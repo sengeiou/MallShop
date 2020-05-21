@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.epro.mall">
+
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /> <!-- <uses-permission android:nickname="android.permission.RECEIVE_BOOT_COMPLETED" /> -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="com.android.vending.BILLING" />
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.CALL_PHONE" /> <!-- <uses-permission android:nickname="android.permission.ACCESS_NETWORK_STATE" /> -->
+    <!-- //获取设备网络状态，禁用后无法获取网络状态 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /> <!-- //网络权限，当禁用后，无法进行检索等相关业务 -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- //读取设备硬件信息，统计数据 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" /> <!-- //读取系统信息，包含系统版本等信息，用作统计 -->
+    <uses-permission android:name="com.android.launcher.permission.READ_SETTINGS" /> <!-- //获取设备的网络状态，鉴权所需网络代理 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- //允许sd卡写权限，需写入地图数据，禁用后无法显示地图 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- //这个权限用于进行网络定位 -->
+    <!-- <uses-permission android:specificationsValue="android.permission.WRITE_SETTINGS" /> -->
+    <!-- //这个权限用于访问GPS定位 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- //获取统计数据 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- //使用步行AR导航，配置Camera权限 -->
+    <uses-permission android:name="android.permission.CAMERA" /> <!-- //程序在手机屏幕关闭后后台进程仍然运行 -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.READ_LOGS" />
+
+    <application
+        android:name=".MallApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/icon_launcher_logo"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:requestLegacyExternalStorage="true"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme_NoActionBar"
+        tools:replace="android:name,android:theme">
+        <activity android:name=".ui.activity.PayResultActivity" />
+        <activity android:name=".ui.login.BindAccountActivity" />
+        <activity android:name=".ui.activity.AddressListActivity" />
+        <activity android:name=".ui.activity.EditAddressActivity" />
+        <activity android:name=".ui.activity.OrderInfoActivity" />
+        <activity android:name=".ui.activity.GoodsDetailActivity" />
+        <activity android:name=".ui.activity.ShopInfoActivity" />
+        <activity android:name=".ui.activity.EditBindAccountActivity" />
+        <activity android:name=".ui.activity.ShopDetailActivity" />
+        <activity android:name=".ui.activity.FindShopActivity" />
+        <activity android:name=".ui.activity.PaypalSampleActivity" />
+
+        <activity
+            android:name=".ui.MainActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait"
+            android:theme="@style/MainActivityTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="mall.app"
+                    android:pathPrefix="/open_with"
+                    android:scheme="mall_app" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
+        </activity>
+        <activity
+            android:name=".ui.login.LoginActivity"
+            android:launchMode="singleTop" />
+        <activity android:name="com.mike.baselib.activity.DemoHeartSocketActivity" />
+        <activity android:name=".ui.AppConfigActivity" />
+        <activity android:name=".ui.login.RegisterActivity" />
+        <activity android:name=".ui.login.ModifyPasswordActivity" />
+        <activity android:name=".ui.activity.ScanActivity" />
+        <activity android:name=".ui.activity.SearchActivity" />
+        <activity android:name=".ui.activity.SearchResultActivity" />
+        <activity android:name=".ui.login.FindPasswordActivity" />
+        <activity
+            android:name=".ui.activity.OrderDetailActivity"
+            android:launchMode="singleTask" />
+        <activity android:name=".ui.activity.MyInfoActivity" />
+        <activity android:name=".ui.activity.LanguageChangeActivity" />
+        <activity android:name=".ui.activity.TestActivity"   android:theme="@style/TransparentTheme" />
+
+        <service android:name="com.mike.baselib.service.SocketConnService" />
+        <service android:name="com.mike.baselib.service.DownloadIntentService" />
+
+        <activity
+            android:name="com.mike.baselib.activity.ProgressActivity"
+            android:theme="@style/AppTheme" />
+        <activity
+            android:name="com.tencent.bugly.beta.ui.BetaActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|locale"
+            android:theme="@android:style/Theme.Translucent" />
+        <activity
+            android:name=".ui.UpgradeActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize|locale"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+        <activity android:name=".ui.activity.AreaSelectActivity" />
+        <activity android:name=".ui.activity.LocationSelectActivity" />
+        <activity android:name=".ui.activity.AccountAssociationActivity" />
+        <activity android:name=".ui.activity.AboutActivity" />
+        <activity android:name=".ui.activity.ScanCodeOrderListActivity" />
+        <activity android:name=".ui.activity.ScanCodeOrderListDetailActivity" />
+        <activity android:name=".ui.activity.ScanBuyActivity" />
+        <activity android:name=".ui.activity.InputBarcodeActivity" />
+        <activity android:name=".ui.activity.ScanBuyCartActivity" />
+        <activity android:name=".ui.activity.ScanBuyOrderInfoActivity" />
+        <activity android:name=".ui.activity.CartActivity" />
+        <activity android:name=".ui.activity.ScanBuyPayResultActivity" />
+        <activity android:name=".ui.activity.PhoneServiceTermsActivity" />
+        <activity android:name=".ui.activity.ProductDescription" />
+        <activity
+            android:name=".ui.activity.UpdateAppActivity"
+            android:theme="@style/TransparentTheme" />
+        <activity android:name=".ui.activity.AccountBindActivity" />
+        <activity android:name=".ui.activity.ScanBarPurchaseActivity" />
+        <activity
+            android:name=".wxapi.WXPayEntryActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:exported="true"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+        <activity
+            android:name=".ui.activity.PayManagerActivity"
+            android:theme="@style/TransparentTheme" />
+        <activity
+            android:name=".ui.activity.AlertActivity"
+            android:launchMode="singleTop"
+            android:theme="@style/TransparentTheme" />
+        <activity
+            android:name=".ui.activity.SelectImageActivity"
+            android:theme="@style/TransparentTheme" />
+        <activity
+            android:name=".ui.activity.NearlyShopListActivity"
+            android:theme="@style/TransparentTheme" />
+        <activity android:name=".ui.activity.SelectCityActivity" />
+        <activity android:name=".ui.activity.GeolocationSelectActivity" />
+
+        <meta-data
+            android:name="com.amap.api.v2.apikey"
+            android:value="16a0795977ad31ab6f2a7f6c0f6c794d" /> <!-- 定位需要的服务 适配Android Q需要加上android:foregroundServiceType="location" -->
+        <service
+            android:name="com.amap.api.location.APSService"
+            android:foregroundServiceType="location" />
+
+        <receiver android:name=".TimeChangedReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.TIME_SET" />
+            </intent-filter>
+        </receiver>
+
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.epro.mall.fileProvider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+
+</manifest>

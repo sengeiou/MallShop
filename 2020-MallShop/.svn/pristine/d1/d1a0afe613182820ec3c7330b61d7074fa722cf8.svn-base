@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/shape_white_bg_radius5"
+    android:gravity="center_horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/iv_dialog_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:textColor="@color/purple_d7a6fc"
+        android:textStyle="bold"
+        android:layout_marginTop="15dp"
+        android:gravity="center"
+        android:id="@+id/tvDialogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/change_number"
+        android:textSize="20sp" />
+
+    <ImageView
+        android:visibility="gone"
+        android:id="@+id/ivDialogIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <RelativeLayout
+        android:layout_marginTop="25dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_marginLeft="60dp"
+            android:padding="5dp"
+            android:id="@+id/ivDialogMinus"
+            android:layout_alignParentLeft="true"
+            android:src="@mipmap/icon_back_white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <EditText
+            android:textSize="18sp"
+            android:textColor="@color/black_2b2b2b"
+            android:gravity="center"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:layout_centerVertical="true"
+            android:background="@drawable/shape_bg_gray"
+            android:inputType="number"
+            android:digits="0123456789"
+            android:text="1"
+            android:layout_toEndOf="@+id/ivDialogMinus"
+            android:layout_toStartOf="@+id/ivDialogPlus"
+            android:id="@+id/etDialogContent"
+            android:layout_width="match_parent"
+            android:layout_height="30dp" />
+        <ImageView
+            android:layout_marginEnd="60dp"
+            android:padding="5dp"
+            android:id="@+id/ivDialogPlus"
+            android:layout_alignParentEnd="true"
+            android:src="@mipmap/icon_back_white"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_marginRight="8dp"
+            android:textColor="@color/black_2b2b2b"
+            android:id="@+id/tvDialogCancel"
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            android:text="@string/delete_dialog_cancel"
+            android:textSize="14sp" />
+
+        <Button
+            android:layout_marginLeft="8dp"
+            android:textColor="@color/black_2b2b2b"
+            android:id="@+id/btDialogConfirm"
+            android:layout_width="90dp"
+            android:layout_height="wrap_content"
+            android:text="@string/modify_password_push"
+            android:textSize="14sp" />
+    </LinearLayout>
+</LinearLayout>

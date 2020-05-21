@@ -1,0 +1,54 @@
+package com.epro.mall.mvp.model
+
+import com.mike.baselib.net.exception.ApiException
+import com.mike.baselib.net.exception.ErrorStatus
+import com.mike.baselib.rx.scheduler.SchedulerUtils
+import com.mike.baselib.listener.RetryWithDelay
+import com.epro.mall.mvp.model.bean.*
+import io.reactivex.Observable
+
+class CartModel : BaseModel() {
+    fun getCartGoodsList(): Observable<GetResultListBean<ShopCart>> {
+        return getApiSevice().getCartGoodsList()
+                .flatMap {
+                    if (it.code == ErrorStatus.SUCCESS) {
+                        return@flatMap Observable.just(it)
+                    } else {
+                        return@flatMap Observable.error<GetResultListBean<ShopCart>>(ApiException(it.message, it.code))
+                    }
+                }
+                .retryWhen(RetryWithDelay())
+                .compose(SchedulerUtils.ioToMain())
+    }
+
+    fun modifyCartGoods(productId: String, number: Int): Observable<ModifyCartGoodsBean> {
+        val send = ModifyCartGoodsBean.Send(productId, number)
+        return getApiSevice().modifyCartGoods(send)
+                .flatMap {
+                    if (it.code == ErrorStatus.SUCCESS) {
+                        return@flatMap Observable.just(it)
+                    } else {
+                        return@flatMap Observable.error<ModifyCartGoodsBean>(ApiException(it.message, it.code))
+                    }
+                }
+                .retryWhen(RetryWithDelay())
+                .compose(SchedulerUtils.ioToMain())
+    }
+
+    fun deleteCartGoods(productId: String): Observable<DeleteCartGoodsBean> {
+        val ids = ArrayList<String>()
+        ids.add(productId)
+        val send = DeleteCartGoodsBean.Send(ids)
+        return getApiSevice().deleteCartGoods(send)
+                .flatMap {
+                    if (it.code == ErrorStatus.SUCCESS) {
+                        return@flatMap Observable.just(it)
+                    } else {
+                        return@flatMap Observable.error<DeleteCartGoodsBean>(ApiException(it.message, it.code))
+                    }
+                }
+                .retryWhen(RetryWithDelay())
+                .compose(SchedulerUtils.ioToMain())
+    }
+
+}

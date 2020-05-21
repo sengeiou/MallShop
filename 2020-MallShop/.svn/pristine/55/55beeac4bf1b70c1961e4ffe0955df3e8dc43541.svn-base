@@ -1,0 +1,130 @@
+apply plugin: 'com.android.library'
+
+
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+//apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-kapt'  //kapt3插件
+
+
+android {
+    compileSdkVersion Integer.parseInt("$compileSdkVer")
+    buildToolsVersion "$buildToolsVersion"
+
+
+    defaultConfig {
+        minSdkVersion Integer.parseInt("$minSdkVer")
+        targetSdkVersion Integer.parseInt("$targetSdkVer")
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            // 设置支持的SO库架构
+            abiFilters 'armeabi', 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
+        }
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+
+    //implementation 'com.android.support:appcompat-v7:28.0.0'
+    testImplementation 'junit:junit:4.12'
+
+    // androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    api "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    api "org.jetbrains.anko:anko-sdk15:$ankoVersion"
+    api "org.jetbrains.anko:anko-support-v4:$ankoVersion"
+    api "org.jetbrains.anko:anko-appcompat-v7:$ankoVersion"
+    api "org.jetbrains.anko:anko-design:$ankoVersion"
+
+    // Support库
+    api rootProject.ext.supportLibs
+
+    // 网络请求库
+    api rootProject.ext.networkLibs
+
+    // RxJava2
+    api rootProject.ext.rxJavaLibs
+    api rootProject.ext.otherLibs
+
+    // APT dependencies(Kotlin内置的注解处理器)
+    kapt rootProject.ext.annotationProcessorLibs
+
+    //运行时权限
+    api('pub.devrel:easypermissions:2.0.0') {
+        exclude group: 'com.android.support'
+    }
+
+    //smartRefreshLayout 下拉刷新
+    api 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0'
+    api 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0'
+    api 'com.classic.common:multiple-status-view:1.5.1'
+
+    //分发消息,主线
+    api 'org.greenrobot:eventbus:3.1.1'
+
+    //webview
+
+    //api 'com.just.agentweb:agentweb:4.1.2'
+
+    //leakCanary
+    debugApi 'com.squareup.leakcanary:leakcanary-android:1.6.3'
+    releaseApi 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.3'
+
+    // Optional, if you use support library fragments:
+    debugApi 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.3'
+
+    //腾讯 bugly
+
+    //api 'com.tencent.bugly:crashreport:latest.release'
+    api 'com.tencent.bugly:crashreport_upgrade:1.4.1'
+
+    // api 'com.tencent.bugly:crashreport:latest.release'
+
+    //api 'com.tencent.bugly:nativecrashreport:3.7.1'
+
+    // 指定tinker依赖版本（注：应用升级1.3.5版本起，不再内置tinker）
+
+    //api 'com.tencent.tinker:tinker-android-lib:1.9.9'
+
+    //Logger
+
+    //api 'com.orhanobut:logger:2.1.1'
+
+    // api 'me.dm7.barcodescanner:core:1.9.8'
+
+    // api 'me.dm7.barcodescanner:zxing:1.9.8'
+
+    // 底部菜单
+    api('com.flyco.tablayout:FlycoTabLayout_Lib:2.1.0@aar') {
+        exclude group: 'com.android.support', module: 'support-v4'
+    }
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
+    implementation 'jp.wasabeef:glide-transformations:3.3.0'
+    api 'com.bigkoo:ConvenientBanner:2.1.4'
+    api 'com.contrarywind:Android-PickerView:4.1.7'
+
+    // api 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+    api 'com.github.razerdp:BasePopup:2.1.9'
+
+    //api 'com.zhihu.android:matisse:0.5.2-beta4'
+    api 'com.android.support:multidex:1.0.3'
+    api 'cn.bingoogolapple:bga-qrcode-zxing:1.3.7'
+    api 'cn.bingoogolapple:bga-qrcode-zbar:1.3.7'
+    api 'org.litepal.android:kotlin:3.0.0'
+}
+

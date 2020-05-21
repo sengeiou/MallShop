@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bottomColor"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/logoutBottom"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="@string/logout_btn_bottom"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:background="@color/white"
+        android:textColor="@color/mainTextColor"/>
+    <TextView
+        android:id="@+id/cancelBottom"
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="@string/delete_dialog_cancel"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textSize="16sp"
+        android:background="@color/white"
+        android:textColor="@color/mainTextColor"/>
+</LinearLayout>

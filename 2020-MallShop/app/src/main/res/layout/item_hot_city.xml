@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheckBox xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cbHotCity"
+    android:background="@drawable/shape_bg_btn_white"
+    android:layout_marginEnd="6dp"
+    android:layout_marginBottom="6dp"
+    android:textColor="@color/mainTextColor"
+    android:textSize="@dimen/middleContentTextSize"
+    android:text="深圳"
+    android:maxEms="10"
+    android:maxLines="1"
+    android:ellipsize="end"
+    android:button="@null"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="32dp" />

@@ -1,0 +1,169 @@
+package com.epro.mall.mvp.presenter
+
+import com.epro.mall.R
+import com.mike.baselib.base.BasePresenter
+import com.mike.baselib.net.exception.ExceptionHandle
+import com.epro.mall.mvp.contract.GoodsDetailContract
+import com.epro.mall.mvp.model.GoodsDetailModel
+import com.epro.mall.mvp.model.bean.Goods
+import com.epro.mall.mvp.model.bean.Product
+import com.epro.mall.mvp.model.bean.Spec
+import com.epro.mall.mvp.model.bean.SpecValue
+import com.mike.baselib.net.exception.ErrorStatus
+import com.mike.baselib.utils.AppContext
+
+class GoodsDetailPresenter : BasePresenter<GoodsDetailContract.View>(), GoodsDetailContract.Presenter {
+    override fun addToCart(productId: String, number: Int, type: String) {
+        checkViewAttached()
+        mRootView?.showLoading(type)
+        val disposable = model.addToCart(productId, number)
+                .subscribe({ bean ->
+                    mRootView?.onAddToCartSuccess()
+                    mRootView?.dismissLoading(ErrorStatus.SUCCESS_MSG, ErrorStatus.SUCCESS,type)
+                }, { throwable ->
+                    //处理异常
+                    ExceptionHandle.handleException(throwable)
+                    mRootView?.showError(ExceptionHandle.errorMsg, ExceptionHandle.errorCode, type)
+                    mRootView?.dismissLoading(ExceptionHandle.errorMsg, ExceptionHandle.errorCode,type)
+                })
+        addSubscription(disposable)
+    }
+
+    private val model by lazy { GoodsDetailModel() }
+
+//    "productList": [
+//    {
+//        "compressPicUrl": "",
+//        "onlineSalesPrice": 2.20,
+//        "productBarCode": "100000000",
+//        "productId": "K880000071572590516221000001",
+//        "productNumber": 199,
+//        "productPicUrl": "",
+//        "retailPrice": 2.50,
+//        "specificationsValueIds": "",
+//        "specificationsValueNames": "250ml"
+//    }
+//    ],
+
+    override fun getGoodsDetail(goodsId:String,type: String) {
+        checkViewAttached()
+        mRootView?.showLoading(type)
+        val disposable = model.getGoodsDetail(goodsId)
+                .subscribe({ bean ->
+                    val goods=bean.result
+
+                    //没有规格列表,默认填充
+                    if(goods.specificationsList.isEmpty()){
+                        val specValues=ArrayList<SpecValue>()
+                        val spec=Spec("parentId",AppContext.getInstance().getString(R.string.specification),specValues)
+                        val specs=ArrayList<Spec>()
+                        for(i in goods.productList.indices){
+                            val p=goods.productList[i]
+                            val specValue=SpecValue(i.toString(),p.specificationsValueNames,spec.id)
+                            p.specificationsValueIds=i.toString()
+                            specValues.add(specValue)
+                        }
+                        spec.specificationsValueList=specValues
+                        specs.add(spec)
+                        goods.specificationsList=specs
+                    }
+
+                    for(p in goods.productList){
+                        p.specificationsValueIds=getSortSpecValueIdsStr(getSpecVauleList(p.specificationsValueIds))
+                    }
+
+                    mRootView?.onGetGoodsDetailSuccess(goods)
+                    mRootView?.dismissLoading(ErrorStatus.SUCCESS_MSG, ErrorStatus.SUCCESS,type)
+                }, { throwable ->
+                    //处理异常
+                    ExceptionHandle.handleException(throwable)
+                    mRootView?.showError(ExceptionHandle.errorMsg, ExceptionHandle.errorCode, type)
+                    mRootView?.dismissLoading(ExceptionHandle.errorMsg, ExceptionHandle.errorCode,type)
+                })
+        addSubscription(disposable)
+
+//        val colors = ArrayList<SpecValue>()
+//        val sizes = ArrayList<SpecValue>()
+//        val flavors = ArrayList<SpecValue>()
+//        for (i in 1..2) {
+//            val specValue = SpecValue("" + i, "颜色$i", "1")
+//            colors.add(specValue)
+//        }
+//
+//        for (i in 3..4) {
+//            val specValue = SpecValue("" + i, "尺寸$i", "2")
+//            sizes.add(specValue)
+//        }
+//        for (i in 5..6) {
+//            val specValue = SpecValue("" + i, "口味$i", "3")
+//            flavors.add(specValue)
+//        }
+//
+//        val specs = ArrayList<Spec>()
+//        val colorSpec = Spec("" + 1, "颜色", colors)
+//        val sizeSpec = Spec("" + 2, "尺寸", sizes)
+//        val flavorSpec = Spec("" + 3, "口味", flavors)
+//        specs.add(colorSpec)
+//        specs.add(sizeSpec)
+//        specs.add(flavorSpec)
+//
+//
+//        val productList = ArrayList<Product>()
+//
+//        var pos = 0
+//        var ids = ""
+//        for (color in colors) {
+//            for (size in sizes) {
+//                for (flavor in flavors) {
+//                    ids = color.productId + "_" + size.productId + "_" + flavor.productId
+//                    val product = Product("" + pos, ids, pos - 4)
+//                    productList.add(product)
+//                    pos++
+//                }
+//            }
+//        }
+//
+//        val goods = Goods("" + 1, specs, productList)
+//        mRootView?.onGetGoodsDetailSuccess(goods)
+    }
+
+    /**
+     * 将用 _ 拼接好的字符串转成集合
+     */
+    private  fun getSpecVauleList(specValueIds: String): ArrayList<String> {
+        val list = ArrayList<String>()
+        list.addAll(specValueIds.split("_"))
+        logTools.toJson(list)
+        return list
+    }
+
+    /**
+     * 将集合转成有序的用 _ 拼接的字符串
+     */
+
+    private  fun getSortSpecValueIdsStr(list: ArrayList<String>): String {
+        list.sort()
+        var ids = ""
+        for (i in list.indices) {
+            if (i == 0) ids += list[i] else ids = ids + "_" + list[i]
+        }
+        return ids
+    }
+
+    override fun getShopInfo(shopId: String, type: String) {
+        checkViewAttached()
+        mRootView?.showLoading(type)
+        val disposable = model.getShopInfo(shopId)
+                .subscribe({ bean ->
+                    mRootView?.onGetShopInfoSuccess(bean.result)
+                    mRootView?.dismissLoading(ErrorStatus.SUCCESS_MSG, ErrorStatus.SUCCESS,type)
+                }, { throwable ->
+                    //处理异常
+                    ExceptionHandle.handleException(throwable)
+                    mRootView?.showError(ExceptionHandle.errorMsg, ExceptionHandle.errorCode, type)
+                    mRootView?.dismissLoading(ExceptionHandle.errorMsg, ExceptionHandle.errorCode,type)
+                })
+        addSubscription(disposable)
+    }
+
+}

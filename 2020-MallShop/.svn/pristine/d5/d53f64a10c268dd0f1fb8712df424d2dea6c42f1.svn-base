@@ -1,0 +1,112 @@
+package com.epro.mall.ui.activity;
+
+import android.content.Context
+import android.content.Intent
+import android.support.v7.widget.LinearLayoutManager
+import android.view.View
+import com.epro.mall.R
+import com.epro.mall.mvp.contract.ScanCodeOrderListDetailContract
+import com.epro.mall.mvp.model.bean.ScanCodeOrderListDetailBean
+import com.epro.mall.mvp.presenter.ScanCodeOrderListDetailPresenter
+import com.epro.mall.ui.adapter.ScanCodeOrderDetailAdapter
+import com.epro.mall.utils.MallConst
+import com.mike.baselib.activity.BaseTitleBarCustomActivity
+import com.mike.baselib.utils.*
+import kotlinx.android.synthetic.main.activity_scan_code_order_list_detail.*
+
+
+class ScanCodeOrderListDetailActivity : BaseTitleBarCustomActivity<ScanCodeOrderListDetailContract.View, ScanCodeOrderListDetailPresenter>(), ScanCodeOrderListDetailContract.View {
+
+    override fun onScanCodeOrderListDetailSuccess(result: ScanCodeOrderListDetailBean.Result) {
+        orderListOneBean = result
+        initDetailView()
+    }
+
+    override fun layoutContentId(): Int {
+        return R.layout.activity_scan_code_order_list_detail
+    }
+
+
+    companion object {
+        const val TAG = "ScanCodeOrderListDetail"
+
+        fun launchWithStr(context: Context, data: String) {
+            context.startActivity(Intent(context, ScanCodeOrderListDetailActivity::class.java).putExtra(TAG, data))
+        }
+    }
+
+    override fun getPresenter(): ScanCodeOrderListDetailPresenter {
+        return ScanCodeOrderListDetailPresenter()
+    }
+
+    override fun initData() {}
+
+    var orderListOneBean:ScanCodeOrderListDetailBean.Result?=null
+    var mAdapter:ScanCodeOrderDetailAdapter?=null
+    override fun initView() {
+        super.initView()
+        getLeftTitleView().visibility = View.GONE
+        getTitleView().visibility = View.VISIBLE
+        getTitleView().text = getString(R.string.scan_code_order_list_detail)
+        var orderSn = intent.getStringExtra(TAG)
+        mPresenter.ScanCodeOrderListDetail(MallConst.SCAN_CODE_ORDER_DETAIL,orderSn)
+        rvDetailView.layoutManager = LinearLayoutManager(this)
+        mAdapter =  ScanCodeOrderDetailAdapter(this, ArrayList())
+        rvDetailView.adapter = mAdapter
+    }
+
+    private fun initDetailView() {
+        tvOrderNum.text = orderListOneBean!!.orderSn
+        tvCreateTime.text = orderListOneBean!!.createTime
+        storeAll.text = orderListOneBean!!.productCount+getString(R.string.piece_num)
+        allMoney.text = orderListOneBean!!.orderActualAmount.ext_formatAmountWithUnit()
+        payStyle(orderListOneBean!!.payType)
+        shopName.text = orderListOneBean!!.shopName
+        shopAddress.text = orderListOneBean!!.shopAddress
+        shopPhone.text = orderListOneBean!!.shopMobile
+        shopCount.text = orderListOneBean!!.productCount+getString(R.string.piece_num)
+        orderMoney.text = orderListOneBean!!.orderActualAmount.ext_formatAmountWithUnit()
+        offerMoney.text = (orderListOneBean!!.orderTotalAmount.toDouble() - orderListOneBean!!.orderActualAmount.toDouble()).ext_formatAmountWithUnit()
+        orderStatusView(orderListOneBean!!.orderStatus)
+        logTools.t("YB").d("initDetailView :"+orderListOneBean!!.products)
+        mAdapter!!.mData.clear()
+        mAdapter!!.mData.addAll(orderListOneBean!!.products)
+        mAdapter!!.notifyDataSetChanged()
+        ivQrcode.ext_loadImage(QRCodeUtil.getQrImagePath(this,orderListOneBean!!.orderSn,DisplayManager.dip2px(175F)!!,DisplayManager.dip2px(175F)!!,null))
+    }
+
+    private fun orderStatusView(status: String) {
+        if (1 == status.toInt()){
+            orderStatus.text = getString(R.string.order_list_title_2)
+        }else if (2==status.toInt()|| 7==status.toInt()){
+            orderStatus.text = getString(R.string.order_list_title_5)
+        }else if (3==status.toInt()|| 4==status.toInt()|| 5==status.toInt()){
+            orderStatus.text = getString(R.string.order_list_title_3)
+        }else if (6==status.toInt()){
+            orderStatus.text = getString(R.string.order_transaction_complete)
+        }
+    }
+
+    //付款方式
+    private fun payStyle(payType: String) {
+        if ("1".equals(payType)) {
+            payStyle.text = getString(R.string.pay_style_1)
+        } else if ("2".equals(payType)) {
+            payStyle.text = getString(R.string.pay_style_2)
+        } else if ("3".equals(payType)) {
+            payStyle.text = getString(R.string.pay_style_3)
+        } else if ("4".equals(payType)) {
+            payStyle.text = getString(R.string.pay_style_4)
+        } else if ("5".equals(payType)) {
+            payStyle.text = getString(R.string.pay_style_5)
+        } else if ("6".equals(payType)) {
+            payStyle.text = getString(R.string.pay_style_6)
+        }
+    }
+
+    override fun initListener() {
+    }
+
+}
+
+

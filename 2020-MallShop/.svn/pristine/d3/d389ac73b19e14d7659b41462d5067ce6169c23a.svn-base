@@ -1,0 +1,403 @@
+package com.epro.mall.ui
+
+import android.app.Activity
+import android.app.Dialog
+import android.content.Context
+import android.content.Intent
+import android.os.Build
+import android.os.Bundle
+import android.support.annotation.RequiresApi
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentActivity
+import android.support.v4.app.FragmentTransaction
+import android.view.KeyEvent
+import com.epro.mall.R
+import com.epro.mall.listener.LoginSuccessEvent
+import com.epro.mall.listener.LogoutSuccessEvent
+import com.epro.mall.mvp.model.bean.TabEntity
+import com.epro.mall.ui.fragment.*
+import com.epro.mall.ui.login.LoginActivity
+import com.epro.mall.ui.view.CommonDialog
+import com.epro.mall.utils.ActivityUtil
+import com.epro.pos.listener.AccountFrozenEvent
+import com.epro.pos.listener.MultiDeviceLoginEvent
+import com.flyco.tablayout.listener.CustomTabEntity
+import com.flyco.tablayout.listener.OnTabSelectListener
+import com.mike.baselib.activity.BaseSimpleActivity
+import com.mike.baselib.listener.TokenExpiredEvent
+import com.mike.baselib.utils.*
+import kotlinx.android.synthetic.main.activity_main.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import java.lang.ref.WeakReference
+import java.util.*
+
+
+class MainActivity : BaseSimpleActivity() {
+
+    companion object {
+        private const val FOR_LOGIN_RESULT = 1
+        const val RC_READ_AND_WRITE_EXTERNAL_STORAGE = 100
+        const val TAG = "MainActivity"
+        fun launch(context: Context) {
+            launchWithStr(context, "")
+        }
+
+        fun launchWithStr(context: Context, str: String) {
+            context.startActivity(Intent(context, MainActivity::class.java).putExtra(TAG, str))
+        }
+
+        fun launchMain(context: Context, index: Int) {
+            val intent = Intent(context, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            intent.putExtra("index", index)
+            context.startActivity(intent)
+        }
+
+        fun exitApp(context: Context) {
+            val intent = Intent(context, MainActivity::class.java)
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            intent.putExtra("finish", true)
+            context.startActivity(intent)
+        }
+    }
+
+
+    override fun layoutContentId(): Int {
+        return R.layout.activity_main
+    }
+
+   // private val mTitles = arrayOf(R.string.home, R.string.order,R.string.message, R.string.cart, R.string.mine)
+    private val mTitles = arrayOf(R.string.home, R.string.order, R.string.cart, R.string.mine)
+    // 未被选中的图标
+//    private val mIconUnSelectIds = intArrayOf(R.mipmap.nav_home_default, R.mipmap.nav_order_default, R.mipmap.nav_order_default,R.mipmap.nav_cart_default, R.mipmap.nav_mine_default)
+//    // 被选中的图标
+//    private val mIconSelectIds = intArrayOf(R.mipmap.nav_home_selected, R.mipmap.nav_order_selected,R.mipmap.nav_order_selected, R.mipmap.nav_cart_selected, R.mipmap.nav_mine_selected)
+    private val mIconUnSelectIds = intArrayOf(R.mipmap.nav_home_default, R.mipmap.nav_order_default, R.mipmap.nav_cart_default, R.mipmap.nav_mine_default)
+    // 被选中的图标
+    private val mIconSelectIds = intArrayOf(R.mipmap.nav_home_selected, R.mipmap.nav_order_selected, R.mipmap.nav_cart_selected, R.mipmap.nav_mine_selected)
+
+    private val mTabEntities = ArrayList<CustomTabEntity>()
+
+    private var mHomeFragment: HomeFragment? = null
+    private var mOrderFragment: OrderFragment? = null
+    private var mCartFragment: CartFragment? = null
+    private var mMineFragment: MineFragment? = null
+    private var mChatRecordListFragment:Fragment?=null
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            FOR_LOGIN_RESULT -> {
+                if (resultCode == Activity.RESULT_OK) {//登录成功
+//                    mIndex = tab_layout.currentTab
+//                    switchFragment()
+                }
+            }
+        }
+    }
+
+    //默认为0
+    var mIndex = 0
+    val runnable = SplashClose(this)
+    @RequiresApi(Build.VERSION_CODES.O)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        // 避免从桌面启动程序后，会重新实例化入口类的activity
+        if (!this.isTaskRoot) { // 判断当前activity是不是所在任务栈的根
+            if (intent != null) {
+                val action = intent.action;
+                if (intent.hasCategory(Intent.CATEGORY_LAUNCHER) && Intent.ACTION_MAIN == action) {
+                    finish()
+                }
+            }
+        }
+
+        //logTools.d(AESUtils.encrypt("{\"randomKey\":\"6hasbs\",\"token\":\"eyJhbGciOiJIUzUxMiJ9.eyJyYW5kb21LZXkiOiI2aGFzYnMiLCJzdWIiOiIxMDAwMDEyIiwiZXhwIjoxNTg2Mzk5NDM0LCJpYXQiOjE1ODU3OTQ2MzR9.NIoR4i31q6phWVLDfFNh2ETq1mfucOfcCuW8NqhQ7swRF9ylz5ToKy8Wz1kAi12FdJvZGS2CYWn3PoMvEgtvYg\"}"))
+    }
+
+    inner class SplashClose(activity: FragmentActivity) : Runnable {
+        override fun run() {
+            val activity = reference?.get()
+            removeSplash(activity)
+            activity?.window!!.setBackgroundDrawableResource(android.R.color.white)
+        }
+
+        var reference: WeakReference<FragmentActivity>? = null
+
+        init {
+            reference = WeakReference(activity)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        removeSplash(this)
+        //ActivityUtil.stopIMService(this)
+    }
+
+    private fun removeSplash(activity: FragmentActivity?) {
+        val supportFragmentManager = activity?.supportFragmentManager
+        val splashFragment = supportFragmentManager?.findFragmentByTag("splash")
+        if (splashFragment != null) {
+            supportFragmentManager.beginTransaction().remove(splashFragment).commitAllowingStateLoss()
+        }
+        AppContext.getInstance().mainHandler.removeCallbacks(runnable)
+    }
+
+
+    override fun initStatusBar() {
+//        StatusBarUtil.darkMode(this@MainActivity,false)
+//        StatusBarUtil.immersive(this@MainActivity, resources.getColor(R.color.purple_d7a6fc), 1f)
+        StatusBarUtil.immersive(this, resources.getColor(R.color.white), 0f)
+    }
+
+    //初始化底部菜单
+    fun initTab() {
+        (0 until mTitles.size)
+                .mapTo(mTabEntities) { TabEntity(getString(mTitles[it]), mIconSelectIds[it], mIconUnSelectIds[it]) }
+        //为Tab赋值
+        tab_layout.setTabData(mTabEntities)
+        tab_layout.setOnTabSelectListener(object : OnTabSelectListener {
+            override fun onTabSelect(position: Int) {
+                // StatusBarUtil.darkMode(this@MainActivity, position != 0 && position != 2&& position != 3)
+                /*  if (position == 1 || position == 2) {
+                      if (!AppBusManager.isLogin()) {
+                          LoginActivity.launchWithForResult(this@MainActivity, FOR_LOGIN_RESULT)
+                          return
+                      }
+                  }*/
+                mIndex = position
+                switchFragment()
+            }
+
+            override fun onTabReselect(position: Int) {
+            }
+        })
+    }
+
+    /**
+     * 切换Fragment
+     * @param position 下标
+     */
+    fun switchFragment() {
+        val transaction = supportFragmentManager.beginTransaction()
+        hideFragments(transaction)
+        when (mIndex) {
+            0 // 首页
+            -> mHomeFragment?.let {
+                transaction.show(it)
+            } ?: HomeFragment().let {
+                mHomeFragment = it
+                transaction.add(R.id.fl_container, it, "tab_home")
+            }
+
+            1 // 订单
+            -> mOrderFragment?.let {
+                transaction.show(it)
+            } ?: OrderFragment().let {
+                mOrderFragment = it
+                transaction.add(R.id.fl_container, it, "tab_order")
+            }
+            2 // 购物车
+            -> mCartFragment?.let {
+                transaction.show(it)
+            } ?: CartFragment.newInstance().let {
+                mCartFragment = it
+                transaction.add(R.id.fl_container, it, "tab_cart")
+            }
+            3 // 个人
+            -> mMineFragment?.let {
+                transaction.show(it)
+            } ?: MineFragment().let {
+                mMineFragment = it
+                transaction.add(R.id.fl_container, it, "tab_mine")
+            }
+            else -> {
+
+            }
+        }
+        tab_layout.currentTab = mIndex
+        transaction.commitAllowingStateLoss()
+    }
+//    fun switchFragment() {
+//        val transaction = supportFragmentManager.beginTransaction()
+//        hideFragments(transaction)
+//        when (mIndex) {
+//            0 // 首页
+//            -> mHomeFragment?.let {
+//                transaction.show(it)
+//            } ?: HomeFragment().let {
+//                mHomeFragment = it
+//                transaction.add(R.id.fl_container, it, "tab_home")
+//            }
+//
+//            1 // 订单
+//            -> mOrderFragment?.let {
+//                transaction.show(it)
+//            } ?: OrderFragment().let {
+//                mOrderFragment = it
+//                transaction.add(R.id.fl_container, it, "tab_order")
+//            }
+//            2 // 消息
+//            ->mChatRecordListFragment?.let {
+//                transaction.show(it)
+//            } ?: ActivityUtil.createChatRecordListFragment().let {
+//                mChatRecordListFragment = it
+//                transaction.add(R.id.fl_container, it, "tab_chat")
+//            }
+//            3 // 购物车
+//            -> mCartFragment?.let {
+//                transaction.show(it)
+//            } ?: CartFragment.newInstance().let {
+//                mCartFragment = it
+//                transaction.add(R.id.fl_container, it, "tab_cart")
+//            }
+//            4 // 个人
+//            -> mMineFragment?.let {
+//                transaction.show(it)
+//            } ?: MineFragment().let {
+//                mMineFragment = it
+//                transaction.add(R.id.fl_container, it, "tab_mine")
+//            }
+//            else -> {
+//
+//            }
+//        }
+//        tab_layout.currentTab = mIndex
+//        transaction.commitAllowingStateLoss()
+//    }
+
+
+    /**
+     * 隐藏所有的Fragment
+     * @param transaction transaction
+     */
+    private fun hideFragments(transaction: FragmentTransaction) {
+        mHomeFragment?.let { transaction.hide(it) }
+        mOrderFragment?.let { transaction.hide(it) }
+        mCartFragment?.let { transaction.hide(it) }
+        mMineFragment?.let { transaction.hide(it) }
+        mChatRecordListFragment?.let { transaction.hide(it) }
+    }
+
+    override fun initView() {
+        super.initView()
+        logTools.d("initView:" + mIndex)
+        supportFragmentManager.beginTransaction().replace(R.id.flContent, SplashFragment(), "splash").commitAllowingStateLoss()
+        if (AppBusManager.isHasNeedPerms()) {
+            AppContext.getInstance().mainHandler.postDelayed(runnable, 2000)
+            initTab()
+            switchFragment()
+        }
+    }
+
+    override fun initData() {
+    }
+
+    override fun initListener() {
+    }
+
+    private var mExitTime: Long = 0
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (System.currentTimeMillis().minus(mExitTime) <= 2000) {
+                finish()
+            } else {
+                mExitTime = System.currentTimeMillis()
+                toast(getString(R.string.touch_two_logout_app))
+            }
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
+    fun showMsgCount(position: Int, num: Int) {
+//        if(num!=0){
+//            tab_layout.showMsg(position, num)
+//        }
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (intent?.getBooleanExtra("finish", false)!!) {
+            finish()
+        }
+        logTools.d("onNewIntent:" + mIndex)
+        logTools.d("onNewIntent:" + this.intent.getBooleanExtra("finish", false))
+        logTools.d("onNewIntent:" + intent?.getBooleanExtra("finish", false))
+        val index = intent?.getIntExtra("index", -1)!!
+        if (index != -1) {
+            mIndex = index
+        }
+        switchFragment()
+    }
+
+    override fun onRestart() {
+        super.onRestart()
+        logTools.d("onRestart:" + mIndex)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMultiDeviceLoginEvent(event: MultiDeviceLoginEvent) {
+        launchMain(this@MainActivity, 0)
+        tab_layout.hideMsg(2)
+        EventBus.getDefault().post(LogoutSuccessEvent())
+        tab_layout.postDelayed(Runnable {
+            showAlertDialog(getString(R.string.multiple_devices_login))
+        }, 100)
+        //AlertActivity.launchWithLatLng(this,"您的账号已在别的设备登录,请重新登录")
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onTokenExpiredEvent(event: TokenExpiredEvent) {
+        launchMain(this@MainActivity, 0)
+        tab_layout.hideMsg(2)
+        EventBus.getDefault().post(LogoutSuccessEvent())
+        tab_layout.postDelayed(Runnable {
+            showAlertDialog(getString(R.string.login_timeout))
+        }, 100)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onAccountFrozenEvent(event: AccountFrozenEvent) {
+        launchMain(this@MainActivity, 0)
+        tab_layout.hideMsg(2)
+        EventBus.getDefault().post(LogoutSuccessEvent())
+        tab_layout.postDelayed(Runnable {
+            showAlertDialog("账户已冻结")
+        }, 100)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    fun onLogoutSuccess(event: LogoutSuccessEvent) {
+        tab_layout.hideMsg(2)
+        //ActivityUtil.stopIMService(this)
+    }
+
+    private fun showAlertDialog(alert: String) {
+        CommonDialog.Builder(this)
+                .setContent(alert)
+                .setOnConfirmListener(object : CommonDialog.OnConfirmListener {
+                    override fun onClick(dialog: Dialog) {
+                        dialog.dismiss()
+                        startActivityForResult(Intent(this@MainActivity, LoginActivity::class.java), FOR_LOGIN_RESULT)
+                    }
+                })
+                .setCanceledOnTouchOutside(false)
+                .create()
+                .show()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onLoginSuccess(event: LoginSuccessEvent) {
+        //开启通讯服务,监听收到的消息
+        //ActivityUtil.startIMService(this)
+    }
+}
+

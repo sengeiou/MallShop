@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/shape_toast"
+    android:gravity="center"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/tvContent"
+        android:layout_width="184dp"
+        android:layout_height="40dp"
+        android:textSize="15sp"
+        android:layout_gravity="center_horizontal"
+        android:gravity="center"
+        android:textColor="@color/mainMatchColor"
+        android:text=""
+        />
+</LinearLayout>

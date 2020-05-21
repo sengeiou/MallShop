@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:tl="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:layout_marginTop="35dp"
+        android:layout_marginBottom="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/ivBack"
+            android:layout_marginStart="9dp"
+            android:src="@mipmap/top_icon_black_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <RelativeLayout
+            android:layout_marginStart="12dp"
+            android:background="@drawable/shape_bg_search"
+            android:layout_toEndOf="@+id/ivBack"
+            android:layout_toStartOf="@+id/tvCancel"
+            android:layout_width="match_parent"
+            android:layout_height="32dp">
+            <TextView
+                android:gravity="center_vertical"
+                android:layout_marginEnd="8dp"
+                android:layout_toEndOf="@+id/ivSearch"
+                android:textColorHint="@color/gray_cccccc"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/contentTextSize"
+                android:layout_width="match_parent"
+                android:id="@+id/etSearch"
+                android:layout_height="32dp"
+                android:maxLines="1"
+                android:singleLine="true" />
+            <ImageView
+                android:id="@+id/ivSearch"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:src="@mipmap/icon_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+
+        <TextView
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingEnd="9dp"
+            android:paddingStart="9dp"
+            android:layout_centerVertical="true"
+            android:textColor="@color/thirdTextColor"
+            android:textSize="@dimen/contentTextSize"
+            android:id="@+id/tvCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="@string/delete_dialog_cancel" />
+    </RelativeLayout>
+    <com.flyco.tablayout.SlidingTabLayout
+        android:layout_marginBottom="10dp"
+        android:id="@+id/tlResults"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:paddingLeft="5dp"
+        android:paddingRight="5dp"
+        tl:tl_indicator_color="@color/mainColor"
+        tl:tl_textSelectColor="@color/mainColor"
+        tl:tl_textUnselectColor="@color/mainTextColor"
+        tl:tl_indicator_width_equal_title="true"
+        tl:tl_textsize="@dimen/titleTextSize"
+        tl:tl_textBold="BOTH"
+        tl:tl_indicator_corner_radius="1.5dp"
+        tl:tl_indicator_height="3dp"
+        tl:tl_indicator_width="10dp"
+        tl:tl_tab_space_equal="true"
+        tl:tl_tab_padding="5dp" />
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vpResults"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

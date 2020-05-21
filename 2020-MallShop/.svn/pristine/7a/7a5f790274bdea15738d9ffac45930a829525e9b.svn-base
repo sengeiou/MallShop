@@ -1,0 +1,189 @@
+//apply plugin: 'com.android.application'
+ext.mainApp = true //标记为主app module
+apply from: rootProject.file('cc-settings-2.gradle')
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions'
+//apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-kapt'  //kapt3插件
+apply plugin: 'com.mob.sdk'
+
+// 依赖插件脚本
+apply from: 'tinker-support.gradle'
+static def releaseTime() {
+    return new Date().format("yyyy_MM_dd HH_mm_ss")
+}
+android {
+    compileSdkVersion Integer.parseInt("$compileSdkVer")
+    buildToolsVersion "$buildToolsVersion"
+
+    defaultConfig {
+        applicationId "com.epro.mall"
+        minSdkVersion Integer.parseInt("$minSdkVer")
+        targetSdkVersion Integer.parseInt("$targetSdkVer")
+        versionCode 114
+        versionName "1.1.4"
+        multiDexEnabled true
+
+        ndk {
+            //设置支持的SO库架构（开发者可以根据需要，选择一个或多个平台的so）
+            abiFilters "armeabi", "armeabi-v7a", "arm64-v8a", "x86","x86_64"
+        }
+    }
+
+//    applicationVariants.all { variant ->
+//        variant.outputs.all {
+//            def fileName = "app-release" + "_v${defaultConfig.versionCode}_${releaseTime()}_" +
+//                    variant.specificationsValue +
+//                    ".apk"
+//            outputFileName = fileName
+//        }
+//    }
+
+    signingConfigs {
+        release {
+            storeFile file("../app/epro.jks")
+            keyAlias 'epro'
+            keyPassword '111111'
+            storePassword '111111'
+        }
+        debug {
+            storeFile file("../app/epro.jks")
+            keyAlias 'epro'
+            keyPassword '111111'
+            storePassword '111111'
+        }
+    }
+
+    buildTypes {
+        release {
+            // 开启混淆
+            minifyEnabled true
+            // Zipalign压缩优化
+            zipAlignEnabled true
+            // 移除无用的资源文件
+            //shrinkResources true
+            signingConfig signingConfigs.release
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled false
+            zipAlignEnabled false
+            shrinkResources false
+            signingConfig signingConfigs.debug
+        }
+    }
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_8
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+    packagingOptions {
+        exclude 'META-INF/proguard/androidx-annotations.pro'
+    }
+
+//    splits {
+//        abi {
+//            enable true
+//            reset()
+//            include 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a' //select ABIs to build APKs for
+//            universalApk true //generate an additional APK that contains all the ABIs
+//        }
+//    }
+
+    // icon_map for the version code
+    project.ext.versionCodes = ['armeabi-v7a': 1, 'arm64-v8a': 2, 'x86': 3, 'x86_64': 4]
+
+    android.applicationVariants.all { variant ->
+        // assign different version code for each output
+//        variant.outputs.each { output ->
+//            output.versionCodeOverride =
+//                    project.ext.versionCodes.get(output.getFilter(com.android.build.OutputFile.ABI), 0) *
+//                            1000000 + android.defaultConfig.versionCode
+//        }
+
+        variant.outputs.all {
+            // 名称_android_版本号.apk
+            outputFileName = "app_C_${defaultConfig.versionName}_${releaseTime()}.apk"
+        }
+
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
+    }
+
+    dexOptions {
+        javaMaxHeapSize "4g"
+    }
+}
+
+MobSDK {
+    appKey "2bd3aba98ffe4"
+    appSecret "ddfa5f6e21c5f02c1a3fb5506a7b4ec0"
+
+    ShareSDK {
+        //平台配置信息
+        devInfo {
+            Facebook {
+                appKey "1427347407404579"
+                appSecret "113593e9e1468fd2ccce65ae5f459dc4"
+                callbackUri "https://www.epro.com.cn/"
+            }
+            Twitter {
+                appKey "tZ98gXlDAT2WDzBazHbIOJBDL"
+                appSecret "T0HZhXq98BFJU4NVBTtqvwjV1o20XSSgpK7ryf9wFlVcHVrifq"
+                callbackUri "https://www.epro.com.cn/"
+            }
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    testImplementation 'junit:junit:4.12'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+    // APT dependencies(Kotlin内置的注解处理器)
+    kapt rootProject.ext.annotationProcessorLibs
+    api project(':baseLib')
+    addComponent 'compIM'
+
+
+    //高德地图
+    implementation 'com.amap.api:location:latest.integration'
+    implementation 'com.amap.api:3dmap:latest.integration'
+    implementation  'com.amap.api:search:latest.integration'
+
+    //三方UI控件
+    implementation 'com.hyman:flowlayout-lib:1.1.2'
+    implementation 'com.youth.banner:banner:1.4.10'
+    implementation 'me.grantland:autofittextview:0.2.1'
+
+
+   // implementation files('libs/pinyin4j-2.5.0.jar')
+    //支付宝支付
+    implementation files('libs/alipaySdk-15.5.9-20181123210601.aar')
+
+    //微信支付
+    implementation 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
+
+    // 拼音
+    implementation 'com.github.promeg:tinypinyin:2.0.1'
+
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlinVersion"
+    }
+}

@@ -1,0 +1,36 @@
+package com.epro.mall.mvp.model
+
+import com.mike.baselib.net.exception.ApiException
+import com.mike.baselib.net.exception.ErrorStatus
+import com.mike.baselib.rx.scheduler.SchedulerUtils
+import com.mike.baselib.listener.RetryWithDelay
+import com.epro.mall.mvp.model.bean.AboutBean
+import com.epro.mall.mvp.model.bean.UpdateAppBean
+import io.reactivex.Observable
+
+class UpdateAppModel : BaseModel() {
+    fun UpdateApp(): Observable<UpdateAppBean> {
+        return getApiSevice().UpdateApp()
+                .flatMap {
+                    if (it.code == ErrorStatus.SUCCESS) {
+                        return@flatMap Observable.just(it)
+                    } else {
+                        return@flatMap Observable.error<UpdateAppBean>(ApiException(it.message, it.code))
+                    }
+                }
+                .retryWhen(RetryWithDelay())
+                .compose(SchedulerUtils.ioToMain())
+    }
+
+    fun aboutApp(authType:String): Observable<AboutBean> {
+        return getApiSevice().aboutApp(AboutBean.Send(authType)).flatMap {
+            if (it.code == ErrorStatus.SUCCESS){
+                return@flatMap Observable.just(it)
+            }else{
+                return@flatMap Observable.error<AboutBean>(ApiException(it.message,it.code))
+            }
+        }
+                .retryWhen (RetryWithDelay())
+                .compose(SchedulerUtils.ioToMain())
+    }
+}

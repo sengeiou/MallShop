@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bottomColor">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="158dp"
+            android:layout_marginTop="12dp"
+            android:background="@color/white"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/ivShopLogo"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_marginTop="8dp"
+                android:src="@mipmap/bg_empty" />
+
+            <TextView
+                android:id="@+id/tvShopName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="22dp"
+                android:text="@string/shop_name"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/navigationTextSize"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="96dp"
+            android:layout_marginTop="12dp"
+            android:background="@color/white"
+            android:orientation="vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp">
+
+                <TextView
+                    android:id="@+id/tvPhoneTag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="10dp"
+                    android:text="@string/phone"
+                    android:textColor="@color/thirdTextColor"
+                    android:textSize="@dimen/contentTextSize" />
+
+                <TextView
+                    android:id="@id/tvPhone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="5dp"
+                    android:layout_toStartOf="@+id/ivPhone"
+                    android:layout_toEndOf="@+id/tvPhoneTag"
+                    android:clickable="true"
+                    android:drawableEnd="@drawable/shape_vertical_line"
+                    android:gravity="center_vertical"
+                    android:textColor="@color/mainTextColor"
+                    android:textSize="@dimen/contentTextSize" />
+
+                <ImageView
+                    android:id="@+id/ivPhone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="6dp"
+                    android:src="@mipmap/shop_profile_icon_telephone" />
+            </RelativeLayout>
+
+            <include layout="@layout/layout_line" />
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp">
+
+                <TextView
+                    android:id="@+id/tvAddressTag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="10dp"
+                    android:text="@string/address"
+                    android:textColor="@color/thirdTextColor"
+                    android:textSize="@dimen/contentTextSize" />
+
+                <TextView
+                    android:id="@id/tvAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="5dp"
+                    android:layout_toStartOf="@+id/ivAddress"
+                    android:layout_toEndOf="@+id/tvAddressTag"
+                    android:drawableEnd="@drawable/shape_vertical_line"
+                    android:ellipsize="end"
+                    android:gravity="center_vertical"
+                    android:maxEms="15"
+                    android:maxLines="2"
+                    android:textColor="@color/mainTextColor"
+                    android:textSize="@dimen/contentTextSize" />
+
+                <ImageView
+                    android:id="@+id/ivAddress"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:padding="6dp"
+                    android:src="@mipmap/shop_profile_icon_location" />
+            </RelativeLayout>
+
+            <include layout="@layout/layout_line" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@color/white"
+            android:orientation="vertical"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp">
+
+            <TextView
+                android:id="@+id/tvIntroduce"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:text="@string/shop_introduction"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/titleTextSize" />
+
+            <android.support.constraint.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/constraintLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp">
+
+                <com.youth.banner.Banner
+                    android:id="@+id/banner"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:banner_default_image="@mipmap/bg_long_empty"
+                    app:indicator_drawable_selected="@drawable/shape_indicator_banner_selected"
+                    app:indicator_drawable_unselected="@drawable/shape_indicator_banner_unselected"
+                    app:indicator_height="2dp"
+                    app:indicator_margin="2dp"
+                    app:indicator_width="7dp"
+                    app:layout_constraintDimensionRatio="H,1:0.545"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </android.support.constraint.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/tvDetail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:text="@string/introduction"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/middleContentTextSize" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
+
+

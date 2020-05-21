@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:layout_marginTop="12dp"
+    android:orientation="vertical">
+    <LinearLayout
+        android:id="@+id/llValidTitle"
+        android:layout_marginTop="5dp"
+        android:layout_marginStart="10dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:padding="5dp"
+            android:button="@drawable/selector_bg_checkbox"
+            android:id="@+id/cbSelect"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:maxEms="15"
+            android:padding="5dp"
+            android:gravity="center_vertical"
+            android:textSize="@dimen/titleTextSize"
+            android:drawableStart="@mipmap/store_shop"
+            android:drawablePadding="6dp"
+            android:layout_marginEnd="15dp"
+            android:drawableEnd="@mipmap/arrow_right"
+            android:text="@string/fruit"
+            android:id="@+id/tvShopName"
+            android:textStyle="bold"
+            android:textColor="@color/mainTextColor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_marginTop="5dp"
+        android:id="@+id/tvUnValidTitle"
+        android:layout_marginStart="10dp"
+        android:textSize="@dimen/text_size_13"
+        android:textColor="@color/mainTextColor"
+        android:text="@string/dead_goods"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvShopCarts"
+        android:nestedScrollingEnabled="false"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <RelativeLayout
+        android:visibility="gone"
+        android:background="@color/white"
+        android:id="@+id/rlBottom"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_alignParentBottom="true">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:button="@drawable/selector_checkbox"
+                android:id="@+id/cbAllSelect"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="10dp" />
+
+            <TextView
+                android:id="@+id/tvSelectNum"
+                android:textSize="@dimen/contentTextSize"
+                android:textColor="@color/thirdTextColor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:text="@string/select_0" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/contentTextSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/total" />
+            <TextView
+                android:textSize="@dimen/contentTextSize"
+                android:textColor="@color/mainColor"
+                android:id="@+id/tvTotal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="HK 0.00" />
+            <Button
+                style="@style/MainRedButton"
+                android:id="@+id/btnCheckout"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_width="wrap_content"
+                android:text="@string/settlement" />
+        </LinearLayout>
+        <View
+            android:background="@color/bottomColor"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"/>
+    </RelativeLayout>
+</LinearLayout>

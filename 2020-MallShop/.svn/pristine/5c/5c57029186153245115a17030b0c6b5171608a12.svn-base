@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bottomColor"
+        android:orientation="vertical">
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="12dp"
+            android:background="@color/bottomColor" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/white">
+    <RelativeLayout
+        android:id="@+id/faceAssociation"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="14dp"
+            android:id="@+id/img"
+            android:src="@mipmap/icon_facebook"
+            />
+        <TextView
+            android:layout_toRightOf="@id/img"
+            android:text="@string/association_name_1"
+            android:textColor="@color/mainTextColor"
+            android:textSize="@dimen/contentTextSize"
+            android:layout_marginLeft="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:drawableEnd="@mipmap/arrow_right"
+            android:drawablePadding="13dp"
+            android:id="@+id/tvBook"
+            android:layout_alignParentEnd="true"
+            android:text=""
+            android:paddingEnd="12dp"
+            android:textColor="@color/secondaryTextColor"
+            android:textSize="@dimen/contentTextSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+        <View
+            style="@style/View_line"
+            android:layout_alignParentBottom="true"
+            />
+
+    <RelativeLayout
+        android:id="@+id/twitterAssociation"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="14dp"
+            android:id="@+id/img2"
+            android:src="@mipmap/icon_twitter"
+            />
+        <TextView
+            android:layout_toRightOf="@id/img2"
+            android:text="@string/association_name_2"
+            android:textColor="@color/mainTextColor"
+            android:textSize="@dimen/contentTextSize"
+            android:layout_marginLeft="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:drawableEnd="@mipmap/arrow_right"
+            android:drawablePadding="13dp"
+            android:id="@+id/tvAssociation2"
+            android:layout_alignParentEnd="true"
+            android:text=""
+            android:paddingEnd="12dp"
+            android:textColor="@color/mainColor"
+            android:textSize="@dimen/contentTextSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+        <View
+            style="@style/View_line" />
+    <RelativeLayout
+        android:id="@+id/sinaAssociation"
+        android:gravity="center_vertical"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="48dp">
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="14dp"
+            android:id="@+id/img3"
+            android:src="@mipmap/icon_micro_blog"
+            />
+        <TextView
+            android:layout_toRightOf="@id/img3"
+            android:text="@string/association_name_3"
+            android:textColor="@color/mainTextColor"
+            android:textSize="@dimen/text_size_16"
+            android:layout_marginLeft="12dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:drawableEnd="@mipmap/arrow_right"
+            android:drawablePadding="13dp"
+            android:id="@+id/tvAssociation3"
+            android:layout_alignParentEnd="true"
+            android:text="@string/association_name_2_ok"
+            android:paddingEnd="12dp"
+            android:textColor="@color/mainColor"
+            android:textSize="@dimen/text_size_16"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

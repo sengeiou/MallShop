@@ -1,0 +1,25 @@
+package com.epro.mall.mvp.model
+
+import com.mike.baselib.net.exception.ApiException
+import com.mike.baselib.net.exception.ErrorStatus
+import com.mike.baselib.rx.scheduler.SchedulerUtils
+import com.mike.baselib.listener.RetryWithDelay
+import com.epro.mall.mvp.model.bean.GetNearlyShopListBean
+import com.epro.mall.mvp.model.bean.GetResultListBean
+import com.epro.mall.mvp.model.bean.NearlyShop
+import io.reactivex.Observable
+
+class NearlyShopListModel : BaseModel() {
+    fun getNearlyShopList(latitude: String,longitude:String,query:String?=null, city:String?=null): Observable<GetResultListBean<NearlyShop>> {
+        return getApiSevice().getNearlyShopList(GetNearlyShopListBean.Send(latitude,longitude,query,city))
+                .flatMap {
+                    if (it.code == ErrorStatus.SUCCESS) {
+                        return@flatMap Observable.just(it)
+                    } else {
+                        return@flatMap Observable.error<GetResultListBean<NearlyShop>>(ApiException(it.message, it.code))
+                    }
+                }
+                .retryWhen(RetryWithDelay())
+                .compose(SchedulerUtils.ioToMain())
+    }
+}

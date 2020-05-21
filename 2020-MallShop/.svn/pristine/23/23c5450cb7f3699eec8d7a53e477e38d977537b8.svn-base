@@ -1,0 +1,198 @@
+package com.mike.baselib.utils;
+
+import android.util.Log;
+
+import com.google.gson.Gson;
+
+public class LogTools {
+
+    private String tag;
+    public static int logLevel =AppConfig.Companion.isPublish()?8:0;
+    public static String TAG = "_mall_";
+    public static boolean isPrint = AppConfig.Companion.isDebug();
+
+    public LogTools(String tag) {
+        this.tag = tag;
+    }
+
+    public LogTools() {
+
+    }
+
+    public LogTools(Object o) {
+        this(o.getClass().getSimpleName());
+    }
+
+    private static volatile LogTools instance;
+
+    /**
+     * 获取操作实例
+     *
+     * @return
+     */
+    public static LogTools getInstance() {
+        if (instance == null) {
+            synchronized (LogTools.class) {
+                if (instance == null) {
+                    instance = new LogTools();
+                }
+            }
+        }
+        return instance;
+    }
+
+    public LogTools t(String tag) {
+        this.tag = tag;
+        return this;
+    }
+
+    public static void debug(String tag, Object msg) {
+        getInstance().t(TAG).d(tag+"_"+msg);
+    }
+
+    public static void debug(Object msg) {
+        getInstance().t(TAG).d(msg);
+    }
+
+    public static void debug2Json(String tag, Object msg) {
+        getInstance().t(TAG).toJson(tag+"_"+msg);
+    }
+
+    public static void debug2Json( Object msg) {
+        getInstance().t(TAG).toJson(msg);
+    }
+
+    public LogTools t(Object o) {
+        return t(o.getClass().getSimpleName());
+    }
+
+    public void v(Object msg) {
+        log(msg, Log.VERBOSE);
+    }
+
+    public void d(Object msg) {
+        log(msg, Log.DEBUG);
+    }
+
+    public void i(Object msg) {
+        log(msg, Log.INFO);
+    }
+
+    public void w(Object msg) {
+        log(msg, Log.WARN);
+    }
+
+    public void e(Object msg) {
+        log(msg, Log.ERROR);
+    }
+
+    public void e(Exception ex) {
+        error(ex);
+    }
+
+    public void toJson(Object msg) {
+        d(new Gson().toJson(msg));
+    }
+
+    private String getFunctionName() {
+        StackTraceElement[] sts = Thread.currentThread().getStackTrace();
+        if (sts == null) {
+            return null;
+        }
+        for (StackTraceElement st : sts) {
+            if (st.isNativeMethod()) {
+                continue;
+            }
+            if (st.getClassName().equals(Thread.class.getName())) {
+                continue;
+            }
+            if (st.getClassName().equals(this.getClass().getName())) {
+                continue;
+            }
+            return "[ " + Thread.currentThread().getId() + ": "
+                    + st.getFileName() + ":" + st.getLineNumber() + " ]";
+        }
+
+        return null;
+    }
+
+    public void log(Object msg, int logLev) {
+        if (logLevel <= logLev) {
+            if (msg == null) {
+                msg = "Object is null";
+            }
+            String name = getFunctionName();
+            String ls = (name == null ? msg.toString() : (name + " - " + msg));
+            if (isPrint) {
+                log(tag, ls, logLev);
+            }
+        }
+    }
+
+    private void error(Exception ex) {
+        if (logLevel <= Log.ERROR) {
+            StringBuffer sb = new StringBuffer();
+            String name = getFunctionName();
+            StackTraceElement[] sts = ex.getStackTrace();
+            if (name != null) {
+                sb.append(name + " - " + ex + "\r\n");
+            } else {
+                sb.append(ex + "\r\n");
+            }
+
+            if (sts != null && sts.length > 0) {
+                for (StackTraceElement st : sts) {
+                    if (st != null) {
+                        sb.append("[ " + st.getFileName() + ":"
+                                + st.getLineNumber() + " ]\r\n");
+                    }
+                }
+            }
+            if (isPrint) {
+                Log.e(tag, sb.toString());
+            }
+        }
+    }
+
+    public static void log(String tag, String msg, int level) {
+        msg = msg.trim();
+        if (msg.contains("{") && msg.contains("}") && msg.contains(",") && msg.contains(":") && msg.contains("\"")) {//json格式
+            msg = JsonFormatUtils.toFormat(msg, true, true);
+        }
+        if (msg.length() > 3000) {//长度超过3000,分段打印
+            for (int i = 0; i < msg.length(); i += 3000) {
+                //当前截取的长度<总长度则继续截取最大的长度来打印
+                if (i + 3000 < msg.length()) {
+                    switchLevel(tag, level, msg.substring(i, i + 3000));
+                } else {
+                    //当前截取的长度已经超过了总长度，则打印出剩下的全部信息
+                    switchLevel(tag, level, msg.substring(i, msg.length()));
+                }
+            }
+        } else {
+            //直接打印
+            switchLevel(tag, level, msg);
+        }
+
+    }
+
+    private static void switchLevel(String tag, int logLevel, String msg) {
+        switch (logLevel) {
+            case Log.VERBOSE:
+                Log.v(tag, msg);
+                break;
+            case Log.DEBUG:
+                Log.d(tag, msg);
+                break;
+            case Log.INFO:
+                Log.i(tag, msg);
+                break;
+            case Log.WARN:
+                Log.w(tag, msg);
+                break;
+            case Log.ERROR:
+                Log.e(tag, msg);
+                break;
+        }
+    }
+}

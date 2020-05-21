@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:gravity="center"
+    android:padding="5dp"
+    android:background="@color/black_tran30"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:gravity="center_horizontal"
+        android:background="@drawable/shape_white_rctangle"
+        android:orientation="vertical"
+        android:layout_width="300dp"
+        android:layout_height="168dp">
+        <TextView
+            android:gravity="center"
+            android:layout_marginTop="25dp"
+            android:textStyle="bold"
+            android:textSize="20sp"
+            android:text="@string/version_update"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <ProgressBar
+            android:background="@drawable/shape_gray_progress"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="28dp"
+            android:max="100"
+            style="@style/StyleProgressBarMini"
+            android:id="@+id/proBar"
+            android:layout_width="match_parent"
+            android:layout_height="8dp" />
+        <RelativeLayout
+            android:paddingRight="15dp"
+            android:paddingLeft="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textSize="10sp"
+                android:id="@+id/tvProgress"
+                android:text="0%"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_alignParentRight="true"
+                android:textSize="10sp"
+                android:id="@+id/tvProgressRight"
+                android:text="0/100"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+
+        <TextView
+            android:gravity="center"
+            android:layout_marginTop="20dp"
+            android:textStyle="bold"
+            android:textSize="18sp"
+            android:text="@string/start_download"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    android:paddingTop="10dp"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <ImageView
+        android:layout_marginEnd="9dp"
+        android:layout_marginStart="12dp"
+        android:id="@+id/ivShopLogo"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@mipmap/bg_empty" />
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:visibility="gone"
+                android:gravity="center"
+                android:layout_marginEnd="8dp"
+                android:textColor="@color/mainMatchColor"
+                android:textSize="@dimen/smallContentTextSize"
+                android:background="@drawable/shape_bg_tag_yellow"
+                android:id="@+id/tvTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/newest" />
+            <TextView
+                android:maxLines="1"
+                android:maxEms="20"
+                android:ellipsize="end"
+                android:textSize="@dimen/titleTextSize"
+                android:textColor="@color/mainTextColor"
+                app:layout_constraintLeft_toRightOf="@+id/tvTag"
+                android:id="@+id/tvShopName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/shop_name" />
+        </LinearLayout>
+        <RelativeLayout
+            android:layout_marginEnd="12dp"
+            android:layout_marginTop="6dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textSize="@dimen/explainContentTextSize"
+                android:textColor="@color/thirdTextColor"
+                android:id="@+id/tvSale"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/month_sale_num" />
+            <TextView
+                android:drawablePadding="3dp"
+                android:drawableStart="@mipmap/icon_location_arrow"
+                android:textSize="@dimen/explainContentTextSize"
+                android:textColor="@color/thirdTextColor"
+                android:layout_alignParentEnd="true"
+                android:id="@+id/tvDistance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0m" />
+        </RelativeLayout>
+        <com.zhy.view.flowlayout.TagFlowLayout
+            android:layout_marginTop="10dp"
+            android:id="@+id/flTags"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <android.support.v7.widget.RecyclerView
+            android:visibility="gone"
+            android:layout_marginTop="10dp"
+            android:id="@+id/rvImages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:layout_marginTop="12dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <include layout="@layout/layout_line" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>
+
+

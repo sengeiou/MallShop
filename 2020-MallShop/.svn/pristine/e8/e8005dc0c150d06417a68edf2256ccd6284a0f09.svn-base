@@ -1,0 +1,96 @@
+package com.epro.comp.im.mvp.model.bean;
+
+
+import org.litepal.annotation.Column;
+import org.litepal.crud.LitePalSupport;
+
+import java.util.UUID;
+
+
+//@Table(name = "ChatRecord")
+public class ChatRecord extends LitePalSupport implements java.io.Serializable {
+  //  @PrimaryKey
+   @Column(unique = true, defaultValue = "unknown")
+    private String uuid = UUID.randomUUID().toString() + "";
+    private String msgText;//最近一条
+    private String msgType;
+    private String csId;//客服Id
+    private String shopId;
+    private String shopLogo;//店铺logo
+    private String shopName;//店铺名称
+    private String customerId;//客户Id
+    private long unReadCount; //未读消息数
+
+    public String getCsId() {
+        return csId;
+    }
+
+    public void setCsId(String csId) {
+        this.csId = csId;
+    }
+
+    public String getShopLogo() {
+        return shopLogo;
+    }
+
+    public void setShopLogo(String shopLogo) {
+        this.shopLogo = shopLogo;
+    }
+
+    public String getShopName() {
+        return shopName;
+    }
+
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public void setMsgType(String msgType) {
+        this.msgType = msgType;
+    }
+
+    public String getMsgType() {
+        return msgType;
+    }
+
+    public void setMsgText(String msgText) {
+        this.msgText = msgText;
+    }
+
+    public String getMsgText() {
+        return msgText;
+    }
+
+    public void setShopId(String shopId) {
+        this.shopId = shopId;
+    }
+
+    public String getShopId() {
+        return shopId;
+    }
+
+    public void setUnReadCount(long unReadCount) {
+        this.unReadCount = unReadCount;
+    }
+
+    public long getUnReadCount() {
+        return unReadCount;
+    }
+
+}

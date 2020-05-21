@@ -1,0 +1,36 @@
+package com.epro.mall.ui.activity
+
+import android.app.Activity
+import android.content.Intent
+import android.text.TextUtils
+import android.view.View
+import com.epro.mall.R
+import com.mike.baselib.activity.BaseSimpleActivity
+import kotlinx.android.synthetic.main.activity_test.*
+import com.mike.baselib.utils.toast
+
+class TestActivity : BaseSimpleActivity() {
+    override fun layoutContentId(): Int {
+        return R.layout.activity_test
+    }
+
+    override fun initData() {
+
+    }
+
+    override fun initListener() {
+
+    }
+
+    override fun initView() {
+        super.initView()
+        btnSure.setOnClickListener(View.OnClickListener {
+            if (TextUtils.isEmpty(edtSignData.text.toString())) {
+                toast(getString(R.string.data_cannot_be_empty))
+                return@OnClickListener
+            }
+            setResult(Activity.RESULT_OK, Intent().putExtra("zfb",edtSignData.text.toString()))
+            finish()
+        })
+    }
+}

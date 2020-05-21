@@ -1,0 +1,5 @@
+package com.epro.comp.im.mvp.model.bean
+
+
+data class GetCustomerServiceListBean(override val code: Int, override val message: String, override val result: ArrayList<CustomerService>) : BaseBean<ArrayList<CustomerService>> {
+}

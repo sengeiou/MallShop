@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:orientation="vertical">
+    <com.mike.baselib.view.CircleImageView
+        android:layout_marginStart="12dp"
+        android:id="@+id/ivLogo"
+        android:layout_centerVertical="true"
+        android:src="@mipmap/bg_empty"
+        android:layout_width="45dp"
+        android:layout_height="45dp" />
+    <LinearLayout
+        android:layout_marginEnd="5dp"
+        android:layout_toStartOf="@+id/llRight"
+        android:layout_marginStart="12dp"
+        android:layout_toEndOf="@+id/ivLogo"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:maxEms="20"
+            android:textSize="@dimen/titleTextSize"
+            android:textColor="@color/mainTextColor"
+            android:text="名字"
+            android:id="@+id/tvName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:maxEms="20"
+            android:layout_marginTop="3dp"
+            android:textColor="@color/thirdTextColor"
+            android:textSize="@dimen/middleContentTextSize"
+            android:text="内容"
+            android:id="@+id/tvContent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <View
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/lineColor2"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"/>
+
+    <LinearLayout
+        android:id="@+id/llRight"
+        android:layout_marginEnd="12dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@color/thirdTextColor"
+            android:id="@+id/tvTime"
+            android:textSize="@dimen/middleContentTextSize"
+            android:text="时间"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_gravity="end"
+            android:layout_marginTop="5dp"
+            android:padding="1dp"
+            android:gravity="center"
+            android:textSize="@dimen/text_size_12"
+            android:textColor="@color/white"
+            android:background="@drawable/shape_red_pointer"
+            android:id="@+id/tvNum"
+            android:text="0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+
+</RelativeLayout>

@@ -1,0 +1,67 @@
+package com.epro.mall.mvp.model
+
+import com.mike.baselib.listener.RetryWithDelay
+import com.epro.mall.mvp.model.bean.CancelOrderBean
+import com.epro.mall.mvp.model.bean.DeleteOrderBean
+import com.epro.mall.mvp.model.bean.OrderAgainBean
+import com.epro.mall.mvp.model.bean.OrderListBean
+import com.mike.baselib.net.exception.ApiException
+import com.mike.baselib.net.exception.ErrorStatus
+import com.mike.baselib.rx.scheduler.SchedulerUtils
+import io.reactivex.Observable
+
+class OrderListModel : BaseModel() {
+    fun getOrderList(orderStatus:String,page:Int): Observable<OrderListBean> {
+       val p = OrderListBean.PageList(page)
+        return getApiSevice().getOrderList(OrderListBean.Send(orderStatus,p))
+                .flatMap {
+                    if (it.code == ErrorStatus.SUCCESS) {
+                        return@flatMap Observable.just(it)
+                    } else {
+                        return@flatMap Observable.error<OrderListBean>(ApiException(it.message, it.code))
+                    }
+                }
+                .retryWhen(RetryWithDelay())
+                .compose(SchedulerUtils.ioToMain())
+    }
+
+    fun cancelOrder(orderId:String,reason:String):Observable<CancelOrderBean>{
+        return getApiSevice().cancelOrder(CancelOrderBean.Send(orderId,reason))
+                .flatMap {
+                    if (it.code == ErrorStatus.SUCCESS){
+                        return@flatMap Observable.just(it)
+                    }else{
+                        return@flatMap  Observable.error<CancelOrderBean>(ApiException(it.message,it.code))
+                    }
+                }
+                .retryWhen(RetryWithDelay())
+                .compose(SchedulerUtils.ioToMain())
+    }
+
+    fun deleteOrder(orderId: String):Observable<DeleteOrderBean>{
+        return getApiSevice().deleteOrder(DeleteOrderBean.Send(orderId))
+                .flatMap {
+                    if (it.code == ErrorStatus.SUCCESS){
+                        return@flatMap Observable.just(it)
+                    }else {
+                        return@flatMap  Observable.error<DeleteOrderBean>(ApiException(it.message,it.code))
+                    }
+                }
+                .retryWhen (RetryWithDelay())
+                .compose(SchedulerUtils.ioToMain())
+    }
+
+    fun orderAgain(orderSn: String): Observable<OrderAgainBean> {
+        val send = OrderAgainBean.Send(orderSn)
+        return getApiSevice().orderAgain(send)
+                .flatMap {
+                    if (it.code == ErrorStatus.SUCCESS) {
+                        return@flatMap Observable.just(it)
+                    } else {
+                        return@flatMap Observable.error<OrderAgainBean>(ApiException(it.message, it.code))
+                    }
+                }
+                .retryWhen(RetryWithDelay())
+                .compose(SchedulerUtils.ioToMain())
+    }
+}

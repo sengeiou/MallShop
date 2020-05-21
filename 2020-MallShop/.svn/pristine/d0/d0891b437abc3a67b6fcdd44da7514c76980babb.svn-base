@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="ResourceName">
+    <dimen name="comp_im_text_size_9">9sp</dimen>
+    <dimen name="comp_im_text_size_13">13sp</dimen>
+    <dimen name="comp_im_text_size_18">18sp</dimen>
+
+    <!-- Default screen margins, per the Android Design guidelines. -->
+    <dimen name="activity_horizontal_margin" >16dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <!-- *********KeyboardUtil相关********* -->
+    <dimen name="keyboard_content_panel_max_height">120dp</dimen>
+    <dimen name="keyboard_content_panel_min_height">0dp</dimen>
+
+</resources>

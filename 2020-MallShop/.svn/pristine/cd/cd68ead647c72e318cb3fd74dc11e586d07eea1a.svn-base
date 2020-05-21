@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/rlHeader"
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+
+        <LinearLayout
+            android:clickable="false"
+            android:id="@+id/llLeft"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="12dp"
+            android:paddingEnd="10dp">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/home_icon_location_small" />
+
+            <TextView
+                android:id="@+id/tvLocation"
+                style="@style/MyTextView"
+                android:maxEms="5"
+                android:text="定位"
+                android:textSize="@dimen/text_size_16" />
+
+            <ImageView
+                android:id="@+id/ivTriangle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:src="@mipmap/icon_triangle" />
+        </LinearLayout>
+
+
+        <RelativeLayout
+            android:layout_toStartOf="@+id/tvCancel"
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="12dp"
+            android:layout_toEndOf="@+id/llLeft"
+            android:background="@drawable/shape_bg_search">
+
+            <com.epro.mall.ui.view.ClearableEditText
+                android:id="@+id/etSearch"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginEnd="8dp"
+                android:layout_toEndOf="@+id/ivSearch"
+                android:background="@null"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:hint="小区/写字楼/学校等"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@color/mainTextColor"
+                android:textColorHint="@color/gray_cccccc"
+                android:textSize="@dimen/text_size_16"
+                app:clearIcon="@mipmap/icon_delete_black" />
+
+            <ImageView
+                android:id="@+id/ivSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:src="@mipmap/icon_search" />
+        </RelativeLayout>
+
+        <TextView
+            android:visibility="gone"
+            android:layout_marginStart="-10dp"
+            android:padding="10dp"
+            android:layout_centerVertical="true"
+            android:textColor="@color/thirdTextColor"
+            android:textSize="@dimen/contentTextSize"
+            android:id="@+id/tvCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="@string/delete_dialog_cancel" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_below="@+id/rlHeader"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="12dp"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <com.amap.api.maps.MapView
+                android:id="@+id/mapView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
+            <ImageView
+                android:id="@+id/ivLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentBottom="true"
+                android:layout_margin="5dp"
+                android:src="@mipmap/icon_location" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.7">
+            <TextView
+                android:gravity="center"
+                android:background="@color/white"
+                android:textSize="@dimen/contentTextSize"
+                android:textColor="@color/mainTextColor"
+                android:padding="10dp"
+                android:text="暂无搜索结果"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <android.support.v7.widget.RecyclerView
+                android:background="@color/white"
+                android:id="@+id/rvMapView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:focusable="true"
+        android:clickable="true"
+        android:visibility="gone"
+        android:layout_below="@+id/rlHeader"
+        android:background="@color/bottomColor"
+        android:id="@+id/rlPoiSearch"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:gravity="center"
+            android:background="@color/white"
+            android:textSize="@dimen/contentTextSize"
+            android:textColor="@color/mainTextColor"
+            android:padding="10dp"
+            android:text="暂无搜索结果"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <android.support.v7.widget.RecyclerView
+            android:background="@color/white"
+            android:id="@+id/rvSearchView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+</RelativeLayout>

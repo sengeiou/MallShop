@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bottomColor"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="47.5dp"
+            android:background="@color/white"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingLeft="12dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/receiver_name"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/contentTextSize" />
+
+            <com.epro.mall.ui.view.ClearableEditText
+                android:id="@+id/etReceiver"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="12dp"
+                android:layout_weight="3"
+                android:background="@null"
+                android:hint="@string/pls_input_order_name"
+                android:textColor="@color/mainTextColor"
+                android:textColorHint="@color/thirdTextColor"
+                android:textSize="@dimen/contentTextSize" />
+        </LinearLayout>
+
+        <View style="@style/View_line" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="47.5dp"
+            android:background="@color/white"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingLeft="12dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+            <TextView
+                android:layout_marginStart="-6dp"
+                android:padding="6dp"
+                android:drawablePadding="5dp"
+                android:drawableEnd="@mipmap/icon_phone_pull"
+                android:id="@+id/tvAreaCode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:text="+86"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/contentTextSize" />
+            </LinearLayout>
+            <com.epro.mall.ui.view.ClearableEditText
+                android:inputType="number"
+                android:maxLines="1"
+                android:maxLength="15"
+                android:id="@+id/etPhone"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="12dp"
+                android:layout_weight="3"
+                android:background="@null"
+                android:hint="@string/pls_input_phone_num"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/contentTextSize" />
+        </LinearLayout>
+
+        <View style="@style/View_line" />
+
+        <LinearLayout
+            android:id="@+id/llSelect"
+            android:layout_width="match_parent"
+            android:layout_height="47.5dp"
+            android:background="@color/white"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingLeft="12dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/area_name"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/contentTextSize" />
+
+            <TextView
+                android:gravity="center_vertical"
+                android:id="@+id/etArea"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="12dp"
+                android:layout_weight="3"
+                android:background="@null"
+                android:hint="@string/pls_select_area"
+                android:drawableRight="@mipmap/arrow_right"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/contentTextSize" />
+        </LinearLayout>
+
+        <View style="@style/View_line" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="47.5dp"
+            android:background="@color/white"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingLeft="12dp">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/detailed_address"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/contentTextSize" />
+
+            <com.epro.mall.ui.view.ClearableEditText
+                android:id="@+id/etAddress"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginRight="12dp"
+                android:layout_weight="3"
+                android:background="@null"
+                android:hint="@string/pls_input_detail_address"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/contentTextSize" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="@color/white"
+            android:gravity="center_vertical"
+            android:orientation="vertical">
+
+            <CheckBox
+                android:id="@+id/cbDefault"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginLeft="12dp"
+                android:button="@drawable/selector_checkbox"
+                android:gravity="center_vertical"
+                android:paddingLeft="16dp"
+                android:text="@string/set_address_normal"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/contentTextSize" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btnConfirm"
+            style="@style/Confirm_Button"
+            android:text="保存" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,566 @@
+package com.epro.comp.im.smack;
+
+import com.epro.comp.im.smack.xmppdebug.XmppDebuggerFactory;
+import com.mike.baselib.utils.LogTools;
+
+import org.jivesoftware.smack.ReconnectionManager;
+import org.jivesoftware.smack.SmackConfiguration;
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.SmackException.NoResponseException;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.SmackException.NotLoggedInException;
+import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smack.XMPPException.XMPPErrorException;
+import org.jivesoftware.smack.chat2.Chat;
+import org.jivesoftware.smack.chat2.ChatManager;
+import org.jivesoftware.smack.packet.Presence;
+import org.jivesoftware.smack.roster.Roster;
+import org.jivesoftware.smack.roster.RosterEntry;
+import org.jivesoftware.smack.tcp.XMPPTCPConnection;
+import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
+import org.jivesoftware.smackx.filetransfer.FileTransferListener;
+import org.jivesoftware.smackx.filetransfer.FileTransferManager;
+import org.jivesoftware.smackx.filetransfer.OutgoingFileTransfer;
+import org.jivesoftware.smackx.iqregister.AccountManager;
+import org.jxmpp.jid.impl.JidCreate;
+import org.jxmpp.jid.parts.Localpart;
+import org.jxmpp.stringprep.XmppStringprepException;
+
+import java.io.IOException;
+import java.net.InetAddress;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+
+public class SmackManager {
+    private static final String TAG = "SmackManager_";
+    /**
+     * Xmpp服务器地址
+     */
+    //public static final String SERVER_IP = "192.168.40.238";
+    public static final String SERVER_IP = "119.3.88.16";
+    /**
+     * Xmpp 服务器端口
+     */
+    private static final int PORT = 5222;
+    /**
+     * 服务器名称
+     */
+    //public static final String SERVER_NAME = "192.168.40.238";
+    public static final String SERVER_NAME = "119.3.88.16";
+    /**
+     *
+     */
+    public static final String XMPP_CLIENT = "Smack";
+
+    private static volatile SmackManager sSmackManager;
+    /**
+     * 连接
+     */
+    private XMPPTCPConnection mConnection;
+
+    private SmackManager() {
+        createConnection();
+    }
+
+    private LogTools logTools = new LogTools(TAG);
+
+    /**
+     * 获取操作实例
+     *
+     * @return
+     */
+    public static SmackManager getInstance() {
+        if (sSmackManager == null) {
+            synchronized (SmackManager.class) {
+                if (sSmackManager == null) {
+                    sSmackManager = new SmackManager();
+                }
+            }
+        }
+        return sSmackManager;
+    }
+
+    /**
+     * 连接服务器
+     *
+     * @return
+     */
+    private XMPPTCPConnection createConnection() {
+        if (mConnection != null) {
+            return mConnection;
+        }
+        try {
+            SmackConfiguration.setDefaultReplyTimeout(10000);
+            XMPPTCPConnectionConfiguration config = XMPPTCPConnectionConfiguration.builder()
+                    //是否开启安全模式
+                    .setSecurityMode(XMPPTCPConnectionConfiguration.SecurityMode.disabled)
+                    //服务器名称
+                    .setXmppDomain(SERVER_NAME)
+                    // .setHost(SERVER_IP)//服务器IP地址
+                    .setHostAddress(InetAddress.getByName(SERVER_IP))
+                    .setSendPresence(true)
+                    //服务器端口
+                    .setPort(PORT)
+                    .setDebuggerFactory(new XmppDebuggerFactory())
+                    //是否开启压缩
+                    .setCompressionEnabled(false).build();
+            XMPPTCPConnection connection = new MyXMPPTCPConnection(config);
+            ReconnectionManager reconnectionManager = ReconnectionManager.getInstanceFor(connection);
+            reconnectionManager.enableAutomaticReconnection();//允许自动重连
+            reconnectionManager.setFixedDelay(2);//重连间隔时间
+            //connection.addConnectionListener(new SmackConnectionListener());//连接监听
+            mConnection = connection;
+            return mConnection;
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    public  boolean isAuthenticated() {
+        return getConnection().isAuthenticated();
+    }
+
+    private synchronized boolean connect() {
+        if (mConnection!=null&&mConnection.isConnected()) {
+            return true;
+        }
+        try {
+            logTools.d("do here");
+            Objects.requireNonNull(createConnection()).connect();
+        } catch (SmackException e) {
+            e.printStackTrace();
+            logTools.e(e);
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            logTools.e(e);
+            return false;
+        } catch (XMPPException e) {
+            e.printStackTrace();
+            logTools.e(e);
+            return false;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            logTools.e(e);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 登陆
+     *
+     * @param username 用户账号
+     * @param password 用户密码
+     */
+    public synchronized boolean login(String username, String password) {
+        try {
+            if (!isConnected()) {
+                throw new IllegalStateException("服务器断开，请先连接服务器");
+            }
+            logTools.d(mConnection.isAuthenticated());
+            mConnection.login(username, password);
+            return true;
+        } catch (Exception e) {
+            logTools.e(e);
+            return false;
+        }
+    }
+
+    public XMPPTCPConnection getConnection() {
+        if (!isConnected()) {
+            throw new IllegalStateException("服务器断开，请先连接服务器");
+        }
+        return mConnection;
+    }
+
+    public XMPPTCPConnection getConnectionInstance() {
+        if (mConnection==null) {
+            throw new IllegalStateException("Connection is null");
+        }
+        return mConnection;
+    }
+
+    /**
+     * 注销
+     *
+     * @return
+     */
+    public boolean logout() {
+        if (!isConnected()) {
+            return false;
+        }
+        try {
+            mConnection.instantShutdown();
+            return true;
+        } catch (Exception e) {
+            logTools.e(e);
+            return false;
+        }
+    }
+
+
+    /**
+     * 删除当前登录的用户信息(从服务器上删除当前用户账号)
+     *
+     * @return
+     */
+    public boolean deleteUser() {
+
+        if (!isConnected()) {
+            return false;
+        }
+        try {
+            AccountManager.getInstance(mConnection).deleteAccount();//删除该账号
+            return true;
+        } catch (NoResponseException | XMPPErrorException
+                | NotConnectedException e) {
+            return false;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+
+    /**
+     * 注册用户信息
+     *
+     * @param username   账号
+     * @param password   账号密码
+     * @param attributes 账号其他属性，参考AccountManager.getAccountAttributes()的属性介绍
+     * @return
+     */
+    public boolean registerUser(String username, String password, Map<String, String> attributes) {
+
+        if (!isConnected()) {
+            return false;
+        }
+        try {
+            AccountManager.getInstance(mConnection).createAccount(Localpart.from(username), password, attributes);
+            return true;
+        } catch (NoResponseException | XMPPErrorException
+                | NotConnectedException e) {
+            logTools.e(e);
+            return false;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return false;
+        } catch (XmppStringprepException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 修改密码
+     *
+     * @param newpassword 新密码
+     * @return
+     */
+    public boolean changePassword(String newpassword) {
+
+        if (!isConnected()) {
+            return false;
+        }
+        try {
+            AccountManager.getInstance(mConnection).changePassword(newpassword);
+            return true;
+        } catch (NoResponseException | XMPPErrorException | NotConnectedException e) {
+            logTools.e(e);
+            return false;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 断开连接，注销
+     *
+     * @return
+     */
+    public void disconnect() {
+        logTools.d("disconnect");
+        logTools.d(mConnection);
+        logTools.d(mConnection.isConnected());
+        if (mConnection == null || !mConnection.isConnected()) {
+            return;
+        }
+        logTools.d("disconnect");
+        mConnection.disconnect();
+    }
+
+    /**
+     * 更新用户状态
+     *
+     * @param code
+     * @return
+     */
+    public boolean updateUserState(int code) {
+
+        if (!isConnected()) {
+            throw new NullPointerException("服务器连接失败，请先连接服务器");
+        }
+        try {
+            Presence presence;
+            switch (code) {
+                case 0://设置在线
+                    presence = new Presence(Presence.Type.available);
+                    presence.setMode(Presence.Mode.available);
+                    mConnection.sendStanza(presence);
+                    break;
+                case 1://设置Q我吧
+                    presence = new Presence(Presence.Type.available);
+                    presence.setMode(Presence.Mode.chat);
+                    mConnection.sendStanza(presence);
+                    break;
+                case 2://设置忙碌
+                    presence = new Presence(Presence.Type.available);
+                    presence.setMode(Presence.Mode.dnd);
+                    mConnection.sendStanza(presence);
+                    break;
+                case 3://设置离开
+                    presence = new Presence(Presence.Type.available);
+                    presence.setMode(Presence.Mode.away);
+                    mConnection.sendStanza(presence);
+                    break;
+                case 4://设置隐身
+                    //                Roster roster = connection.getRoster();
+                    //                Collection<RosterEntry> entries = roster.getEntries();
+                    //                for (RosterEntry entry : entries) {
+                    //                    presence = new Presence(Presence.Type.unavailable);
+                    //                    presence.setStanzaId(Stanza.ID_NOT_AVAILABLE);
+                    //                    presence.setFrom(connection.getUser());
+                    //                    presence.setTo(entry.getUser());
+                    //                    connection.sendStanza(presence);
+                    //                }
+                    //                // 向同一用户的其他客户端发送隐身状态
+                    //                presence = new Presence(Presence.Type.unavailable);
+                    //                presence.setStanzaId(Packet.ID_NOT_AVAILABLE);
+                    //                presence.setFrom(connection.getUser());
+                    //                presence.setTo(StringUtils.parseBareAddress(connection.getUser()));
+                    //                connection.sendStanza(presence);
+                    break;
+                case 5://设置离线
+                    presence = new Presence(Presence.Type.unavailable);
+                    mConnection.sendStanza(presence);
+                    break;
+                default:
+                    break;
+            }
+            return true;
+        } catch (NotConnectedException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return false;
+    }
+
+    /**
+     * 是否连接成功
+     *
+     * @return
+     */
+    private boolean isConnected() {
+        if (mConnection == null || !mConnection.isConnected()) {
+            //重连
+            return connect();
+        }
+        return true;
+    }
+
+    /**
+     * 获取账户昵称
+     *
+     * @return
+     */
+    public String getAccountName() {
+        if (isConnected()) {
+            try {
+                return AccountManager.getInstance(mConnection).getAccountAttribute("name");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        throw new NullPointerException("服务器连接失败，请先连接服务器");
+    }
+
+    /**
+     * 获取账户所有属性信息
+     *
+     * @return
+     */
+    public Set<String> getAccountAttributes() {
+        if (isConnected()) {
+            try {
+                return AccountManager.getInstance(mConnection).getAccountAttributes();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        throw new NullPointerException("服务器连接失败，请先连接服务器");
+    }
+
+    /**
+     * 创建聊天窗口
+     *
+     * @param jid 好友的JID
+     * @return
+     */
+    public Chat createChat(String jid) {
+        if (isConnected()) {
+            ChatManager chatManager = ChatManager.getInstanceFor(mConnection);
+            logTools.d(chatManager);
+            try {
+                return chatManager.chatWith(JidCreate.entityBareFrom(jid));
+            } catch (XmppStringprepException e) {
+                e.printStackTrace();
+                return null;
+            }
+
+        }
+        throw new NullPointerException("服务器连接失败，请先连接服务器");
+    }
+
+    /**
+     * 获取聊天对象管理器
+     *
+     * @return
+     */
+    public ChatManager getChatManager() {
+        if (isConnected()) {
+            return ChatManager.getInstanceFor(mConnection);
+        }
+        throw new NullPointerException("服务器连接失败，请先连接服务器");
+    }
+
+    public FileTransferManager getFileTransferManager() {
+        if (isConnected()) {
+            return FileTransferManager.getInstanceFor(mConnection);
+        }
+        throw new NullPointerException("服务器连接失败，请先连接服务器");
+    }
+
+    /**
+     * 获取当前登录用户的所有好友信息
+     *
+     * @return
+     */
+    public Set<RosterEntry> getAllFriends() {
+        if (isConnected()) {
+            return Roster.getInstanceFor(mConnection).getEntries();
+        }
+        throw new NullPointerException("服务器连接失败，请先连接服务器");
+    }
+
+    /**
+     * 获取指定账号的好友信息
+     *
+     * @param user 账号
+     * @return
+     */
+    public RosterEntry getFriend(String user) throws XmppStringprepException {
+        if (isConnected()) {
+            return Roster.getInstanceFor(mConnection).getEntry(JidCreate.entityBareFrom(getFullJid(user)));
+        }
+        throw new NullPointerException("服务器连接失败，请先连接服务器");
+    }
+
+    /**
+     * 添加好友
+     *
+     * @param user      用户账号
+     * @param nickName  用户昵称
+     * @param groupName 所属组名
+     * @return
+     */
+    public boolean addFriend(String user, String nickName, String groupName) {
+        if (isConnected()) {
+            try {
+                Roster.getInstanceFor(mConnection).createEntry(JidCreate.entityBareFrom(getFullJid(user)), nickName, new String[]{groupName});
+                return true;
+            } catch (NotLoggedInException | NoResponseException
+                    | XMPPErrorException | NotConnectedException e) {
+                logTools.e(e);
+                return false;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                logTools.e(e);
+                return false;
+            } catch (XmppStringprepException e) {
+                e.printStackTrace();
+                logTools.e(e);
+                return false;
+            }
+        }
+        throw new NullPointerException("服务器连接失败，请先连接服务器");
+    }
+
+    /**
+     * 获取聊天对象的Fully的jid值
+     *
+     * @param userName 用户账号
+     * @return
+     */
+    public String getChatJid(String userName) {
+
+        if (!isConnected()) {
+            throw new NullPointerException("服务器连接失败，请先连接服务器");
+        }
+        return userName + "@" + mConnection.getXMPPServiceDomain();
+    }
+
+    /**
+     * Jid The fully qualified jabber ID (i.e. full JID) with resource of the user
+     *
+     * @param userName
+     * @return
+     */
+    public String getFullJid(String userName) {
+        if (!isConnected()) {
+            throw new NullPointerException("服务器连接失败，请先连接服务器");
+        }
+        return userName + "@" + mConnection.getXMPPServiceDomain() + "/" + XMPP_CLIENT;
+    }
+
+    /**
+     * 获取文件传输的完全限定Jid The fully qualified jabber ID (i.e. full JID) with resource of the user to
+     * send the file to.
+     *
+     * @param userName 用户名，也就是RosterEntry中的user
+     * @return
+     */
+    public String getFileTransferJid(String userName) {
+        return getFullJid(userName);
+    }
+
+    /**
+     * 获取发送文件的发送器
+     *
+     * @param jid 一个完整的jid(如：laohu@192.168.0.108/Smack，后面的Smack应该客户端类型，不加这个会出错)
+     * @return
+     */
+    public OutgoingFileTransfer getSendFileTransfer(String jid) throws XmppStringprepException {
+        if (isConnected()) {
+            return FileTransferManager.getInstanceFor(mConnection).createOutgoingFileTransfer(JidCreate.entityFullFrom(jid));
+        }
+        throw new NullPointerException("服务器连接失败，请先连接服务器");
+    }
+
+    /**
+     * 添加文件接收的监听
+     *
+     * @param fileTransferListener
+     */
+    public void addFileTransferListener(FileTransferListener fileTransferListener) {
+        if (isConnected()) {
+            FileTransferManager.getInstanceFor(mConnection).addFileTransferListener(fileTransferListener);
+            return;
+        }
+        throw new NullPointerException("服务器连接失败，请先连接服务器");
+    }
+}

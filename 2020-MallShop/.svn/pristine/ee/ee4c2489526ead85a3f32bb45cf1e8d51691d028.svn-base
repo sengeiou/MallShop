@@ -1,0 +1,379 @@
+package com.epro.mall.api
+
+import com.epro.mall.mvp.model.bean.*
+import com.epro.mall.utils.MallConst
+import com.mike.baselib.utils.Constants
+import io.reactivex.Observable
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.http.*
+
+/**
+ * Api 接口
+ */
+
+interface ApiService {
+
+    /**
+     * 登录
+     */
+    //@Headers("Content-Type: application/json","Accept: application/json")//需要添加头
+    @POST(MallConst.LOGIN)
+    fun login(@Body params: LoginBean.Send): Observable<LoginBean>
+
+    /**
+     * 注册
+     */
+
+    @POST(MallConst.REGISTER)
+    fun register(@Body params: RegisterBean.Send): Observable<RegisterBean>
+
+    /**
+     * 获取验证码
+     */
+
+    @POST(MallConst.GET_VFCODE)
+    fun getVfcode(@Body params: GetVfBean.Send): Observable<GetVfBean>
+
+    /**
+     * 获取解绑/修改密码验证码
+     */
+
+    @POST(MallConst.GET_USERVFCODE)
+    fun getUserVfcode(@Body params: GetUserVfBean.Send): Observable<GetUserVfBean>
+
+    /**
+     * 忘记密码
+     */
+    @POST(MallConst.FIND_PASSWORD)
+    fun findPassword(@Body params: FindPasswordBean.Send): Observable<FindPasswordBean>
+
+    /**
+     * 退出登录
+     */
+    @GET(MallConst.LOGOUT)
+    fun logout(): Observable<LogoutBean>
+
+    /**
+     * 首页店铺列表
+     */
+//    | 字段      | 类型   | 必须 | 说明 |
+//    | --------- | ------ | ---- | ---- |
+//    | latitude  | string | N    | 纬度 |
+//    | longitude | string | N    | 经度 |
+    @GET(MallConst.GET_HOME_SHOP_LIST)
+    @Headers(Constants.HEADER_ONLINE_CACHETIME+": "+Constants.ONLINE_CACHETIME,Constants.HEADER_OFFLINE_CACHETIME+": "+Constants.OFFLINE_CACHETIME)//需要添加头
+    fun getHomeShopList(@Query("latitude") latitude:String,@Query("longitude") longitude:String): Observable<GetResultListBean<HomeShop>>
+
+    /**
+     * 首页横幅列表
+     */
+    @GET(MallConst.GET_HOME_BANNER_LIST)
+    @Headers(Constants.HEADER_ONLINE_CACHETIME+": "+Constants.ONLINE_CACHETIME,Constants.HEADER_OFFLINE_CACHETIME+": "+Constants.OFFLINE_CACHETIME)//需要添加头
+    fun getHomeBannerList(@Query("type") type:Int=0): Observable<GetResultListBean<AdBanner>>
+
+    /**
+     * 搜索建议
+     */
+    @POST(MallConst.GET_SEARCH_SUGGESTS)
+    fun getSearchSuggests(): Observable<GetSearchSuggestsBean>
+
+    /**
+     * 店铺搜索
+     */
+    @POST(MallConst.SEARCH_SHOPLIST)
+    fun searchShopList(@Body params: SearchShopListBean.Send): Observable<SearchShopListBean>
+
+    @POST("")
+    @FormUrlEncoded
+    fun getGoodsList(): Observable<GetGoodsListBean>
+
+    @POST("")
+    @FormUrlEncoded
+    fun findShop(): Observable<FindShopBean>
+
+    /**
+     * 获取店铺简介信息
+     */
+    @GET(MallConst.GET_SHOP_INFO)
+    fun getShopInfo(@Query("shopId") shopId: String): Observable<GetShopInfoBean>
+
+    /**
+     * 关注店铺
+     */
+    @POST(MallConst.FOLLOW_SHOP)
+    fun followShop(@Body params: FollowShopBean.Send):Observable<FollowShopBean>
+
+    /**
+     * 订单列表
+    */
+    @POST(MallConst.GET_ORDER_LIST)
+    fun getOrderList(@Body params: OrderListBean.Send): Observable<OrderListBean>
+
+    /**
+     * 订单详情
+     */
+    @POST(MallConst.GET_ORDER_DETAIL)
+    fun getOrderDetail(@Body params: OrderDetailBean.Send): Observable<OrderDetailBean>
+
+    //绑定手机或者邮箱
+    @POST(MallConst.CHANGE_ACCOUNT_EAMIL)
+    fun editBindAccount(@Body params:EditBindAccountBean.Send): Observable<EditBindAccountBean>
+
+    //检查绑定的账号
+    @POST(MallConst.CHECK_ACCOUNT_BIND)
+    fun checkBindAccount(@Body params:CheckBindAccountBean.Send): Observable<CheckBindAccountBean>
+    /**
+     *  商品详情
+     */
+
+    @GET(MallConst.GET_GOODS_DETAIL)
+    fun getGoodsDetail(@Query("goodsId") goodsId:String): Observable<GetGoodsDetailBean>
+
+    /**
+     * 创建订单
+     */
+    @POST(MallConst.CREATE_ORDER)
+    fun createOrder(@Body params: CreateOrderBean.Send): Observable<CreateOrderBean>
+
+    @POST("")
+    fun bindAccount(@Body params: BindAccountBean.Send): Observable<BindAccountBean>
+
+    /**
+     * 店铺热门商品
+     */
+    @POST(MallConst.GET_SHOP_GOODSLIST_HOT)
+    fun getShopGoodsListHot(@Body params: GetShopGoodsListBean.Send): Observable<GetShopGoodsListBean>
+
+    /**
+     * 店铺推荐
+     */
+    @POST(MallConst.GET_SHOP_GOODSLIST_RECOMMEND)
+    fun getShopGoodsListRecommend(@Body params: GetShopGoodsListBean.Send): Observable<GetShopGoodsListBean>
+
+    /**
+     * 店铺首页接口
+     */
+    @GET(MallConst.GET_SHOP_HOME_VIEW)
+    fun getShopHomeView(@Path("shopId") shopId:String): Observable<GetShopHomeViewBean>
+
+    /**
+     * 店铺新品
+     */
+    @GET(MallConst.GET_SHOP_GOODSLIST_NEW)
+    fun getShopNewGoodsList(@Path("shopId") shopId: String): Observable<GetShopNewGoodsListBean>
+
+    /**
+     * 店铺分类
+     */
+    @POST(MallConst.GET_SHOP_GOODSLIST_CATEGORY)
+    fun getShopGoodsCategoryList(@Body params: GetResultListBean.ShopGoodsCategorySend): Observable<GetResultListBean<ShopGoodsCategory>>
+
+    /**
+     * 店铺搜索
+     */
+    @POST(MallConst.GET_SHOP_GOODSLIST_SEARCH)
+    fun getShopGoodsListSearch(@Body params: GetShopGoodsListBean.Send): Observable<GetShopGoodsListBean>
+
+    /**
+     * 购物车列表商品
+     */
+    @GET(MallConst.GET_CARTGOODS_LIST)
+    fun getCartGoodsList(): Observable<GetResultListBean<ShopCart>>
+
+    /**
+     * 添加购物车
+     */
+    @POST(MallConst.ADD_CARTGOODS)
+    fun addToCart(@Body params: AddToCartBean.Send):Observable<AddToCartBean>
+
+    /**
+     * 修改购物车商品数量等
+     */
+    @POST(MallConst.MODIFY_CARTGOODS)
+    fun modifyCartGoods(@Body params: ModifyCartGoodsBean.Send):Observable<ModifyCartGoodsBean>
+
+    /**
+     * 删除购物车商品
+     */
+    @POST(MallConst.DELETE_CARTGOODS)
+    fun deleteCartGoods(@Body params: DeleteCartGoodsBean.Send):Observable<DeleteCartGoodsBean>
+
+    /**
+     * 获取购物车商品数量
+     */
+    @GET(MallConst.GET_CARTGOODS_COUNT)
+    fun getCartGoodsCount():Observable<GetCartGoodsCountBean>
+
+    @POST("")
+    @FormUrlEncoded
+    fun getPayResult(): Observable<PayResultBean>
+
+    /**
+     * 搜索全部,商品,店铺
+     */
+    @POST(MallConst.SEARCH)
+    fun searchAll(@Body params: SearchAllBean.Send): Observable<SearchAllBean>
+
+    /**
+     * 店内搜索
+     */
+    @POST(MallConst.GET_SHOP_GOODSLIST_SEARCH)
+    fun searchInShop(@Body params: SearchInShopBean.Send): Observable<SearchInShopBean>
+
+    /**
+     * 我的信息
+     */
+    @GET(MallConst.GET_MY_INFO)
+    fun getMyInfo(): Observable<MyInfoBean>
+
+    /**
+     * 上传图片
+     */
+    @Multipart
+    @POST(MallConst.UPDATE_IMAGE)
+    fun updateImage(@PartMap map: HashMap<String, RequestBody>, @Part image: MultipartBody.Part): Observable<UpdateImageBean>
+
+    /**
+     * 修改图片
+    */
+     @POST(MallConst.MODIFY_IMAGE)
+     fun modifyImage(@Body params: ModifyImageBean.Send ):Observable<ModifyImageBean>
+
+    /**
+     * 修改收货地址(设置默认)
+     */
+    @POST(MallConst.UPDATE_ADDRESS)
+    fun editAddress(@Body params: UpdateAddressBean.Send):Observable<UpdateAddressBean>
+
+    /**
+     * 收货地址列表
+     */
+    @GET(MallConst.GET_MY_ADDRESS_LIST)
+    fun getAddressList(@Query("parentId") parentId:String): Observable<AddressListBean>
+
+    /**
+     * 关于APP 检查更新
+     */
+    @POST(MallConst.ABOUT_APP)
+    fun aboutApp(@Body params: AboutBean.Send): Observable<AboutBean>
+
+    /**
+     * 账号关联绑定
+     */
+    @POST(MallConst.ASSOCIATION_ACCOUNT)
+    fun associationAccount(@Body params: AccountAssociationBean.Send): Observable<AccountAssociationBean>
+
+   /**
+    * 解除关联账号绑定
+    */
+    @GET(MallConst.UNBIND_ACCOUNT)
+    fun unBindAccount(@Query ("providerId")providerId:String):Observable<UnbindAccountBean>
+
+    /**
+     * 关联账号列表
+     */
+    @GET(MallConst.ASSOCIATION_ACCOUNT_LIST)
+    fun associationAccountList():Observable<AssociationAccountListBean>
+
+    /**
+     * 删除收货地址
+     */
+    @GET(MallConst.DELETE_ADDRESS)
+    fun deleteAddress(@Path("id") id:String):Observable<DeleteAddressBean>
+
+    /**
+     * 新增收货地址
+     */
+    @POST(MallConst.ADD_ADDRESS)
+    fun addNewAddress(@Body params: AddNewAddressBean.Send):Observable<AddNewAddressBean>
+
+    /**
+     * 手机（邮箱）验证修改密码
+     */
+    @POST(MallConst.MODIFY_PASSWORD)
+    fun modifyPassword(@Body params: ModifyPasswordBean.Send):Observable<ModifyPasswordBean>
+
+    /**
+     * 取消订单
+     */
+    @POST(MallConst.CANCEL_ORDER)
+    fun cancelOrder(@Body params:CancelOrderBean.Send):Observable<CancelOrderBean>
+
+    /**
+     * 删除订单
+     */
+    @POST(MallConst.DELETE_ORDER)
+    fun deleteOrder(@Body params: DeleteOrderBean.Send):Observable<DeleteOrderBean>
+
+    /**
+     * 扫码购订单列表
+     */
+    @POST(MallConst.SCAN_CODE_ORDER_LIST)
+    fun ScanCodeOrderList(@Body params: ScanCodeOrderListBean.Send): Observable<ScanCodeOrderListBean>
+
+    /**
+     * 扫码购订单详情
+     */
+    @POST(MallConst.SCAN_CODE_ORDER_DETAIL)
+    fun ScanCodeOrderListDetail(@Body params:ScanCodeOrderListDetailBean.Send): Observable<ScanCodeOrderListDetailBean>
+
+    @POST(MallConst.GET_GOODS_BY_BARCODE)
+    fun getGoodsByBarcode(@Body params: GetGoodsByBarcodeBean.Send): Observable<GetGoodsByBarcodeBean>
+
+    /**
+     * 创建扫码购订单
+     */
+    @POST(MallConst.CREATE_SCANBUY_ORDER)
+    fun createScanBuyOrder(@Body params: CreateScanBuyOrderBean.Send): Observable<CreateScanBuyOrderBean>
+
+    /**
+     * 绑定账号
+     */
+    @POST(MallConst.ACCOUNT_BIND)
+    fun AccountBind(@Body params:AccountBindBean.Send): Observable<AccountBindBean>
+
+    @POST(MallConst.CHECK_ORDER_PAY)
+    fun checkOrderPay(@Body params: CheckOrderPayBean.Send): Observable<CheckOrderPayBean>
+
+    @POST(MallConst.ORDER_PAY)
+    fun orderPay(@Body params: OrderPayBean.Send): Observable<OrderPayBean>
+
+    @POST(MallConst.ORDER_AGAIN)
+    fun orderAgain(@Body params: OrderAgainBean.Send): Observable<OrderAgainBean>
+
+    @POST("")
+    @FormUrlEncoded
+    fun PhoneServiceTerms(): Observable<PhoneServiceTermsBean>
+
+    @POST("")
+    @FormUrlEncoded
+    fun UpdateApp(): Observable<UpdateAppBean>
+
+    @POST(MallConst.GET_NEARLY_SHOP_LIST)
+    fun getNearlyShopList(@Body params: GetNearlyShopListBean.Send): Observable<GetResultListBean<NearlyShop>>
+
+
+    @POST("")
+    @FormUrlEncoded
+    fun SelectCity(): Observable<City>
+
+    @POST("")
+    @FormUrlEncoded
+    fun ScanBarPurchase(): Observable<ScanBarPurchaseBean>
+
+    @POST(MallConst.SEARCH_GOODSLIST)
+    fun searchGoodsList(@Body params: SearchGoodsListBean.Send): Observable<SearchGoodsListBean>
+
+    @POST("")
+    @FormUrlEncoded
+    fun GeolocationSelect(): Observable<GeolocationSelectBean>
+
+    @POST(MallConst.SEARCH_ASSOCIATE)
+    fun searchAssociate(@Body params: SearchAssociateBean.Send): Observable<SearchAssociateBean>
+
+    @POST(MallConst.GET_CITY_LIST)
+    fun getCityList(@Path("level") level:Int): Observable<GetCityListBean>
+
+
+}

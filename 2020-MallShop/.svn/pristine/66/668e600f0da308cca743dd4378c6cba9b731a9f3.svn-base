@@ -1,0 +1,101 @@
+package com.epro.comp.im.mvp.presenter
+
+import com.epro.comp.im.mvp.contract.ChatContract
+import com.epro.comp.im.mvp.model.ChatModel
+import com.epro.comp.im.mvp.model.bean.MsgBody
+import com.epro.comp.im.mvp.model.bean.MsgType
+import com.epro.comp.im.utils.IMConst
+import com.mike.baselib.base.BasePresenter
+import com.mike.baselib.net.exception.ErrorStatus
+import com.mike.baselib.net.exception.ExceptionHandle
+import org.jivesoftware.smackx.filetransfer.FileTransferRequest
+import java.io.File
+
+class ChatPresenter : BasePresenter<ChatContract.View>(), ChatContract.Presenter {
+
+    private val model by lazy { ChatModel() }
+
+    fun sendMsgText(message: String, csId:String,type: String = IMConst.SEND_TEXT) {
+        checkViewAttached()
+       // mRootView?.showLoading(type)
+        val disposable = model.sendTextMsg(message,csId)
+                .subscribe({ bean ->
+                    mRootView?.onSendMessageSuccess(bean.result)
+                    mRootView?.dismissLoading(ErrorStatus.SUCCESS_MSG, ErrorStatus.SUCCESS, type)
+                }, { throwable ->
+                    //处理异常
+                    ExceptionHandle.handleException(throwable)
+                    mRootView?.showError(ExceptionHandle.errorMsg, ExceptionHandle.errorCode, type)
+                    mRootView?.dismissLoading(ExceptionHandle.errorMsg, ExceptionHandle.errorCode, type)
+                })
+        addSubscription(disposable)
+    }
+
+
+    fun <T : MsgBody> sendMsgFile(file: File, msgType: MsgType, csId: String,type: String = IMConst.SEND_FILE) {
+        checkViewAttached()
+       // mRootView?.showLoading(type)
+        val disposable = model.sendBase64MsgFile<T>(file, msgType,csId)
+                .subscribe({ bean ->
+                    mRootView?.onSendMessageSuccess(bean.result)
+                    mRootView?.dismissLoading(ErrorStatus.SUCCESS_MSG, ErrorStatus.SUCCESS, type)
+                }, { throwable ->
+                    //处理异常
+                    ExceptionHandle.handleException(throwable)
+                    mRootView?.showError(ExceptionHandle.errorMsg, ExceptionHandle.errorCode, type)
+                    mRootView?.dismissLoading(ExceptionHandle.errorMsg, ExceptionHandle.errorCode, type)
+                })
+        addSubscription(disposable)
+    }
+
+    fun <T : MsgBody> recvMsgFile(request: FileTransferRequest,type: String = IMConst.RECV_FILE) {
+        checkViewAttached()
+        //mRootView?.showLoading(type)
+        val disposable = model.recvMsgFile<T>(request)
+                .subscribe({ bean ->
+                    //mRootView?.onRecvMessageSuccess(bean.result)
+                    mRootView?.dismissLoading(ErrorStatus.SUCCESS_MSG, ErrorStatus.SUCCESS, type)
+                }, { throwable ->
+                    //处理异常
+                    ExceptionHandle.handleException(throwable)
+                    mRootView?.showError(ExceptionHandle.errorMsg, ExceptionHandle.errorCode, type)
+                    mRootView?.dismissLoading(ExceptionHandle.errorMsg, ExceptionHandle.errorCode, type)
+                })
+        addSubscription(disposable)
+    }
+
+    fun <T : MsgBody> getMessageList(csId:String,type: String = IMConst.GET_MESSAGE_LIST) {
+        checkViewAttached()
+        mRootView?.showLoading(type)
+        val disposable = model.getMessageList<T>(csId)
+                .subscribe({ bean ->
+                    mRootView?.onGetMessageListSuccess(bean.result)
+                    mRootView?.dismissLoading(ErrorStatus.SUCCESS_MSG, ErrorStatus.SUCCESS, type)
+                }, { throwable ->
+                    //处理异常
+                    ExceptionHandle.handleException(throwable)
+                    mRootView?.showError(ExceptionHandle.errorMsg, ExceptionHandle.errorCode, type)
+                    mRootView?.dismissLoading(ExceptionHandle.errorMsg, ExceptionHandle.errorCode, type)
+                })
+        addSubscription(disposable)
+    }
+
+
+
+    fun uploadImage(image: File, isCreateThumb: Int, type: String = IMConst.UPLOAD_IMAGE) {
+        checkViewAttached()
+        mRootView?.showLoading(type)
+        val disposable = model.updateImage(image, isCreateThumb)
+                .subscribe({ bean ->
+                    mRootView?.onUploadImageSuccess(bean.result)
+                    mRootView?.dismissLoading(ErrorStatus.SUCCESS_MSG, ErrorStatus.SUCCESS, type)
+                }, { throwable ->
+                    //处理异常
+                    ExceptionHandle.handleException(throwable)
+                    mRootView?.showError(ExceptionHandle.errorMsg, ExceptionHandle.errorCode, type)
+                    mRootView?.dismissLoading(ExceptionHandle.errorMsg, ExceptionHandle.errorCode, type)
+                })
+        addSubscription(disposable)
+    }
+
+}

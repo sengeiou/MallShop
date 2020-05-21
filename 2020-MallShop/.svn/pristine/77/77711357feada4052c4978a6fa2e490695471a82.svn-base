@@ -1,0 +1,19 @@
+package com.epro.comp.im.mvp.contract
+
+import com.epro.comp.im.mvp.model.bean.ChatMessage
+import com.epro.comp.im.mvp.model.bean.MsgBody
+import com.epro.comp.im.mvp.model.bean.User
+import com.mike.baselib.base.IBaseView
+import com.mike.baselib.base.IPresenter
+
+interface ChatContract {
+
+    interface View : IBaseView {
+        fun <T :MsgBody>onSendMessageSuccess(message: ChatMessage<T>)
+        fun <T :MsgBody>onGetMessageListSuccess(messageList:ArrayList<ChatMessage<T>>)
+        fun onUploadImageSuccess(sList:ArrayList<String>)
+    }
+
+    interface Presenter : IPresenter<View> {
+    }
+}

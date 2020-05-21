@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CheckBox xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/cbSpecValue"
+    android:background="@drawable/selector_bg_specvalue"
+    android:layout_marginEnd="10dp"
+    android:layout_marginTop="8dp"
+    android:textColor="@color/mainTextColor"
+    android:textSize="@dimen/explainContentTextSize"
+    android:text="@string/red"
+    android:maxEms="10"
+    android:maxLines="2"
+    android:ellipsize="end"
+    android:button="@null"
+    android:gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="32dp" />

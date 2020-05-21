@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+      <RelativeLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginLeft="12dp"
+          android:gravity="center_vertical"
+          android:layout_marginRight="12dp">
+          <LinearLayout
+              android:id="@+id/leftLinea"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:gravity="center"
+              android:orientation="horizontal">
+              <ImageView
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:src="@mipmap/ic_launcher"/>
+              <TextView
+                  android:id="@+id/memberId"
+                  android:layout_width="wrap_content"
+                  android:layout_height="wrap_content"
+                  android:textColor="@color/mainTextColor"
+                  android:textSize="@dimen/text_size_14"
+                  android:text="易喵平台会员"/>
+          </LinearLayout>
+          <TextView
+              android:id="@+id/level"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_alignParentRight="true"
+              android:text="钻石"
+              android:layout_centerVertical="true"
+              android:textSize="@dimen/text_size_14"
+              android:padding="5dp"
+              android:background="@drawable/member_centre_bg"
+              android:textColor="@color/mainTextColor"/>
+      </RelativeLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="12dp"
+            android:textColor="@color/mainTextColor"
+            android:textSize="@dimen/text_size_14"
+            android:text="123456789"
+            android:layout_marginBottom="15dp"
+            />
+    </LinearLayout>
+
+
+
+</LinearLayout>

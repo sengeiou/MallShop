@@ -1,0 +1,77 @@
+package com.epro.comp.im.mvp.model.bean;
+
+
+import org.litepal.annotation.Column;
+import org.litepal.crud.LitePalSupport;
+
+import java.util.UUID;
+
+
+public class IMShop extends LitePalSupport implements java.io.Serializable {
+    //  @PrimaryKey
+    @Column(unique = true, defaultValue = "unknown")
+    private String uuid = UUID.randomUUID().toString() + "";
+    private String shopDesc;
+    private String shopId;
+    private String shopName;
+    private String logoUrl;
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public long getObjectId() {
+        return getBaseObjId();
+    }
+
+    public String getShopName() {
+        return shopName;
+    }
+
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
+    }
+
+
+    public void setShopId(String shopId) {
+        this.shopId = shopId;
+    }
+
+    public String getShopId() {
+        return shopId;
+    }
+
+    public void setLogoUrl(String logoUrl) {
+        this.logoUrl = logoUrl;
+    }
+
+    public String getLogoUrl() {
+        return logoUrl;
+    }
+
+    public void setShopDesc(String shopDesc) {
+        this.shopDesc = shopDesc;
+    }
+
+    public String getShopDesc() {
+        return shopDesc;
+    }
+
+    @Override
+    public int hashCode() {
+        return Integer.valueOf(shopId);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof IMShop) {
+            return this.shopId.equals(((IMShop) obj).shopId);
+        }
+        return false;
+    }
+
+}

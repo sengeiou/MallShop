@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="comp_im_phone_not_empty">手机号码不能为空</string>
+    <string name="comp_im_phone_format_error">手机号码格式不正确</string>
+    <string name="comp_im_password_not_empty">密码不能为空</string>
+    <string name="comp_im_password_format_error">密码格式不正确</string>
+    <string name="comp_im_repassword_not_empty">确认密码不能为空</string>
+    <string name="comp_im_repassword_format_error">确认密码格式不正确</string>
+    <string name="comp_im_two_password_not_same">两次密码不一致</string>
+    <string name="comp_im_proxy_id_not_empty">邀请码不能为空</string>
+    <string name="comp_im_agree_service_protocol">请同意注册服务条款</string>
+    <string name="comp_im_vfcode_not_empty">验证码不能为空</string>
+    <string name="comp_im_get_vfcode_first">请先获取验证码</string>
+    <string name="comp_im_vfcode_format_error">验证码为6位数字</string>
+    <string name="comp_im_login">登录</string>
+    <string name="comp_im_forget_password">忘记密码?</string>
+</resources>

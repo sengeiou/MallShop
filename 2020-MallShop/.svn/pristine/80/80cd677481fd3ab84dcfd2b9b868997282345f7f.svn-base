@@ -1,0 +1,23 @@
+package com.epro.mall.mvp.model.bean
+
+/*| 字段       | 类型    | 必须 | 说明                         |
+| ---------- | ------- | ---- | ---------------------------- |
+| id         | String  | Y    | 主键ID                       |
+| userId     | String  | Y    | 用户ID                       |
+| receive    | String  | Y    | 收件人                       |
+| province   | String  | Y    | 省                           |
+| provinceId | Integer | Y    | 省Id                         |
+| city       | string  | Y    | 市                           |
+| cityId     | Integer | Y    | 市id                         |
+| title       | String  | Y    | 区                           |
+| areaId     | Integer | Y    | 区ID                         |
+| address    | String  | Y    | 详细地址                     |
+| mobile     | String  | Y    | 手机                         |
+| isDefult   | Integer | Y    | 是否默认地址0:非默认  1:默认 |
+| longitude  | String  | Y    | 经度                         |
+| latitude   | String  | Y    | 纬度                         |*/
+data class AddressListBean(val code: Int, val message: String, val result: ArrayList<Address>) {
+//    data class Result(val id: String, val userId: String, val receive: String, val province: String,val provinceId:String,val city:String,val cityId:String,val title:String,val areaId:String,
+//                      val address:String,val mobile:String,val isDefult:String,val longitude:String,val latitude:String)
+    data class Send(val parentId:String)
+}

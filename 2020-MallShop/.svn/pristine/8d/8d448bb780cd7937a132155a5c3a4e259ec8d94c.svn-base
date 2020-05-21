@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:paddingLeft="3dp"
+        android:paddingRight="3dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/serviceImg"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@mipmap/ic_head_default_left"
+            android:layout_alignParentLeft="true"
+            />
+        <TextView
+            android:layout_toRightOf="@id/serviceImg"
+            android:layout_marginLeft="5dp"
+            android:id="@+id/tvService"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/secondaryContentTextSize"
+            android:textColor="@color/white"
+            android:layout_centerVertical="true"
+            android:text="客服10010"
+            />
+    </RelativeLayout>
+
+</LinearLayout>

@@ -1,0 +1,302 @@
+package com.epro.mall.ui.activity
+
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
+import android.text.Editable
+import android.text.TextUtils
+import android.text.TextWatcher
+import android.view.KeyEvent
+import android.view.View
+import android.view.inputmethod.EditorInfo
+import android.widget.TextView
+import com.alipay.sdk.app.EnvUtils
+import com.amap.api.location.AMapLocation
+import com.epro.mall.R
+import com.epro.mall.mvp.contract.NearlyShopListContract
+import com.epro.mall.mvp.model.bean.City
+import com.epro.mall.mvp.model.bean.Location
+import com.epro.mall.mvp.model.bean.NearlyShop
+import com.epro.mall.mvp.model.bean.ShopLocation
+import com.epro.mall.mvp.presenter.NearlyShopListPresenter
+import com.epro.mall.ui.adapter.NearlyShopListAdapter
+import com.epro.mall.ui.fragment.OpenLocationServiceBottomPopup
+import com.epro.mall.utils.LocationManager
+import com.epro.mall.utils.MallConst
+import com.epro.pos.listener.GetNearlyShopSuccessEvent
+import com.epro.pos.listener.PopupDismissEvent
+import com.mike.baselib.activity.BaseTitleBarListActivity
+import com.mike.baselib.listener.SoftKeyBoardListener
+import com.mike.baselib.utils.*
+import kotlinx.android.synthetic.main.activity_account_association.*
+import kotlinx.android.synthetic.main.activity_nearly_shoplist.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+
+class NearlyShopListActivity : BaseTitleBarListActivity<NearlyShop, NearlyShopListContract.View
+        , NearlyShopListPresenter, NearlyShopListAdapter>(), NearlyShopListContract.View, View.OnClickListener, LocationManager.LocationListener {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        EnvUtils.setEnv(EnvUtils.EnvEnum.ONLINE)// just used for sandbox env, otherwise, pls delete it.
+        intent.putExtra("cannotRequestedOrientation", true)
+        super.onCreate(savedInstanceState)
+
+    }
+
+    override fun onLocationSuccess(location: AMapLocation) {
+        this.location = Location(location.address, location.latitude.toString(),
+                location.longitude.toString(), location.city, location.cityCode)
+        tvLocation.text = location.city
+        page = 1
+        getListData()
+        logTools.toJson(this.location)
+    }
+
+    override fun onLocationError() {
+        this.location = Location("", "", "")
+        //toast(R.string.location_failed)
+        tvLocation.text = getString(R.string.location_failed)
+        page = 1
+        getListData()
+    }
+
+    override fun onClick(p0: View?) {
+        when (p0) {
+            llLeft -> {
+                SelectCityActivity.launchForResult(this, FOR_CITY)
+            }
+        }
+    }
+
+    companion object {
+        const val TAG = "getNearlyShopList"
+        const val START_TYPE = "start_type"
+        const val SHOP_ID = "shopId"
+        const val START_NORMAL = 1 //正常
+        const val START_TYPE_TOUMING = 2//透明
+        const val FOR_CITY = 11
+        //        fun launchWithLatLng(context:Context, location: Location) {
+//            context.startActivity(Intent(context, NearlyShopListActivity::class.java).ext_putJsonExtra(location))
+//        }
+        fun launchWithShopIdForResult(activity: Activity, shopId: String, requestCode: Int) {
+            activity.startActivityForResult(Intent(activity, NearlyShopListActivity::class.java).putExtra(SHOP_ID, shopId), requestCode)
+        }
+
+        fun launch(activity: Activity, type: Int = START_TYPE_TOUMING) {
+            activity.startActivityForResult(Intent(activity, NearlyShopListActivity::class.java).putExtra(START_TYPE, type), 0)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+//        if (startType == START_TYPE_TOUMING) {
+//            finish()
+//        }
+        if (Activity.RESULT_OK == resultCode) {
+            when (requestCode) {
+                FOR_CITY -> {
+                    val city = data!!.ext_getFromJsonWithClassKey(City::class.java)
+                    tvLocation.text = city!!.city_name
+                    cityId = city!!.city_code
+                }
+            }
+        }
+        if (requestCode == OpenLocationServiceBottomPopup.FOR_OPEN_RESULT) {
+            if (AppUtils.checkGPSIsOpen(this)) {
+                toast("开启成功")
+                LocationManager.getInstance().requestLocation()
+            } else {
+                finish()
+            }
+        }
+
+    }
+
+    override fun layoutCustomContentId(): Int {
+        return R.layout.activity_nearly_shoplist
+    }
+
+    override fun getListAdapter(list: ArrayList<NearlyShop>): NearlyShopListAdapter {
+        return NearlyShopListAdapter(this, list)
+    }
+
+
+    override fun getListData() {
+        if (location != null) {
+            mPresenter.getNearlyShopList(location!!.latitude, location!!.longitude, keyword, cityId, MallConst.GET_NEARLY_SHOP_LIST)
+        }
+    }
+
+    override fun getListDataSuccess(list: List<NearlyShop>, type: String) {
+        for (n in list) {
+            if (!TextUtils.isEmpty(currentShopId)) {
+                n.judgeValue = currentShopId == n.shopId
+            }
+        }
+        listDataAdapter?.location = this.location
+        listDataAdapter!!.keyword=keyword
+        super.getListDataSuccess(list, type)
+        if (startType == START_TYPE_TOUMING) {
+            val event = GetNearlyShopSuccessEvent()
+            if (list.isNotEmpty() && list[0].distance <= 200 && location != null && !TextUtils.isEmpty(location!!.cityName)) {
+                event.nealyShop = list[0]
+            }
+            EventBus.getDefault().post(event)
+            finish()
+        }
+    }
+
+
+    override fun showError(errorMsg: String, errorCode: Int, type: String) {
+        super.showError(errorMsg, errorCode, type)
+        when (type) {
+            MallConst.GET_NEARLY_SHOP_LIST -> {
+                if (startType == START_TYPE_TOUMING) {
+                    EventBus.getDefault().post(GetNearlyShopSuccessEvent())
+                    finish()
+                }
+            }
+        }
+    }
+
+
+    override fun initData() {
+    }
+
+    override fun getPresenter(): NearlyShopListPresenter {
+        return NearlyShopListPresenter()
+    }
+
+    var location: Location? = null
+    var startType = START_NORMAL
+    var keyword: String? = null
+    var currentShopId = ""
+    var cityId: String? = null
+    override fun initView() {
+        // location = intent.ext_getFromJsonWithClassKey(Location::class.java)
+        super.initView()
+        getTitleView().text = getString(R.string.select_shop)
+        listDataAdapter?.onItemClickListener = object : NearlyShopListAdapter.OnItemClickListener {
+            override fun onClick(item: NearlyShop) {
+                if (item.distance > 200) {
+                    val shopLocationList = ArrayList<ShopLocation>()
+                    val shopLocation = ShopLocation(item.address, item.latitude, item.longitude, item.shopId, item.shopName)
+                    shopLocationList.add(shopLocation)
+                    FindShopActivity.launchWithShopLocationList(this@NearlyShopListActivity, shopLocationList)
+                } else {
+                    //ScanBarPurchaseActivity.launchWithShopId_ShopName(this@NearlyShopListActivity, item.shopId, item.shopName)
+                    setResult(Activity.RESULT_OK, Intent().ext_putJsonExtra(item))
+                    finish()
+                }
+            }
+        }
+
+        listDataAdapter?.onLocationClickListener = object : NearlyShopListAdapter.OnLocationClickListener {
+            override fun onClick(item: NearlyShop) {
+                val shopLocationList = ArrayList<ShopLocation>()
+                val shopLocation = ShopLocation(item.address, item.latitude, item.longitude, item.shopId, item.shopName)
+                shopLocationList.add(shopLocation)
+                FindShopActivity.launchWithShopLocationList(this@NearlyShopListActivity, shopLocationList)
+            }
+        }
+        startType = intent.getIntExtra(START_TYPE, START_NORMAL)
+        logTools.t("YB").d(" NearlyShop initView :")
+        if (startType == START_TYPE_TOUMING) {
+            // ScanBarPurchaseActivity.launchWithShopId_ShopName(this, "", "")
+            LocationManager.getInstance().initLocation(this, true)
+            rootView!!.visibility = View.GONE
+        } else {
+            LocationManager.getInstance().initLocation(this)
+            currentShopId = intent.getStringExtra(SHOP_ID)!!
+        }
+        LocationManager.getInstance().requestLocation()
+
+        llLeft.isEnabled=false
+    }
+
+    override fun initListener() {
+        llLeft.setOnClickListener(this)
+        LocationManager.getInstance().locationListener = this
+        etSearch.addTextChangedListener(textWatcher)
+//        etSearch.setOnEditorActionListener(object : TextView.OnEditorActionListener {
+//            override fun onEditorAction(p0: TextView?, p1: Int, p2: KeyEvent?): Boolean {
+//                if (p1 == EditorInfo.IME_ACTION_SEARCH) {
+//                    AppUtils.closeKeyboard(this@NearlyShopListActivity)
+//                    val content = etSearch.text.toString()
+//                    keyword = content
+//                    page = 1
+//                    getListData()
+//                    return true
+//                }
+//                return false
+//            }
+//        })
+//
+//        SoftKeyBoardListener.setListener(this, object : SoftKeyBoardListener.OnSoftKeyBoardChangeListener {
+//            override fun keyBoardShow(height: Int) {
+//
+//            }
+//
+//            override fun keyBoardHide(height: Int) {
+//                page = 1
+//                getListData()
+//            }
+//        })
+    }
+
+    val textWatcher: TextWatcher = object : TextWatcher {
+        override fun afterTextChanged(p0: Editable?) {
+            if (p0 == null) {
+                keyword = null
+                page = 1
+                getListData()
+            } else {
+                keyword = p0.toString().trim()
+                if (TextUtils.isEmpty(p0.toString().trim())) {
+                    keyword = null
+                    page = 1
+                    getListData()
+                }else{
+                    val content = p0.toString().trim()
+                    keyword = content
+                    page = 1
+                    getListData()
+                }
+            }
+        }
+
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        }
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+        }
+    }
+
+    override fun onDestroy() {
+        etSearch.removeTextChangedListener(textWatcher)
+        super.onDestroy()
+        LocationManager.getInstance().destroyLocation()
+        AppContext.getInstance().mainHandler.removeCallbacksAndMessages(null)
+    }
+
+    override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
+        super.onPermissionsDenied(requestCode, perms)
+        finish()
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        finish()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onPopupDismissEvent(event: PopupDismissEvent) {
+        if (startType == START_TYPE_TOUMING) {
+            finish()
+        }
+    }
+}
+
+

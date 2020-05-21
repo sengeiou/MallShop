@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bottomColor"
+    android:orientation="vertical">
+    <ImageView
+        android:src="@mipmap/scan_icon_big"
+        android:id="@+id/ivScan"
+        android:layout_marginTop="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_width="130dp"
+        android:layout_height="130dp" />
+    <LinearLayout
+        android:layout_marginTop="25dp"
+        android:layout_centerHorizontal="true"
+        android:orientation="horizontal"
+        android:layout_below="@+id/ivScan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textStyle="bold"
+            android:padding="5dp"
+            android:textSize="@dimen/titleTextSize"
+            android:textColor="@color/mainTextColor"
+            android:text="@string/scan_not"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:textStyle="bold"
+            android:id="@+id/tvInputBarCode"
+            android:padding="5dp"
+            android:textSize="@dimen/titleTextSize"
+            android:textColor="@color/mainColor"
+            android:text="@string/input_shop_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <ImageView
+        android:src="@mipmap/scan_code_pic_bg"
+        android:layout_marginBottom="15dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_width="272dp"
+        android:layout_height="236dp" />
+</RelativeLayout>

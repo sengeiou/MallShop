@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="25dp"
+    android:layout_marginLeft="12dp"
+    android:orientation="horizontal">
+    <ImageView
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:src="@mipmap/notify_update"
+        android:layout_gravity="center"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="@string/notify_name"
+        android:textColor="#000000"
+        android:textSize="14sp"
+        android:layout_marginLeft="12dp"/>
+</LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_gravity="center"
+        android:layout_marginLeft="8dp"
+        android:layout_marginBottom="12dp">
+    <ProgressBar
+        android:id="@+id/pb_progress"
+        android:layout_weight="9"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:max="100"
+        style="?android:attr/progressBarStyleHorizontal"
+        />
+        <TextView
+            android:id="@+id/tv_progress"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:gravity="center"
+            android:layout_marginLeft="3dp"
+            android:layout_height="wrap_content"
+            android:text="30%"
+            android:textColor="#333333"/>
+        <ImageView
+            android:id="@+id/imgUpdate"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="25dp"
+            android:layout_marginRight="8dp"
+            android:src="@mipmap/notify_update"
+            android:layout_alignParentRight="true"/>
+    </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:gravity="center"
+    android:background="@drawable/shape_white_bg_radius5"
+    android:layout_width="300dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <TextView
+        android:textColor="@color/black"
+        android:layout_marginTop="28dp"
+        android:gravity="center"
+        android:id="@+id/tvDialogTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/set_humidity"
+        android:textSize="@dimen/text_size_18" />
+    <EditText
+        android:inputType="number"
+        android:background="@drawable/shape_bg_gray_btn_radius4"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:hint="@string/please_enter_irrigation_humidity"
+        android:textColor="@color/black"
+        android:textColorHint="@color/gray_c2c2c2"
+        android:gravity="center_vertical"
+        android:textSize="18sp"
+        android:id="@+id/et_dialog_content"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="8dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp" />
+    <View
+        android:layout_marginTop="10dp"
+        android:background="@color/gray_f3f3f3"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <Button
+            android:visibility="gone"
+            android:layout_weight="1"
+            android:id="@+id/bt_dialog_cancel"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/delete_dialog_cancel"
+            android:textSize="@dimen/text_size_18" />
+        <Button
+            android:background="@null"
+            android:layout_marginLeft="8dp"
+            android:textColor="@color/blue_785afe"
+            android:id="@+id/btDialogConfirm"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="@string/confirm"
+            android:textSize="@dimen/text_size_18" />
+    </LinearLayout>
+</LinearLayout>

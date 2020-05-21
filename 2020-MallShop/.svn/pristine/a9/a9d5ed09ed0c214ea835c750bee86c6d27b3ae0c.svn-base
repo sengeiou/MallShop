@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="12dp"
+        android:background="@color/bottomColor" />
+
+    <RelativeLayout
+        android:layout_marginTop="17dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="32dp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="12dp"
+            android:layout_toStartOf="@+id/btnAdd"
+            android:background="@drawable/shape_bg_search">
+
+            <com.epro.mall.ui.view.ClearableEditText
+                android:id="@+id/etBarcode"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginEnd="8dp"
+                android:background="@null"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center_vertical"
+                android:hint="@string/pls_input_product_bar"
+                android:inputType="number"
+                android:maxLength="13"
+                android:maxLines="1"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:singleLine="true"
+                android:textColor="@color/mainTextColor"
+                android:textColorHint="@color/gray_cccccc"
+                android:textSize="@dimen/contentTextSize"
+                app:clearIcon="@mipmap/icon_delete_black" />
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/btnAdd"
+            style="@style/MainRedButton"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="12dp"
+            android:text="@string/add" />
+    </RelativeLayout>
+
+    <ImageView
+        android:src="@mipmap/bar_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:text="@string/pls_input_shop_bar"
+        android:textColor="@color/secondaryTextColor"
+        android:textSize="@dimen/secondaryContentTextSize" />
+</LinearLayout>

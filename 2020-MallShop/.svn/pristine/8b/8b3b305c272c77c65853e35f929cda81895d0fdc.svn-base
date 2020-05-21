@@ -1,0 +1,311 @@
+package com.epro.mall.ui.activity;
+
+import android.Manifest
+import android.app.Activity
+import android.app.Dialog
+import android.content.Context
+import android.content.Intent
+import android.support.v7.widget.LinearLayoutManager
+import android.view.KeyEvent
+import android.view.View
+import com.epro.mall.R
+import com.epro.mall.mvp.contract.ScanBuyCartContract
+import com.epro.mall.mvp.model.bean.ScanBuyCartGoods
+import com.epro.mall.mvp.model.bean.ShopInfo
+import com.epro.mall.mvp.presenter.ScanBuyCartPresenter
+import com.epro.mall.ui.adapter.ScanBuyCartGoodsAdapter
+import com.epro.mall.ui.view.CommonDialog
+import com.epro.mall.utils.MallBusManager
+import com.epro.mall.utils.MallConst
+import com.epro.pos.listener.InputResultEvent
+import com.epro.pos.listener.ScanResultEvent
+import com.epro.pos.listener.SearchResultEvent
+import com.mike.baselib.activity.BaseTitleBarCustomActivity
+import com.mike.baselib.utils.*
+import kotlinx.android.synthetic.main.activity_scan_buy_cart.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import pub.devrel.easypermissions.AfterPermissionGranted
+import pub.devrel.easypermissions.EasyPermissions
+
+
+class ScanBuyCartActivity : BaseTitleBarCustomActivity<ScanBuyCartContract.View, ScanBuyCartPresenter>(), ScanBuyCartContract.View, View.OnClickListener {
+    override fun onGetShopInfoSuccess(shopInfo: ShopInfo) {
+        tvShopName.text = shopInfo.shopName
+        tvAddress.text = shopInfo.province + shopInfo.city + shopInfo.area + shopInfo.address
+        this.shopInfo = shopInfo
+    }
+
+    companion object {
+        const val TAG = "bar_code"
+        const val RC_CAMERA = 100
+        const val FOR_BAR_CODE = 10
+        const val FOR_GOODS = 11
+        const val SHOP_ID = "shop_id"
+        const val BAR_CODE = "bar_code"
+        const val BAR_CODE_GETYPE = "bar_code_getType"
+        const val BAR_CODE_GETYPE_SCAN = 1
+        const val BAR_CODE_GETYPE_INPUT = 2
+        const val FOR_CHECKOUT_RESULT = 12
+        fun launchWithShopId_Type(context: Context, shopId: String, type: Int = BAR_CODE_GETYPE_SCAN) {
+            context.startActivity(Intent(context, ScanBuyCartActivity::class.java).putExtra(SHOP_ID, shopId).putExtra(BAR_CODE_GETYPE, type))
+        }
+    }
+
+    override fun getPresenter(): ScanBuyCartPresenter {
+        return ScanBuyCartPresenter()
+    }
+
+    override fun onGetGoodsByBarcodeSuccess(cartGoods: ScanBuyCartGoods) {
+        var position = -1
+        for (i in scanAdapter!!.mData.indices) {
+            if (scanAdapter!!.mData[i].productId == cartGoods.productId) {
+                scanAdapter!!.mData[i].buyNum = scanAdapter!!.mData[i].buyNum + 1
+                position = i
+                break
+            }
+        }
+        if (position < 0) {
+            cartGoods.buyNum = 1
+            scanAdapter!!.mData.add(0, cartGoods)
+            scanAdapter!!.notifyDataSetChanged()
+            logTools.d("position:" + position + "##buyNum:" + scanAdapter!!.mData[0].buyNum)
+        } else {
+            logTools.d("position:" + position + "##buyNum:" + scanAdapter!!.mData[position].buyNum)
+            scanAdapter!!.notifyDataSetChanged()
+        }
+        toast(getString(R.string.add_product_success))
+        val sevent = SearchResultEvent()
+        sevent.isEmpty = false
+        EventBus.getDefault().post(sevent)
+        updateAmount()
+    }
+
+    private fun updateAmount() {
+        var count = 0
+        var amount = 0.toDouble()
+        for (d in scanAdapter!!.mData) {
+            amount += d.retailPrice.toDouble() * d.buyNum
+            count += d.buyNum
+        }
+        tvCheckout.text = getString(R.string.settlement)+"($count)"
+        tvAmount.text = amount.ext_formatAmount()
+        if (count == 0) {
+            tvCheckout.alpha = 0.5F
+            tvCheckout.isEnabled = false
+        } else {
+            tvCheckout.alpha = 1F
+            tvCheckout.isEnabled = true
+        }
+        calculateActivityDiscount(amount)
+    }
+
+
+    /**
+     * 计算活动优惠
+     */
+    private fun calculateActivityDiscount(amount: Double) {
+        val isHaveActivity = MallBusManager.isHaveActivity(scanAdapter!!.mData)
+        if (!isHaveActivity) {
+            return
+        }
+        var discount = 0.toDouble() //总优惠
+        var totalRealAmount = 0.toDouble()//总实际支付金额
+        for (goods in scanAdapter!!.mData) {
+            val a=MallBusManager.getProductActivity(goods)
+            if (a != null) {
+                totalRealAmount += a.discountPrice.toDouble() * goods.buyNum
+            } else {
+                totalRealAmount += goods.onlineSalesPrice.toDouble() * goods.buyNum
+            }
+        }
+        tvAmount.text = totalRealAmount.ext_formatAmount()
+        discount = amount - totalRealAmount
+        if (discount > 0.toDouble()) {
+            llDiscount.visibility = View.VISIBLE
+            tvDiscount.text = discount.ext_formatAmountWithUnit()
+        } else {
+            llDiscount.visibility = View.GONE
+        }
+    }
+
+
+
+    override fun showError(errorMsg: String, errorCode: Int, type: String) {
+        super.showError(errorMsg, errorCode, type)
+        when (type) {
+            MallConst.GET_GOODS_BY_BARCODE -> {
+                val sevent = SearchResultEvent()
+                sevent.isEmpty = true
+                EventBus.getDefault().post(sevent)
+            }
+        }
+    }
+
+
+    override fun onClick(p0: View?) {
+        when (p0) {
+            ivScan -> {
+                startScan()
+            }
+            tvClear -> {
+                showClearDialog()
+            }
+            ivBack -> {
+                showExitDialog()
+            }
+            llAlert -> {
+                InputBarcodeActivity.launchForResult(this, FOR_BAR_CODE)
+            }
+            tvCheckout -> {
+                if (MallBusManager.checkNotLogin(this)) {
+                    return
+                }
+                if (scanAdapter!!.mData.isEmpty()) {
+                    toast(getString(R.string.pls_add_product))
+                    return
+                }
+                if (shopInfo == null) {
+                    toast(getString(R.string.load_store_information_first))
+                    return
+                }
+                ScanBuyOrderInfoActivity.launchWithCartGoodses_ShopInfo(this, scanAdapter!!.mData, shopInfo!!, FOR_CHECKOUT_RESULT)
+            }
+        }
+    }
+
+    @AfterPermissionGranted(RC_CAMERA)
+    private fun startScan() {
+        if (EasyPermissions.hasPermissions(this, Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+            // Already have permission, do the thing
+            ScanActivity.launchWithScanType(this, FOR_GOODS)
+        } else {
+            // Do not have permissions, request them now
+            EasyPermissions.requestPermissions(this, getString(R.string.pls_permission_storage),
+                    RC_CAMERA, Manifest.permission.CAMERA, Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+        }
+    }
+
+
+    private fun showClearDialog() {
+        CommonDialog.Builder(this)
+                .setContent(getString(R.string.confirm_clean_cart))
+                .setOnConfirmListener(object : CommonDialog.OnConfirmListener {
+                    override fun onClick(dialog: Dialog) {
+                        dialog.dismiss()
+                        scanAdapter!!.setData(ArrayList())
+                        updateAmount()
+                    }
+                })
+                .create()
+                .show()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (Activity.RESULT_OK == resultCode) {
+            when (requestCode) {
+                FOR_BAR_CODE -> {
+                    val barcode = data!!.getStringExtra(BAR_CODE)
+                    val shopId = intent.getStringExtra(SHOP_ID)
+                    mPresenter.getGoodsByBarcode(shopId!!, barcode!!, MallConst.GET_GOODS_BY_BARCODE)
+                }
+            }
+        }
+    }
+
+    private fun showExitDialog() {
+        CommonDialog.Builder(this)
+                .setContent(getString(R.string.confirm_drop_out))
+                .setOnConfirmListener(object : CommonDialog.OnConfirmListener {
+                    override fun onClick(dialog: Dialog) {
+                        dialog.dismiss()
+                        finish()
+                    }
+                })
+                .create()
+                .show()
+    }
+
+
+    override fun layoutContentId(): Int {
+        return R.layout.activity_scan_buy_cart
+    }
+
+    var scanAdapter: ScanBuyCartGoodsAdapter? = null
+    var shopInfo: ShopInfo? = null
+    override fun initData() {
+        val shopId = intent.getStringExtra(SHOP_ID)
+        mPresenter.getShopInfo(shopId, MallConst.GET_SHOP_INFO)
+        rvGoods.layoutManager = LinearLayoutManager(this)
+        scanAdapter = ScanBuyCartGoodsAdapter(this, ArrayList())
+        scanAdapter!!.onItemDeleteListener = object : ScanBuyCartGoodsAdapter.OnItemDeleteListener {
+            override fun onItemDelete(position: Int) {
+                updateAmount()
+            }
+        }
+        scanAdapter!!.onBuyNumChangeListner = object : ScanBuyCartGoodsAdapter.OnBuyNumChangeListener {
+            override fun onBuyNumChange(position: Int) {
+                updateAmount()
+            }
+        }
+        rvGoods.adapter = scanAdapter
+        updateAmount()
+
+    }
+
+    override fun initView() {
+        super.initView()
+        getTitleBar().visibility = View.GONE
+        tvUnit.text = AppBusManager.getAmountUnit()
+        val getType = intent.getIntExtra(BAR_CODE_GETYPE, BAR_CODE_GETYPE_SCAN)
+        if (getType == BAR_CODE_GETYPE_SCAN) {
+            startScan()
+        } else {
+            InputBarcodeActivity.launchForResult(this, FOR_BAR_CODE)
+        }
+
+    }
+
+    override fun initListener() {
+        ivScan.setOnClickListener(this)
+        llAlert.setOnClickListener(this)
+        tvClear.setOnClickListener(this)
+        ivBack.setOnClickListener(this)
+        tvCheckout.setOnClickListener(this)
+        rlHeader.setOnClickListener(this)
+    }
+
+    override fun initStatusBar() {
+        StatusBarUtil.immersive(this, resources.getColor(R.color.white), 0f)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onScanResultEvent(event: ScanResultEvent) {
+        if (event.scanType == ScanActivity.SCAN_FOR_GOODS) {
+            val barcode = event.result
+            val shopId = intent.getStringExtra(SHOP_ID)
+            mPresenter.getGoodsByBarcode(shopId!!, barcode!!, MallConst.GET_GOODS_BY_BARCODE)
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onInputResultEvent(event: InputResultEvent) {
+        val barcode = event.result
+        val shopId = intent.getStringExtra(SHOP_ID)
+        mPresenter.getGoodsByBarcode(shopId!!, barcode!!, MallConst.GET_GOODS_BY_BARCODE)
+    }
+
+    override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            showExitDialog()
+            return true
+        }
+        return super.onKeyDown(keyCode, event)
+    }
+
+
+}
+
+

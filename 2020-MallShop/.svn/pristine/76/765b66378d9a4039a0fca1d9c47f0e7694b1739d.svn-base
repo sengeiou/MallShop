@@ -1,0 +1,107 @@
+package com.epro.comp.im.ui.widget
+
+import android.app.Dialog
+import android.content.Context
+import android.view.View
+import android.widget.RelativeLayout
+import com.epro.comp.im.R
+import com.epro.comp.im.listener.ChatMessageChangeEvent
+import com.epro.comp.im.mvp.model.bean.ChatMessage
+import com.epro.comp.im.mvp.model.bean.MsgBody
+import com.epro.comp.im.mvp.model.bean.MsgType
+import com.epro.comp.im.mvp.model.bean.TextMsgBody
+import com.epro.comp.im.utils.IMBusManager
+import com.mike.baselib.utils.ext_copyToClipboard
+import org.greenrobot.eventbus.EventBus
+
+class MessageHandlerDialog : Dialog {
+    var rlCopy: RelativeLayout? = null
+    var rlDelete: RelativeLayout? = null
+
+    constructor(context: Context) : super(context) {
+        initView()
+    }
+
+    constructor(context: Context, themeStyle: Int) : super(context, themeStyle) {
+        initView()
+    }
+
+    private fun initView() {
+        setContentView(R.layout.dialog_message_handler)
+        setCanceledOnTouchOutside(true)
+        rlCopy = findViewById(R.id.rlCopy)
+        rlDelete = findViewById(R.id.rlDelete)
+    }
+
+    class Builder(val context: Context) {
+        var coypListener: OnCopyListener=object :OnCopyListener{
+            override fun onClick(dialog: Dialog) {
+                if(message!!.msgType==MsgType.TEXT){
+                    (message!!.body as TextMsgBody).message.ext_copyToClipboard(context)
+                }
+               dialog.dismiss()
+            }
+        }
+        var onDeleteListener: OnDeleteListener=object :OnDeleteListener{
+            override fun onClick(dialog: Dialog) {
+                IMBusManager.updateRecordByMessageDelete(message!!)
+                IMBusManager.deleteChatMessage(message!!)
+                val event=ChatMessageChangeEvent<MsgBody>()
+                message!!.isDelete=true
+                event.message= (message as ChatMessage<MsgBody>?)!!
+                EventBus.getDefault().post(event)
+                dialog.dismiss()
+            }
+        }
+
+        var canceledOnTouchOutside=true
+        var message:ChatMessage<out MsgBody>?=null
+
+        fun setOnConfirmListener(confirmListener: OnCopyListener): Builder {
+            this.coypListener = confirmListener
+            return this
+        }
+        fun setChatMessage( message:ChatMessage<out MsgBody>): Builder {
+            this.message=message
+            return this
+        }
+
+        fun setOnCancelListener(cancelListener: OnDeleteListener): Builder {
+            this.onDeleteListener = cancelListener
+            return this
+        }
+
+        fun  setCanceledOnTouchOutside(canceledOnTouchOutside:Boolean): Builder {
+            this.canceledOnTouchOutside=canceledOnTouchOutside
+            return this
+        }
+
+        fun create(): MessageHandlerDialog {
+            val dialog = MessageHandlerDialog(context, R.style.Theme_AudioDialog)
+            if(message!!.msgType==MsgType.TEXT){
+            }else if(message!!.msgType==MsgType.IMAGE){
+               dialog.rlCopy!!.visibility= View.GONE
+            }
+            if (onDeleteListener != null) {
+                dialog.rlDelete?.setOnClickListener { v -> onDeleteListener!!.onClick(dialog) }
+            }
+            if (coypListener != null) {
+                dialog.rlCopy?.setOnClickListener { v -> coypListener!!.onClick(dialog) }
+            }
+            dialog.setCanceledOnTouchOutside(canceledOnTouchOutside)
+            return dialog
+        }
+
+    }
+
+    // 点击弹窗取消按钮回调
+    interface OnDeleteListener {
+        fun onClick(dialog: Dialog)
+    }
+
+    // 点击弹窗跳转回调
+    interface OnCopyListener {
+        fun onClick(dialog: Dialog)
+    }
+
+}

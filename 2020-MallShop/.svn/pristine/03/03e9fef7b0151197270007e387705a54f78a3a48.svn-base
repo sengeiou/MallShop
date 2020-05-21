@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ViewFlipper
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:id="@+id/vfEmail"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="30dp"
+    android:layout_marginTop="20dp"
+    android:layout_marginRight="30dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:background="@drawable/shape_bg_tranblack20_radius6">
+            <com.epro.mall.ui.view.ClearableEditText
+                android:id="@+id/etEmail"
+                style="@style/MyEditText"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:hint="@string/pls_input_email"
+                android:maxLength="20" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/shape_bg_tranblack20_radius6">
+            <com.epro.mall.ui.view.ClearableEditText
+                android:id="@+id/etEmailVfcode"
+                style="@style/MyEditText"
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_marginStart="10dp"
+                android:layout_marginEnd="10dp"
+                android:hint="@string/my_info_pls_input_confirm_code"
+                android:inputType="number"
+                android:maxLength="6" />
+            <View
+                android:layout_width="0.5dp"
+                android:layout_height="16dp"
+                android:background="@color/mainMatchColor"
+                />
+            <com.epro.mall.ui.view.CountDownButton
+                android:textSize="@dimen/secondaryContentTextSize"
+                app:enableTextColor="@color/mainMatchColor"
+                app:disableTextColor="@color/mainMatchColor_60"
+                android:textColor="@color/mainMatchColor"
+                android:background="@null"
+                android:id="@+id/btnEmailGetCode"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:enabled="false"
+                android:text="@string/my_info_pull_confirm_code" />
+        </LinearLayout>
+        <Button
+            android:layout_marginEnd="70dp"
+            android:layout_marginStart="70dp"
+            style="@style/MyButton"
+            android:id="@+id/btnEmailNext"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="15dp"
+            android:text="@string/my_info_next_step" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+
+        <RelativeLayout
+            android:background="@drawable/shape_bg_tranblack20_radius6"
+            android:layout_width="match_parent"
+            android:layout_height="44dp">
+
+            <com.epro.mall.ui.view.ClearableEditText
+                style="@style/MyPasswordEditText"
+                android:id="@+id/etEmailPassword"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="10dp"
+                android:layout_toStartOf="@+id/cbEmailEyes"
+                android:hint="@string/pls_input_password" />
+            <CheckBox
+                android:layout_marginEnd="7dp"
+                android:id="@+id/cbEmailEyes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:button="@null"
+                android:drawableStart="@drawable/selector_check_password"
+                android:padding="8dp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:background="@drawable/shape_bg_tranblack20_radius6"
+            android:layout_width="match_parent"
+            android:layout_height="44dp"
+            android:layout_marginTop="20dp">
+
+            <com.epro.mall.ui.view.ClearableEditText
+                style="@style/MyPasswordEditText"
+                android:id="@+id/etReEmailPassword"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="10dp"
+                android:layout_toStartOf="@+id/cbReEmailEyes"
+                android:hint="@string/pls_input_again" />
+            <CheckBox
+                android:layout_marginEnd="7dp"
+                android:id="@+id/cbReEmailEyes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:button="@null"
+                android:drawableStart="@drawable/selector_check_password"
+                android:padding="8dp" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:gravity="center_vertical"
+            android:layout_marginTop="7dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textColor="@color/mainMatchColor"
+                android:text="@string/login_after_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textSize="@dimen/explainContentTextSize" />
+        </LinearLayout>
+        <Button
+            android:layout_marginBottom="15dp"
+            android:layout_marginEnd="70dp"
+            android:layout_marginStart="70dp"
+            style="@style/MyButton"
+            android:id="@+id/btnEmailConform"
+            android:layout_marginTop="20dp"
+            android:text="@string/confirm" />
+    </LinearLayout>
+</ViewFlipper>
+

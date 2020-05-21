@@ -1,0 +1,40 @@
+package com.epro.comp.im.smack.xmppdebug;
+
+import com.mike.baselib.utils.LogTools;
+
+import org.jivesoftware.smack.ConnectionListener;
+import org.jivesoftware.smack.XMPPConnection;
+
+/**
+ * Created by WangQX on 2018/4/16.
+ * Description:此类用于打印xmpp协议收发包信息
+ */
+
+public class XmppLoggingConnectionListener implements ConnectionListener {
+    private final XMPPConnection connection;
+
+    public XmppLoggingConnectionListener(XMPPConnection connection) {
+        this.connection = Validate.notNull(connection);
+    }
+
+    @Override
+    public void connected(XMPPConnection connection) {
+        LogTools.debug(XmppDebugger.LOGGER_NAME, "Connection connected: " + connection.hashCode());
+    }
+
+    @Override
+    public void authenticated(XMPPConnection connection, boolean resumed) {
+        LogTools.debug(XmppDebugger.LOGGER_NAME, "authenticated connection.getUser()=" + connection.getUser());
+    }
+
+    @Override
+    public void connectionClosed() {
+        LogTools.debug(XmppDebugger.LOGGER_NAME, "connectionClosed");
+    }
+
+    @Override
+    public void connectionClosedOnError(Exception e) {
+        LogTools.debug(XmppDebugger.LOGGER_NAME, "connectionClosedOnError e=" + e);
+    }
+}
+

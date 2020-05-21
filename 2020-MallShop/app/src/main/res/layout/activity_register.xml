@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#F5F5F5"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_marginTop="35dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <ImageView
+            android:id="@+id/ivClose"
+            android:padding="8dp"
+            android:src="@mipmap/register_back_del"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_marginTop="33dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RadioButton
+                android:textColor="@color/thirdTextColor"
+                android:textSize="@dimen/navigationTextSize"
+                android:drawableBottom="@drawable/shape_register_indicator"
+                android:drawablePadding="6dp"
+                android:padding="10dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:layout_marginRight="10dp"
+                android:button="@null"
+                android:text="@string/register_your_phone"
+                android:id="@+id/rbPhoneRegister"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <RadioButton
+                android:drawablePadding="6dp"
+                android:drawableBottom="@drawable/shape_register_indicator"
+                android:textColor="@color/thirdTextColor"
+                android:textSize="@dimen/navigationTextSize"
+                android:padding="10dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:layout_marginLeft="10dp"
+                android:button="@null"
+                android:text="@string/email_register"
+                android:id="@+id/rbEmailRegister"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RadioGroup>
+        <ViewFlipper
+            android:id="@+id/viewFlipper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <include layout="@layout/layout_register_phone"/>
+            <include layout="@layout/layout_register_email"/>
+        </ViewFlipper>
+    </LinearLayout>
+</RelativeLayout>

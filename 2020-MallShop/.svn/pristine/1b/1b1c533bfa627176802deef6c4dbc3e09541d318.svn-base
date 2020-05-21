@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="language_chinese_fan">繁體中文</string>
+    <string name="language_chinese_simple">简单中文</string>
+    <string name="language_english">English</string>
+    <string name="home">Home</string>
+    <string name="order">Order</string>
+    <string name="login">Login</string>
+    <string name="mine">Mine</string>
+    <string name="cart">Cart</string>
+</resources>

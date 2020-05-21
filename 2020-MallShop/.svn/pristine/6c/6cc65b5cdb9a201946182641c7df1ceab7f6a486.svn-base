@@ -1,0 +1,41 @@
+package com.epro.mall.mvp.model.bean
+
+/*| 字段              | 类型       | 必须 | 说明                                                         |
+| ----------------- | ---------- | ---- | ------------------------------------------------------------ |
+| orderSn           | string     | Y    | 订单编号                                                     |
+| shopId            | string     | Y    | 商铺id                                                       |
+| shopName          | string     | Y    | 店铺名称                                                     |
+| orderStatus       | integer    | Y    | 订单状态(订单状态(1.未支付 2.用户已取消3.待配送 4.待自提 5.配送中  6.交易完成  7.店家已取消) |
+| createTime        | string     | Y    | 下单时间                                                     |
+| payType           | integer    | Y    | 付款方式(1.现金 2.支付宝 3.paypal 4.微信 5.信用卡 6.银行卡)  |
+| productCount      | integer    | Y    | 订单商品总数                                                 |
+| orderActualAmount | bigdecimal | Y    | 订单实际金额                                                 |
+| deliveryType      | integer    | Y    | 提货方式(0.自提 1.配送)                                      |
+| pickUpAdress      | string     | Y    | 自提地址                                                     |
+| deliveryCode      | string     | Y    | 取件码                                                       |
+| consignee         | string     | Y    | 收货人                                                       |
+| address           | string     | Y    | 收货地址                                                     |
+| mobile            | string     | Y    | 收货人电话                                                   |
+| logisticsFee      | bigdecimal | Y    | 运费金额                                                     |
+| orderCancelReason | string     | Y    | 订单取消原因                                                 |
+| leftPayTime       | long       | Y    | 剩余支付时间                                                 |
+| products          | list       | Y    | 订单商品列表                                                 |*/
+
+data class OrderDetailBean(val code: Int,
+                           val message: String,
+                           val result: Result){
+    data class Send(val orderSn:String)
+    data class Result(val orderTotalAmount:String,val orderSn:String,val shopId:String,val shopName:String,val orderStatus:String,val createTime:String,val payType:String,
+                      val productCount:String,val orderActualAmount:String,val deliveryType:String,val pickUpAdress:String,val deliveryCode:String,val consignee:String,val address:String,
+                      val mobile:String,val logisticsFee:String,val orderCancelReason:String,val shopMobile:String,val leftPayTime:String,val products:ArrayList<OrderProduct>)
+
+}
+
+/*| 字段                      | 类型    | 必须 | 说明                         |
+| ------------------------- | ------- | ---- | ---------------------------- |
+| goodsName                 | string  | Y    | 商品名                       |
+| productId                 | long    | Y    | 产品id                       |
+| salePrice                 | decimal | Y    | 产品价格                     |
+| productCount              | integer | Y    | 产品数量                     |
+| listPicUrl                | string  | Y    | 产品图片链接                 |
+| goodsSpecifitionNameValue | integer | Y    | 产品规则(白色,250ml)逗号隔开 |*/

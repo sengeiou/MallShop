@@ -1,0 +1,18 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.epro.comp.im">
+
+    <application >
+        <activity android:name="com.epro.comp.im.ui.activity.LoginActivity" />
+        <activity
+            android:name="com.epro.comp.im.ui.activity.ChatActivity"
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustPan|stateHidden"/>
+        <activity android:name="com.epro.comp.im.ui.activity.RegisterActivity" />
+        <activity android:name="com.epro.comp.im.ui.activity.ChatRecordListActivity" />
+        <activity android:name=".ui.activity.PictureActivity" />
+
+        <service
+            android:name=".service.IMService"
+            android:priority="1000" />
+    </application>
+</manifest>

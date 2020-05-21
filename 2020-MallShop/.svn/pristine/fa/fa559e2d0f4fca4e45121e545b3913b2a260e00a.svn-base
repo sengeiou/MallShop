@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tl="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/shape_bg_login"
+            android:orientation="vertical"
+            app:layout_constraintDimensionRatio="H,1:0.503"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <RelativeLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="35dp">
+
+                <ImageView
+                    android:id="@+id/ivBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="9dp"
+                    android:layout_marginEnd="9dp"
+                    android:src="@mipmap/icon_back_white" />
+
+                <RelativeLayout
+                    android:clickable="false"
+                    android:visibility="gone"
+                    android:id="@+id/rlSearch"
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@+id/ivHome"
+                    android:layout_toEndOf="@+id/ivBack"
+                    android:background="@drawable/shape_bg_search_white">
+
+                    <com.epro.mall.ui.view.ClearableEditText
+                        android:id="@+id/etSearch"
+                        android:layout_width="match_parent"
+                        android:layout_height="32dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_toEndOf="@+id/ivSearch"
+                        android:background="@null"
+                        android:focusable="false"
+                        android:focusableInTouchMode="false"
+                        android:hint="搜索本店商品"
+                        android:imeOptions="actionSearch"
+                        android:inputType="text"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:textColor="@color/mainMatchColor"
+                        android:textColorHint="@color/gray_cccccc"
+                        android:textSize="@dimen/contentTextSize"
+                        app:clearIcon="@mipmap/icon_delete_black" />
+
+                    <ImageView
+                        android:id="@+id/ivSearch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:src="@mipmap/icon_home_search" />
+                </RelativeLayout>
+
+                <ImageView
+                    android:id="@+id/ivHome"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@+id/ivCart"
+                    android:paddingStart="9dp"
+                    android:paddingTop="2dp"
+                    android:paddingEnd="5dp"
+                    android:paddingBottom="2dp"
+                    android:src="@mipmap/icon_shop_go" />
+
+                <ImageView
+                    android:id="@+id/ivCart"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:paddingTop="2dp"
+                    android:paddingEnd="9dp"
+                    android:paddingStart="9dp"
+                    android:paddingBottom="2dp"
+                    android:src="@mipmap/icon_shop_cart" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rlShop"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp">
+
+                <ImageView
+                    android:id="@+id/ivShopLogo"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="12dp"
+                    android:src="@mipmap/bg_empty" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="9dp"
+                    android:layout_toEndOf="@+id/ivShopLogo"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:maxEms="12"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:id="@+id/tvShopName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/shopname"
+                        android:textColor="@color/mainMatchColor"
+                        android:textSize="@dimen/titleTextSize"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvShopDesc"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:drawableEnd="@mipmap/shop_right"
+                        android:drawablePadding="4dp"
+                        android:text="@string/store_introduction"
+                        android:textColor="@color/mainMatchColor_60"
+                        android:textSize="@dimen/explainContentTextSize" />
+
+                </LinearLayout>
+                <Button
+                    android:textColor="@color/mainColor"
+                    android:textStyle="bold"
+                    android:textSize="@dimen/titleTextSize"
+                    android:layout_width="74dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/shape_bg_search_white"
+                    android:id="@+id/btnScanBuy"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="12dp"
+                    android:text="@string/scan_code_purchase" />
+                <LinearLayout
+                    android:visibility="gone"
+                    android:id="@+id/llFollow"
+                    android:layout_marginEnd="12dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:background="@drawable/shape_bg_tag_red"
+                        android:drawablePadding="3dp"
+                        android:drawableStart="@mipmap/icon_follow"
+                        android:textSize="@dimen/explainContentTextSize"
+                        android:textColor="@color/mainMatchColor"
+                        android:id="@+id/tvFollow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/attention" />
+
+                    <TextView
+                        android:layout_marginTop="2dp"
+                        android:id="@+id/tvFollowNum"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/number_of_fans"
+                        android:textColor="@color/mainMatchColor"
+                        android:textSize="@dimen/explainContentTextSize" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <com.flyco.tablayout.SlidingTabLayout
+                android:id="@+id/tlGoods"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:layout_marginTop="10dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                tl:tl_indicator_margin_bottom="6dp"
+                tl:tl_indicator_color="@color/white"
+                tl:tl_indicator_corner_radius="1.5dp"
+                tl:tl_indicator_height="3dp"
+                tl:tl_indicator_width="10dp"
+                tl:tl_indicator_width_equal_title="true"
+                tl:tl_tab_padding="2dp"
+                tl:tl_tab_space_equal="true"
+                tl:tl_textBold="SELECT"
+                tl:tl_textSelectColor="@color/white"
+                tl:tl_textUnselectColor="@color/gray_ebebeb"
+                tl:tl_textsize="@dimen/titleTextSize" />
+        </LinearLayout>
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/vpGoods"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

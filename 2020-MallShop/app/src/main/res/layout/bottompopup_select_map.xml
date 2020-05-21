@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/white"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/tvGaode"
+        android:gravity="center"
+        android:text="@string/gouda_map"
+        android:textSize="@dimen/contentTextSize"
+        android:textColor="@color/mainTextColor"
+        android:layout_width="match_parent"
+        android:layout_height="56dp" />
+    <View
+        style="@style/View_line"
+        android:layout_margin="0dp" />
+    <TextView
+        android:id="@+id/tvBaidu"
+        android:gravity="center"
+        android:text="@string/baidu_map"
+        android:textSize="@dimen/contentTextSize"
+        android:textColor="@color/mainTextColor"
+        android:layout_width="match_parent"
+        android:layout_height="56dp" />
+    <View
+        style="@style/View_line_wide"
+        android:layout_margin="0dp" />
+    <TextView
+        android:id="@+id/tvCancel"
+        android:gravity="center"
+        android:text="@string/delete_dialog_cancel"
+        android:textSize="@dimen/contentTextSize"
+        android:textColor="@color/mainTextColor"
+        android:layout_width="match_parent"
+        android:layout_height="56dp" />
+</LinearLayout>

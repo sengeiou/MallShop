@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
+    android:background="@color/bottomColor">
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_above="@+id/rlBottom"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvShopOrders"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <RelativeLayout
+                android:id="@+id/rlPayMode"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="12dp"
+                android:background="@color/white">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="12dp"
+                    android:text="@string/pay_style"
+                    android:textColor="@color/thirdTextColor"
+                    android:textSize="@dimen/contentTextSize" />
+
+                <TextView
+                    android:id="@+id/tvPayMode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:drawableEnd="@mipmap/arrow_right"
+                    android:drawablePadding="8dp"
+                    android:layout_marginRight="12dp"
+                    android:textColor="@color/mainTextColor"
+                    android:textSize="@dimen/contentTextSize" />
+            </RelativeLayout>
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+    <RelativeLayout
+        android:id="@+id/rlBottom"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/tvTotalText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="12dp"
+            android:text="@string/total"
+            android:textColor="@color/mainTextColor"
+            android:textSize="@dimen/contentTextSize" />
+
+        <LinearLayout
+            android:layout_toEndOf="@+id/tvTotalText"
+            android:layout_centerVertical="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:textStyle="bold"
+                android:id="@+id/tvUnit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$"
+                android:textColor="@color/mainColor"
+                android:textSize="@dimen/secondaryContentTextSize" />
+            <TextView
+                android:textStyle="bold"
+                android:maxEms="10"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:id="@+id/tvTotalAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.00"
+                android:textColor="@color/mainColor"
+                android:textSize="@dimen/titleTextSize" />
+        </LinearLayout>
+        <Button
+            android:id="@+id/btnConfirm"
+            style="@style/MainRedButton"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="12dp"
+            android:text="@string/confirm_pay" />
+        <include layout="@layout/layout_line"/>
+    </RelativeLayout>
+</RelativeLayout>

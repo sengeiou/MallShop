@@ -1,0 +1,949 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">易喵</string>
+        
+    <string name="phone_format_error">賬號或密碼錯誤</string>
+        
+    <string name="account_error">賬號格式錯誤</string>
+        
+    <string name="password_format_error">密碼為8-16位數字和字母組合</string>
+        
+    <string name="repassword_format_error">確認密碼格式不正確</string>
+        
+    <string name="two_password_not_same">兩次輸入密碼不一致</string>
+        
+    <string name="vfcode_format_error">驗證碼為6位數字</string>
+        
+    <string name="home">首頁</string>
+        
+    <string name="order">訂單</string>
+        
+    <string name="login">登錄</string>
+        
+    <string name="mine">我的</string>
+        
+    <string name="about_us">關於App</string>
+        
+    <string name="logout">退出登錄</string>
+        
+    <string name="set_dv">環境配置</string>
+        
+    <string name="alreay_newest_version">當前已經是最新版本</string>
+        
+    <string name="cart">購物車</string>
+        
+    <string name="account_relative">賬戶關聯</string>
+        
+    <string name="modify_password">修改密碼</string>
+        
+    <string name="receive_address">收貨地址</string>
+        
+    <string name="area_select_json_name">area_phone_code.json</string>
+        
+    <string name="area_select_title">選擇國家或地區</string>
+        
+    <string name="common_country_1">中國大陸</string>
+        
+    <string name="common_country_2">中國香港</string>
+        
+    <string name="common_country_list">常用</string>
+        
+    <string name="my_info_account">賬戶名</string>
+        
+    <string name="my_info_change_phone">更改手機號</string>
+        
+    <string name="my_info_change_email">更改郵箱</string>
+        
+    <string name="my_info_personal_information">個人信息</string>
+        
+    <string name="my_info_current_phone">當前綁定的手機號</string>
+        
+    <string name="my_info_current_phone_change">如需更改,請選擇驗證方式</string>
+        
+    <string name="my_info_bind_phone">你正在綁定新的手機號</string>
+        
+    <string name="my_info_pls_input_phone">請輸入手機號</string>
+        
+    <string name="my_info_pls_input_confirm_code">請輸入驗證碼</string>
+        
+    <string name="my_info_pull_confirm_code">獲取驗證碼</string>
+        
+    <string name="my_info_push_confirm">提交</string>
+        
+    <string name="my_info_allow_change_phone">你可以更改手機號</string>
+        
+    <string name="my_info_allow_phone_content">點擊“獲取驗證碼”,我們將發送到您綁定的手機上請確認123456是您的手機</string>
+        
+    <string name="my_info_next_step">下一步</string>
+        
+    <string name="modify_password_title_1">如需修改,請選擇修改方式</string>
+        
+    <string name="modify_password_pass_phone">通過手機修改</string>
+        
+    <string name="modify_password_pass_email">通過郵箱修改</string>
+        
+    <string name="modify_password_pass">通過</string>
+        
+    <string name="modify_password_now">您正在修改密碼</string>
+        
+    <string name="modify_password_now_title">點擊“獲取驗證碼”,我們將發送到您綁定的手機上請確認</string>
+        
+    <string name="modify_password_now_title_2">是您的手機</string>
+        
+    <string name="modify_password_now_email_title">點擊“獲取新密碼”，我們將發送到您綁定的郵箱，請確認</string>
+        
+    <string name="modify_password_now_email_title_2">是您的郵箱</string>
+        
+    <string name="modify_password_input_paw">請設置新密碼,8-16位數字和字母組合</string>
+        
+    <string name="modify_password_push">確認</string>
+        
+    <string name="add_address">+ 新增地址</string>
+        
+    <string name="add_address_name">張三 1321234567890</string>
+        
+    <string name="add_address_location">香港 灣仔區 皇后大道 皇后大廈D棟18樓1210</string>
+        
+    <string name="add_address_normal">默認</string>
+        
+    <string name="receiver_name">收貨人</string>
+        
+    <string name="phone_num">手機號碼</string>
+        
+    <string name="area_name">所屬地區</string>
+        
+    <string name="detailed_address">詳細地址</string>
+        
+    <string name="set_address_normal">設置默認地址</string>
+        
+    <string name="confirm_and_use">確認並使用</string>
+        
+    <string name="version_app">Version 1.0.1</string>
+        
+    <string name="product_detail">產品介紹</string>
+        
+    <string name="version_update">檢查更新</string>
+
+    <string name="about_app">關於APP</string>
+        
+    <string name="association_name_1">Facebook</string>
+        
+    <string name="association_name_2">Twitter</string>
+        
+    <string name="association_name_3">新浪微博</string>
+        
+    <string name="association_name_1_ok">扎克伯格</string>
+        
+    <string name="association_name_2_ok">未綁定</string>
+        
+    <string name="account_association">賬號關聯</string>
+        
+    <string name="login_out_success">退出登錄成功</string>
+        
+    <string name="update_dialog">更新</string>
+        
+    <string name="prompt_title">提示</string>
+        
+    <string name="clean_cache_pls">是否清除全部緩存?</string>
+        
+    <string name="clean_cache_success">清除緩存成功</string>
+        
+    <string name="pls_permission_storage">請求存儲卡讀寫權限</string>
+        
+    <string name="pls_permission_open_camera">請求打開相機等權限</string>
+        
+    <string name="bind_telephone_num">綁定新手機號</string>
+        
+    <string name="bind_new_email">綁定新郵箱</string>
+        
+    <string name="confirm_style">驗證方式</string>
+        <!--editbind -->
+        
+    <string name="change_phone_num">您可以更改手機號</string>
+        
+    <string name="bind_new_phone_num">您正在綁定新的手機號</string>
+        
+    <string name="current_bind_email">當前綁定的郵箱</string>
+        
+    <string name="change_you_email">您可以更改郵箱</string>
+        
+    <string name="now_bind_new_email">您正在綁定新的郵箱</string>
+        
+    <string name="choose_address">選擇地址</string>
+        
+    <string name="add_address_list">新增地址</string>
+        
+    <string name="change_address_list">修改地址</string>
+        
+    <string name="delete_dialog_info">確定刪除這個地址？ </string>
+        
+    <string name="delete_dialog_cancel">取消</string>
+        
+    <string name="delete_dialog_delete">刪除</string>
+        
+    <string name="pls_login">請登錄</string>
+        
+    <string name="pls_input_order_name">請輸入收貨人</string>
+        
+    <string name="pls_input_phone_num">請輸入手機號碼</string>
+        
+    <string name="pls_select_area">請選擇所在區域</string>
+        
+    <string name="pls_input_detail_address">請輸入詳細地址</string>
+        
+    <string name="pls_input_email_address">請輸入郵箱地址</string>
+        
+    <string name="confirm_style_phone">驗證手機號</string>
+        
+    <string name="confirm_style_email">驗證郵箱</string>
+        
+    <string name="email_format_error">賬號或密碼錯誤</string>
+        
+    <string name="unbind_association">確認解綁賬號麼？ </string>
+        
+    <string name="language_change">語言切換</string>
+        
+    <string name="language_chinese_fan">繁體中文</string>
+        
+    <string name="language_chinese_simple">简单中文</string>
+        
+    <string name="language_english">English</string>
+        
+    <string name="pop_HK_area">地區</string>
+        
+    <string name="order_list_title_1">全部</string>
+        
+    <string name="order_list_title_2">待支付</string>
+        
+    <string name="order_list_title_3">待收貨</string>
+        
+    <string name="order_list_title_4">已完成</string>
+        
+    <string name="order_list_title_5">已取消</string>
+        
+    <string name="scan_code_order_list">訂單列表</string>
+        
+    <string name="scan_code_order_list_detail">訂單詳情</string>
+        
+    <string name="bind_phone_num">更改手機號</string>
+        
+    <string name="bind_email_num">更改郵箱</string>
+        
+    <string name="unbind_account">尚未綁定手機號</string>
+        
+    <string name="unbind_email">尚未綁定郵箱</string>
+        
+    <string name="scan_code_shop_count_start">共</string>
+        
+    <string name="scan_code_shop_count_end">件商品</string>
+        
+    <string name="order_self_pickup">自提</string>
+        
+    <string name="order_delivery">配送</string>
+        
+    <string name="order_item_btn_del">刪除訂單</string>
+        
+    <string name="order_item_btn_add">再來一單</string>
+        
+    <string name="order_item_renew_add">重新購買</string>
+        
+    <string name="order_item_view_picking_code">查看提貨碼</string>
+        
+    <string name="order_item_cancel">取消訂單</string>
+        
+    <string name="order_item_pay">去支付</string>
+        
+    <string name="order_detail_list">請在</string>
+        
+    <string name="order_detail_list_end">內完成支付,過時訂單將會取消</string>
+        
+    <string name="pay_style_1">現金</string>
+        
+    <string name="pay_style_2">支付寶</string>
+        
+    <string name="pay_style_3">paypal</string>
+        
+    <string name="pay_style_4">微信</string>
+        
+    <string name="pay_style_5">信用卡</string>
+        
+    <string name="pay_style_6">銀行卡</string>
+        
+    <string name="order_pick_up_code">提貨碼</string>
+        
+    <string name="order_transaction_complete">交易成功</string>
+        
+    <string name="order_self_goto_pickup">上門自提</string>
+        
+    <string name="order_goto_delivery">商家配送</string>
+        
+    <string name="order_del_dialog">確定刪除訂單麼？ </string>
+        
+    <string name="order_cancel_dialog">確定取消訂單麼？ </string>
+        
+    <string name="pls_input_password_again">請再次輸入新密碼</string>
+        
+    <string name="submitText_ok">完成</string>
+        
+    <string name="piece_num">件</string>
+        
+    <string name="order_empty_title">訂單空空如也,趕緊開啟您的第一次吧!</string>
+        
+    <string name="code_send_success">驗證碼已發送</string>
+        
+    <string name="pls_set_new_password">設置新密碼</string>
+        
+    <string name="new_password_set_success">新密碼設置成功</string>
+        
+    <string name="pls_login_system">立即登錄</string>
+
+    <string name="login_check_order">登錄查看訂單</string>
+        
+    <string name="login_check_cart">登錄查看購物車</string>
+        
+    <string name="popup_service_terms">在您註冊成為易喵用戶的過程中，您需要完成我們的註冊流程並通過點擊同意的形式在線簽署以下協議，請您務必仔細閱讀，充分理解協議中的條款內容後再點擊同意（尤其是以粗體標識的條款，因為這些條款可能會明確您應履行的義務或對您的權利有所限制）：</string>
+        
+    <string name="popup_service_terms_title_0">《用戶註冊協議》</string>
+        
+    <string name="popup_service_terms_title_1">《用戶註冊協議》</string>
+        
+    <string name="popup_service_terms_title_1_5"></string>
+        
+    <string name="popup_service_terms_title_2">《服務條款》</string>
+        
+    <string name="popup_service_terms_title_3">《隱私政策》</string>
+        
+    <string name="popup_service_terms_2">【請您注意】如果您不同意上述協議或其中任何條款約定，請您停止註冊。您停止註冊後將僅可以瀏覽我們的商品信息但無法享受我們的產品或服務。如您按照註冊流程提示填寫信息，閱讀並點擊同意上述協議且完成全部註冊流程後，即表示您已充分閱讀理解並接受協議的全部內容；並表明您也同意易喵可以依據以上的隱私政策內容來處理您的個人信息。如您對以上協議內容有任何疑問，您可隨時與易喵客服聯繫。 </string>
+        
+    <string name="popup_service_bottom_title">點擊同意即表示您已閱讀並同意</string>
+        
+    <string name="popup_not_agree">不同意</string>
+        
+    <string name="popup_agree">同意</string>
+        
+    <string name="user_agreement">用戶註冊協議</string>
+        
+    <string name="terms_of_service">服務條款</string>
+        
+    <string name="privacy_policy">隱私政策</string>
+        
+    <string name="logout_btn_bottom">退出登錄</string>
+        
+    <string name="phone_not_register_1" tools:ignore="ExtraTranslation">手機號</string>
+        
+    <string name="email_not_register_1">郵箱</string>
+        
+    <string name="phone_not_register_2">未註冊，請註冊</string>
+        
+    <string name="phone_not_register_confirm">去註冊</string>
+        
+    <string name="phone_ready_register_1" tools:ignore="ExtraTranslation">已註冊，請直接登錄</string>
+        
+    <string name="phone_ready_register_confirm">去登錄</string>
+        
+    <string name="click_login_agree">點擊登錄即代表您已同意</string>
+        
+    <string name="server_select">《服務條款》</string>
+        
+    <string name="privacy_policy_login">《隱私政策》</string>
+        
+    <string name="login_and">和</string>
+        
+    <string name="register_success">註冊成功</string>
+        
+    <string name="modify_success">修改成功</string>
+        
+    <string name="product_description_content">易喵作為香港電商聚合平台，使用用途主要以香港實體店為基礎的線上銷售平台；使用人群以香港C端用戶為主，輻射中國大陸及其他海外國家和地區。 </string>
+        
+    <string name="user_cancel_order">用戶取消訂單</string>
+        
+    <string name="time_out_to_pay">超時未支付</string>
+        
+    <string name="goods_detail">商品詳情</string>
+        
+    <string name="version_name">版本</string>
+        
+    <string name="order_send_address_1">自提地址</string>
+        
+    <string name="order_send_address_2">配送地址</string>
+        
+    <string name="register_password">請輸入8-16位數字和字母組合</string>
+        
+    <string name="register_password_again">請再次輸入以便確認密碼無誤</string>
+        
+    <string name="service_phone">客服電話</string>
+        
+    <string name="shop_phone_address">門店電話</string>
+        
+    <string name="shop_phone_address_title">門店地址</string>
+        
+    <string name="pickup_phone_name">收貨人</string>
+        
+    <string name="pickup_address">收貨地址</string>
+        
+    <string name="have_new_version">已有新版本</string>
+        
+    <string name="update_title">檢查更新</string>
+        
+    <string name="update_main_content">主要內容</string>
+        
+    <string name="bind_account_success">綁定成功</string>
+        
+    <string name="unbind_account_success">解綁成功</string>
+        
+    <string name="bind_account_phone">綁定手機</string>
+        
+    <string name="bind_account_email">綁定郵箱</string>
+        
+    <string name="bind_success_tips">綁定後，下次您可以採用手機號和密碼直接登錄</string>
+        
+    <string name="pls_input_email">請輸入郵箱</string>
+        
+    <string name="pay_success">支付成功</string>
+        
+    <string name="pay_failed">支付失敗</string>
+        
+    <string name="cancel_success">取消成功</string>
+        
+    <string name="delete_success">刪除成功</string>
+        
+    <string name="no_commit_code">無提貨碼</string>
+        
+    <string name="confirm_success">驗證通過</string>
+        
+    <string name="edit_phone_change_title_1">點擊“獲取驗證碼”,我們將發送到您的手機上,請確認</string>
+        
+    <string name="edit_phone_change_title_2">是您的手機號</string>
+        
+    <string name="edit_phone_change_title_3">點擊“獲取驗證碼”,我們將發送到您的郵箱裡,請確認</string>
+        
+    <string name="edit_phone_change_title_4">是您的郵箱</string>
+        
+    <string name="unbind_phone_and_email">未綁定手機或郵箱</string>
+        
+    <string name="login_success" tools:ignore="ExtraTranslation">登錄成功</string>
+        
+    <string name="pls_download">請先下載</string>
+        
+    <string name="cancellation_of_certification">認證取消</string>
+        
+    <string name="failed_of_certification">認證失敗</string>
+        
+    <string name="payment_successful">支付成功</string>
+        
+    <string name="payment_failed">支付失敗</string>
+        
+    <string name="order_detail">訂單詳情</string>
+
+    <string name="start_login">登錄開始</string>
+        
+    <string name="multiple_devices_login">您的賬號已在別的設備登錄,請重新登錄</string>
+        
+    <string name="new_product">新品</string>
+        
+    <string name="product_classification">分類</string>
+        
+    <string name="login_timeout">登錄已過期</string>
+        
+    <string name="product_lapse">商品已失效</string>
+        
+    <string name="confirm_delete_product">確認刪除該商品?</string>
+        
+    <string name="cart_empty_pls_stroll_around">​​購物車暫無商品，快去逛逛吧！ </string>
+        
+    <string name="pls_choose_product">請選擇商品</string>
+        
+    <string name="not_support_multi_store">暫不支持多店鋪結算</string>
+        
+    <string name="selected">已選</string>
+        
+    <string name="not_update">沒有更新</string>
+        
+    <string name="service_is_busy">服務器繁忙</string>
+        
+    <string name="unknown">未知</string>
+        
+    <string name="choose_print">選擇打印</string>
+        
+    <string name="point_connection">點擊連接</string>
+        
+    <string name="not_print_device">非打印設備</string>
+        
+    <string name="specification">規格</string>
+        
+    <string name="product_barcode_cannot_be_identified">商品條碼無法識別</string>
+        
+    <string name="configuration">配置</string>
+        
+    <string name="touch_two_logout_app">再按一次退出程序</string>
+        
+    <string name="start_download">開始下載</string>
+        
+    <string name="installation">安裝</string>
+        
+    <string name="stop">暫停</string>
+        
+    <string name="continue_downloading">繼續下載</string>
+        
+    <string name="version_update_upgrade">版本更新</string>
+        
+    <string name="choose_area_address">選擇地理位置</string>
+        
+    <string name="all_hk">全香港</string>
+        
+    <string name="central_and_western_district">中西區</string>
+        
+    <string name="hong_kong_island">香港島</string>
+        
+    <string name="wan_chai_district">灣仔區</string>
+        
+    <string name="kowloon_peninsula">九龍半島</string>
+        
+    <string name="east_district">東區</string>
+        
+    <string name="south_area">南區</string>
+        
+    <string name="yau_tsim_mong_district">油尖旺區</string>
+        
+    <string name="sham_shui_po_district">深水埗區</string>
+        
+    <string name="kowloon_city_district">九龍城區</string>
+        
+    <string name="wong_tai_sin_district">黃大仙區</string>
+        
+    <string name="account_bind_success">賬號綁定成功</string>
+        
+    <string name="address_not_null">地址不能為空</string>
+        
+    <string name="phone_style_error">手機號格式錯誤</string>
+        
+    <string name="geolocation">地理位置</string>
+        
+    <string name="not_selected">未選</string>
+        
+    <string name="inventory">庫存量:</string>
+        
+    <string name="out_of_stock">已超出庫存</string>
+        
+    <string name="not_be_less_anymore">不能再少了</string>
+        
+    <string name="product_is_not_loaded">商品未加載</string>
+        
+    <string name="enter_barcode">輸入條碼</string>
+        
+    <string name="pls_input_product_bar">請輸入商品條碼</string>
+        
+    <string name="image_compression_failed">圖片壓縮失敗</string>
+        
+    <string name="not_to_change">(不可更改)</string>
+        
+    <string name="confirm_order">確認訂單</string>
+        
+    <string name="orders_submitted_successfully">訂單提交成功</string>
+        
+    <string name="the_server_is_busy">服務器正忙...</string>
+        
+    <string name="wechat_version_too_low">微信版本過低</string>
+        
+    <string name="pay_abnormal">支付異常</string>
+        
+    <string name="turn_on_the_flash">環境過暗，請打開閃光燈</string>
+        
+    <string name="error_opening_camera">打開相機出錯</string>
+        
+    <string name="scan_empty">掃碼為空串</string>
+        
+    <string name="pls_add_product">請添加商品</string>
+        
+    <string name="load_store_information_first">先加載店鋪信息</string>
+        
+    <string name="add_product_success">添加商品成功</string>
+        
+    <string name="confirm_clean_cart">確定清空掃碼購物籃嗎?</string>
+        
+    <string name="confirm_drop_out">退出將會刪除已添加商品,確認退出嗎?</string>
+        
+    <string name="settlement">結算</string>
+        
+    <string name="audience">全場</string>
+
+    <string name="fold">折</string>
+        
+    <string name="scan_code_purchase">掃碼購</string>
+        
+    <string name="return_order">返回訂單</string>
+        
+    <string name="liqueur">酒</string>
+        
+    <string name="smoke">煙</string>
+        
+    <string name="start_search">開始搜索</string>
+        
+    <string name="search_shop_or_product">搜索店鋪或商品</string>
+        
+    <string name="search_shop_product">搜索該店商品</string>
+        
+    <string name="product">商品</string>
+        
+    <string name="shop">店鋪</string>
+        
+    <string name="followed">關注成功</string>
+        
+    <string name="store_introduction">店鋪簡介</string>
+        
+    <string name="data_cannot_be_empty">數據不能為空</string>
+        
+    <string name="downloading">正在下載</string>
+        
+    <string name="connected">已連接</string>
+        
+    <string name="not_connected">未連接</string>
+        
+    <string name="printing">正在打印...</string>
+        
+    <string name="bluetooth_not_open">藍牙沒有打開</string>
+        
+    <string name="this_device_not_bluetooth">該設備不是打印機</string>
+        
+    <string name="connect_failed">連接失敗</string>
+        
+    <string name="print_send_failed">打印發送失敗，請稍後再試</string>
+        
+    <string name="month_sale_num">月銷量</string>
+        
+    <string name="pen">筆</string>
+        
+    <string name="send_info">配送信息</string>
+        
+    <string name="date">日期</string>
+        
+    <string name="subtotal">件,小計:</string>
+        
+    <string name="confirm_detele_this_product">確認刪除該商品嗎</string>
+        
+    <string name="take_photo">拍照</string>
+        
+    <string name="from_photo_album">從手機相冊選擇</string>
+        
+    <string name="positioning_failure">定位失敗</string>
+        
+    <string name="pls_location_parms">請求定位等權限</string>
+        
+    <string name="need_more_parms">需要更多權限,確定申請?</string>
+        
+    <string name="ueser_not_in">用戶不存在</string>
+        
+    <string name="this_account_already_exists">該賬號已經註冊過了</string>
+        
+    <string name="center">中</string>
+        
+    <string name="resend">s後重新發送</string>
+        
+    <string name="web_page_cannot_be_opened">網頁無法打開</string>
+        
+    <string name="zbar_formatlist_null">barcodeType 為 BarcodeType.CUSTOM 時 formatList 不能為空</string>
+        
+    <string name="wechat_pay_success">微信支付成功</string>
+        
+    <string name="wechat_pay_cancle">微信支付取消</string>
+        
+    <string name="order_pay_success">訂單支付成功</string>
+        
+    <string name="order_processing">正在處理中，支付結果未知（有可能已經支付成功），請查詢商戶訂單列表中訂單的支付狀態</string>
+        
+    <string name="order_pay_failed">訂單支付失敗</string>
+        
+    <string name="duplicate_request">重複請求</string>
+        
+    <string name="user_canceled_halfway">用戶中途取消</string>
+        
+    <string name="network_connection_error">網絡連接出錯</string>
+        
+    <string name="other_pay_error">其它支付錯誤</string>
+        
+    <string name="Not_finished_loading">未加載完成哦</string>
+        
+    <string name="confirm">確定</string>
+        
+    <string name="find_phone">手機找回</string>
+        
+    <string name="find_email">郵箱找回</string>
+        
+    <string name="clean">清除</string>
+        
+    <string name="reset">重置</string>
+        
+    <string name="shop_name">店鋪名稱</string>
+        
+    <string name="shop_address">店鋪地址</string>
+        
+    <string name="add_cart">加入購物車</string>
+        
+    <string name="buy_now">立即購買</string>
+        
+    <string name="add">添加</string>
+        
+    <string name="pls_input_shop_bar">請參照圖示內容輸入數字商品條碼</string>
+        
+    <string name="registered">註冊</string>
+        
+    <string name="phone_login">手機登錄</string>
+        
+    <string name="email_login">郵箱登錄</string>
+
+    <string name="pls_input_password">請輸入密碼</string>
+        
+    <string name="change_code_login">切換驗證碼登錄</string>
+        
+    <string name="forget_password">忘記密碼</string>
+        
+    <string name="please_enter_the_phone_number">請輸入手機號碼</string>
+        
+    <string name="switch_password_login">切換密碼登錄</string>
+        
+    <string name="social_account_login">社交賬號登錄</string>
+        
+    <string name="the_latest_version">您使用的是最新版本，無需更新</string>
+        
+    <string name="order_num">訂單編號</string>
+        
+    <string name="order_time">下單時間</string>
+        
+    <string name="receipt_method">收貨方式</string>
+        
+    <string name="store_phone">門店電話</string>
+        
+    <string name="pay_style">支付方式</string>
+        
+    <string name="total_goods">商品總額</string>
+        
+    <string name="freight">運費</string>
+        
+    <string name="null_product">0件商品</string>
+        
+    <string name="total">合計:</string>
+        
+    <string name="pay">支付</string>
+        
+    <string name="confirm_pay">確定支付</string>
+        
+    <string name="total_0">共 0 件</string>
+        
+    <string name="check_order">查看訂單</string>
+        
+    <string name="related_suggestion">相關推薦</string>
+        
+    <string name="register_your_phone">手機註冊</string>
+        
+    <string name="email_register">郵箱註冊</string>
+        
+    <string name="scan_it">掃一掃</string>
+        
+    <string name="put_the_barcodein_the_box">將條碼/二維碼放入框內</string>
+        
+    <string name="scan_not">掃不到?</string>
+        
+    <string name="input_shop_bar">輸入商品條碼</string>
+        
+    <string name="scan_cart">掃碼購物籃</string>
+        
+    <string name="scan_clear">清空</string>
+        
+    <string name="shop_name_title">店鋪名</string>
+        
+    <string name="address">地址</string>
+        
+    <string name="cannot_sweep_out">掃不出來?輸入</string>
+        
+    <string name="product_barcode">商品條形碼</string>
+        
+    <string name="pls_confirm_shopid">溫馨提示：請你確認所選門店與所在門店是否一致，如果不一致可能會影響核驗和售後。 </string>
+        
+    <string name="total_number_of_products">商品總數</string>
+        
+    <string name="order_amount">訂單金額</string>
+        
+    <string name="discounted_price">優惠金額</string>
+        
+    <string name="all_zero_fold">全場0折</string>
+        
+    <string name="order_number">訂單號：</string>
+        
+    <string name="creation_time">創建時間：</string>
+        
+    <string name="total_number_of_product">商品總數：</string>
+        
+    <string name="total_Amount">合計金額：</string>
+        
+    <string name="payment_method">付款方式：</string>
+        
+    <string name="store_name">門店名稱：</string>
+        
+    <string name="store_address_matches">門店地址：</string>
+        
+    <string name="store_phone_match">門店電話：</string>
+        
+    <string name="total_benefits">優惠合計</string>
+        
+    <string name="all_8_fold">全場8折</string>
+        
+    <string name="pay_again">重新支付</string>
+        
+    <string name="recently_searched">最近搜索</string>
+        
+    <string name="search_suggestions">搜索建議</string>
+        
+    <string name="search_local_product">搜索本地商品</string>
+        
+    <string name="shopname">店名</string>
+
+    <string name="attention">關注</string>
+        
+    <string name="number_of_fans">粉絲數:1300</string>
+        
+    <string name="phone">電話</string>
+        
+    <string name="shop_introduction">店鋪介紹</string>
+        
+    <string name="introduction">介紹內容</string>
+        
+    <string name="input_data">輸入數據</string>
+        
+    <string name="launch_alipay">啟動支付寶</string>
+        
+    <string name="update_immediately">立即更新</string>
+        
+    <string name="eproshop_update">Eproshop2.0.1主要更新</string>
+        
+    <string name="some_already_solved_problems">解決的一些已經問題</string>
+        
+    <string name="version_match">版本:</string>
+        
+    <string name="patch_size">包大小:</string>
+        
+    <string name="update_time">更新時間:</string>
+        
+    <string name="download_progress">下載進度:</string>
+        
+    <string name="release_notes">更新說明:</string>
+        
+    <string name="start">開始</string>
+        
+    <string name="select_area">選擇區域</string>
+        
+    <string name="china_mainland">中國大陸+86</string>
+        
+    <string name="china_hongkong">中國香港+852</string>
+        
+    <string name="gouda_map">高德地圖</string>
+        
+    <string name="google_map">谷歌地圖</string>
+        
+    <string name="in_stock_0">庫存:0</string>
+        
+    <string name="quantity">數量</string>
+        
+    <string name="loading">加載中</string>
+        
+    <string name="content">內容</string>
+        
+    <string name="change_number">修改數量</string>
+        
+    <string name="receiving_the_goods">收貨時請出示此提貨碼</string>
+        
+    <string name="set_humidity">設置濕度</string>
+        
+    <string name="please_enter_irrigation_humidity">請輸入灌溉濕度</string>
+        
+    <string name="select_0">已選(0)</string>
+        
+    <string name="location">位置</string>
+        
+    <string name="promotion_area">熱銷專區</string>
+        
+    <string name="store_recommendation">店家推薦</string>
+        
+    <string name="china">中國</string>
+        
+    <string name="lapse">失效</string>
+        
+    <string name="product_description">商品描述</string>
+        
+    <string name="fruit">水果</string>
+        
+    <string name="product_name">商品名稱</string>
+        
+    <string name="inventory_0">庫存量:0</string>
+        
+    <string name="delivery_area">配送範圍</string>
+        
+    <string name="graphic_details">圖文詳情</string>
+        
+    <string name="no_details">暫無詳情</string>
+        
+    <string name="description">描述</string>
+        
+    <string name="people_pay_0">0人付款</string>
+        
+    <string name="newest">上新</string>
+        
+    <string name="sales_per_month">月銷量1000筆</string>
+        
+    <string name="equipment_abnormal_alarm">設備異常報警</string>
+        
+    <string name="version_number">版本號1.0.1</string>
+        
+    <string name="sell_out">賣光</string>
+        
+    <string name="shipper">配送人</string>
+        
+    <string name="pickup_time">自提時間</string>
+        
+    <string name="pls_choose">請選擇</string>
+        
+    <string name="pickup">自提</string>
+        
+    <string name="name">名稱</string>
+        
+    <string name="recommend">推薦</string>
+        
+    <string name="featured_products">精選商品</string>
+        
+    <string name="dead_goods">失效商品</string>
+        
+    <string name="colour">顏色</string>
+        
+    <string name="red">紅色</string>
+        
+    <string name="traditional_chinese">繁體中文</string>
+        
+    <string name="pls_input_again">請再次輸入密碼</string>
+        
+    <string name="login_after_email">綁定後,下次您可以直接用郵箱登錄</string>
+        
+    <string name="login_agter_phone">綁定後,下次您可以直接用手機登錄</string>
+        
+    <string name="carry_out">完成</string>
+        
+    <string name="wechat_pay_result">微信支付結果</string>
+        
+    <string name="register_and_privacy_policy">註冊協議及隱私政策</string>
+        
+    <string name="add_cart_success">成功加入購物車</string>
+        
+    <string name="not_changeable">(不可更改)</string>
+        
+    <string name="select_shop">選擇門店</string>
+        
+    <string name="need_read_and_write_file_permissions">需要讀寫文件權限</string>
+        
+    <string name="meter">米</string>
+        
+    <string name="take_a_picture">拍照</string>
+        
+    <string name="select_from_phone_album">從手機相冊選擇</string>
+        
+    <string name="please_reposition">請重新定位</string>
+
+    <string name="location_failed" tools:ignore="ExtraTranslation">定位失敗</string>
+</resources>

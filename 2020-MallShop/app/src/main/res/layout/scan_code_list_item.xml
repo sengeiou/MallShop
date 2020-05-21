@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+   <RelativeLayout
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginTop="12dp">
+       <TextView
+           android:id="@+id/commodityName"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignParentLeft="true"
+           android:text="商品名称"
+           android:textSize="@dimen/contentTextSize"
+           android:textColor="@color/black"/>
+       <TextView
+           android:id="@+id/shopCount"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_alignParentRight="true"
+           android:text="x 3"
+           android:textColor="@color/mainTextColor"
+           android:textSize="@dimen/contentTextSize"/>
+   </RelativeLayout>
+    <LinearLayout
+        android:visibility="gone"
+        android:layout_marginTop="2dp"
+        android:id="@+id/llActivity"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:visibility="gone"
+            android:gravity="center"
+            android:background="@drawable/shape_tag_red_radius2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="限时折扣"
+            android:textColor="@color/mainMatchColor"
+            android:textSize="8sp" />
+        <TextView
+            android:id="@+id/tvOriginalPrice"
+            android:layout_marginStart="5dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0.00"
+            android:textColor="@color/thirdTextColor"
+            android:textSize="@dimen/explainContentTextSize" />
+    </LinearLayout>
+</LinearLayout>

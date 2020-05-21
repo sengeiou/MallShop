@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/constraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <com.youth.banner.Banner
+        android:id="@+id/banner"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:indicator_height="2dp"
+        app:indicator_width="7dp"
+        app:indicator_margin="2dp"
+        app:indicator_drawable_selected="@drawable/shape_indicator_banner_selected"
+        app:indicator_drawable_unselected="@drawable/shape_indicator_banner_unselected"
+        app:banner_default_image="@mipmap/bg_long_empty"
+        app:layout_constraintDimensionRatio="H,351:144"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+</android.support.constraint.ConstraintLayout>

@@ -1,0 +1,304 @@
+package com.epro.mall.ui.activity;
+
+//import com.vector.update_app_kotlin.updateApp
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.text.TextUtils
+import android.view.Gravity
+import android.view.View
+import com.alipay.sdk.app.EnvUtils
+import android.widget.Button
+import android.widget.TextView
+import com.epro.mall.R
+import com.epro.mall.mvp.contract.UpdateAppContract
+import com.epro.mall.mvp.model.bean.AboutBean
+import com.epro.mall.mvp.presenter.UpdateAppPresenter
+import com.epro.mall.ui.MainActivity
+import com.epro.mall.ui.adapter.UpdateContentAdapter
+import com.epro.mall.ui.view.UpdateVersionPopup
+import com.epro.mall.utils.MallConst
+import com.epro.mall.utils.MallUtils
+import com.epro.mall.utils.SoftKeyboardUtil
+import com.mike.baselib.activity.BaseTitleBarCustomActivity
+import com.mike.baselib.service.DownloadIntentService
+import com.mike.baselib.utils.*
+import kotlinx.android.synthetic.main.activity_update_app.tvUpdateContent
+import kotlinx.android.synthetic.main.activity_update_app.tvVersion
+import kotlinx.android.synthetic.main.activity_update_app.tvVersionContent
+import kotlinx.android.synthetic.main.activity_update_app.updateBtn
+import kotlinx.android.synthetic.main.activity_update_app2.*
+import razerdp.basepopup.BasePopupWindow
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
+
+
+class UpdateAppActivity : BaseTitleBarCustomActivity<UpdateAppContract.View, UpdateAppPresenter>(), UpdateAppContract.View, View.OnClickListener {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        EnvUtils.setEnv(EnvUtils.EnvEnum.ONLINE)// just used for sandbox env, otherwise, pls delete it.
+        intent.putExtra("cannotRequestedOrientation", true)
+        updateType = intent.getStringExtra(UPDATE_TYPE)!!
+        super.onCreate(savedInstanceState)
+    }
+
+    var pop: UpdateVersionPopup? = null
+    var beanArrayList = ArrayList<String>()
+    //版本号获取成功
+    var doRequired: Boolean = false
+
+    override fun onAboutSuccess(result: AboutBean.Result) {
+        if (TextUtils.isEmpty(result.version)) {
+            return
+        }
+        updateInfo = result
+        if (updateType == UPDATE_TYPE_PAGE) { //页面
+            var versionNewArray = result.version.split(".")
+            var currentVersion = AppUtils.getVerName(this).split(".")
+            var doUpdate = getCompared(currentVersion, versionNewArray)
+            if (doUpdate) {
+                llUpdate.visibility = View.VISIBLE
+                llNotUpdate.visibility = View.GONE
+                tvVersion.text = "eproshop" + result?.version
+                tvVersionContent.text = "Eproshop" + result?.version + getString(R.string.update_main_content)
+                tvUpdateContent.text = result?.content
+            } else {
+                llUpdate.visibility = View.GONE
+                llNotUpdate.visibility = View.VISIBLE
+            }
+        } else { //弹窗
+            beanArrayList.clear()
+            var mList = updateInfo!!.content.split("；")
+            for (element in mList) {
+                beanArrayList.add(element)
+            }
+            var versionNewArray = result.version.split(".")
+            var currentVersion = AppUtils.getVerName(this).split(".")
+            var doUpdate = MallUtils.getCompared(currentVersion, versionNewArray) //版本号是否有更新
+            if (!TextUtils.isEmpty(result.requiredVersion)) {
+                var versionRequired = result.requiredVersion.split(".")    //强制更新版本
+                doRequired = MallUtils.getCompared(currentVersion, versionRequired)   //是否有强制更新版本
+            }
+            if ("1".equals(result.isRequired) && doRequired) {   // 1 需要强制更新
+                showUpdateVersionDialog("4") //强制更新
+            } else if (doUpdate) {
+                isShowNormalDialog()
+            } else {
+                finish()
+            }
+        }
+    }
+
+    private fun isShowNormalDialog() {
+        val dateSame = Date()
+        val formatSame = "yyyy-MM-dd"
+        var dateSameTime = SimpleDateFormat(formatSame)
+        var currentDate = dateSameTime.format(dateSame)
+        var saveTime = SPUtils.get(this, "ResetTime", "") as String
+        var isSameTime = saveTime.equals(currentDate)
+        logTools.t("YB").d("isSameTime: " + isSameTime + " currentTime :" + currentDate + " saveTime : " + saveTime)
+        if (isSameTime) {
+            val date = Date()
+            val format = "HH:mm:ss"
+            val dateFormat = SimpleDateFormat(format)
+            var time = dateFormat.format(date)
+            //时间范围 一天三次弹框
+            val nowTime = SimpleDateFormat(format).parse(time)
+            val startTime = SimpleDateFormat(format).parse("00:00:00")
+            val endTime = SimpleDateFormat(format).parse("08:00:59")
+            val isContain = SoftKeyboardUtil.isEffectiveDate(nowTime, startTime, endTime)
+            val startTime2 = SimpleDateFormat(format).parse("08:01:00")
+            val endTime2 = SimpleDateFormat(format).parse("16:00:59")
+            val isContain2 = SoftKeyboardUtil.isEffectiveDate(nowTime, startTime2, endTime2)
+            val startTime3 = SimpleDateFormat(format).parse("16:01:00")
+            val endTime3 = SimpleDateFormat(format).parse("23:59:59")
+            val isContain3 = SoftKeyboardUtil.isEffectiveDate(nowTime, startTime3, endTime3)
+            if (isContain) {
+                logTools.t("YB").d("isContain")
+                val isShow = SPUtils.get(this, "time1", "0")
+                if ("1".equals(isShow)) {
+                    finish()
+                } else {
+                    showUpdateVersionDialog(TYPE_TIME1)
+                }
+            } else if (isContain2) {
+                logTools.t("YB").d("isContain2")
+                val isShow = SPUtils.get(this, "time2", "0")
+                if ("1".equals(isShow)) {
+                    finish()
+                } else {
+                    showUpdateVersionDialog(TYPE_TIME2)
+                }
+            } else if (isContain3) {
+                logTools.t("YB").d("isContain3")
+                val isShow = SPUtils.get(this, "time3", "0")
+                if ("1".equals(isShow)) {
+                    finish()
+                } else {
+                    showUpdateVersionDialog(TYPE_TIME3)
+                }
+            }
+        } else {
+            logTools.t("YB").d(" else remove ")
+            SPUtils.remove(this, "time1")
+            SPUtils.remove(this, "time2")
+            SPUtils.remove(this, "time3")
+            SPUtils.put(this, "ResetTime", currentDate)
+            finish()
+        }
+    }
+
+    private fun showUpdateVersionDialog(type: String) {
+        if (type.equals(TYPE_TIME1)) {
+            SPUtils.put(this, "time1", "1")
+        } else if (type.equals(TYPE_TIME2)) {
+            SPUtils.put(this, "time2", "1")
+        } else if (type.equals(TYPE_TIME3)) {
+            SPUtils.put(this, "time3", "1")
+        }
+        pop = UpdateVersionPopup(this)
+        pop!!.width = DisplayManager.getScreenWidth()!! * 80 / 100
+        pop!!.height = DisplayManager.getScreenHeight()!! * 35 / 100
+        pop!!.popupGravity = Gravity.CENTER
+        pop!!.isAllowDismissWhenTouchOutside = "0".equals(updateInfo!!.isRequired)
+        logTools.t("YB").d(" showUpdateVersionDialog isAllowDismissWhenTouchOutside " + !"0".equals(updateInfo!!.isRequired))
+        pop!!.showPopupWindow()
+        var titleVersion = pop!!.contentView.findViewById<TextView>(R.id.titleVersion)
+        var rcUpdateContent = pop!!.contentView.findViewById<RecyclerView>(R.id.rcUpdateContent)
+        var updateCancel = pop!!.contentView.findViewById<Button>(R.id.updateCancel)
+        var updateConfirm = pop!!.contentView.findViewById<Button>(R.id.updateConfirm)
+        rcUpdateContent.layoutManager = LinearLayoutManager(this)
+        rcUpdateContent.adapter = UpdateContentAdapter(this, beanArrayList!!)
+        titleVersion.setText("[" + updateInfo!!.version + "]" + getString(R.string.new_version_update))
+        if ("0".equals(updateInfo!!.isRequired)) {  //正常更新取消
+            updateCancel.setText(getString(R.string.not_to_update))
+        } else { //强制更新禁止点击
+            updateCancel.setText(getString(R.string.exit_app))
+            //禁止返回键dismiss
+            pop!!.setBackPressEnable(false)
+        }
+        //禁止返回键dismiss
+        pop!!.setBackPressEnable(false)
+        updateCancel.setOnClickListener {
+            if ("0".equals(updateInfo!!.isRequired)) {
+                pop!!.dismiss()
+                finish()
+            } else {
+                pop!!.dismiss()
+                MainActivity.exitApp(this)
+            }
+        }
+        updateConfirm.setOnClickListener {
+            //确认更新
+            if (TextUtils.isEmpty(updateInfo!!.downloadUrl)) {
+                toast(getString(R.string.download_url_null))
+            } else {
+                var intent = Intent(this, DownloadIntentService::class.java)
+                intent.putExtra("download_url", AppConfig.getBaseurl() + "/image/" + updateInfo!!.downloadUrl)
+                intent.putExtra("download_file", "appForce")
+                startService(intent)
+                toast(getString(R.string.downloading))
+                if ("0".equals(updateInfo!!.isRequired)) {
+                    pop!!.dismiss()
+                    finish()
+                }
+            }
+        }
+        pop!!.setOnDismissListener(object : BasePopupWindow.OnDismissListener() {
+            override fun onDismiss() {
+                finish()
+            }
+        })
+
+    }
+
+    override fun showError(errorMsg: String, errorCode: Int, type: String) {
+        super.showError(errorMsg, errorCode, type)
+        if (updateType == UPDATE_TYPE_DIALOG) {
+            if (type == MallConst.ABOUT_APP) {
+                finish()
+            }
+        }
+    }
+
+    private fun getCompared(currentVersion: List<String>, versionNewArray: List<String>): Boolean {
+        logTools.t("YB").d("getCompared currentVersion:" + currentVersion + " versionNewArray :" + versionNewArray)
+        if (versionNewArray[0].toInt() > currentVersion[0].toInt()) {
+            return true
+        } else if (versionNewArray[0].toInt() == currentVersion[0].toInt() && versionNewArray[1].toInt() > currentVersion[1].toInt()) {
+            return true
+        } else if (versionNewArray[0].toInt() == currentVersion[0].toInt() && versionNewArray[1].toInt() == currentVersion[1].toInt() && versionNewArray[2].toInt() > currentVersion[2].toInt()) {
+            return true
+        }
+        return false
+    }
+
+    override fun onClick(p0: View?) {
+        when (p0) {
+            updateBtn -> {
+                if (TextUtils.isEmpty(updateInfo!!.downloadUrl)) {
+                    toast(getString(R.string.download_url_null))
+                } else {
+                    var intent = Intent(this@UpdateAppActivity, DownloadIntentService::class.java)
+                    intent.putExtra("download_url", AppConfig.getBaseurl() + "/image/" + updateInfo!!.downloadUrl)
+                    intent.putExtra("download_file", "yimiao")
+                    startService(intent)
+                    toast(getString(R.string.downloading))
+                }
+            }
+        }
+    }
+
+    companion object {
+        const val TAG = "UpdateApp"
+        const val UPDATE_TYPE_PAGE = "0"
+        const val UPDATE_TYPE_DIALOG = "1"
+        const val UPDATE_TYPE = "1"
+        const val TYPE_TIME1 = "0"
+        const val TYPE_TIME2 = "1"
+        const val TYPE_TIME3 = "2"
+        fun launchWithStr(context: Context, str: String, updateInfo: AboutBean.Result?) {
+            context.startActivity(Intent(context, UpdateAppActivity::class.java).putExtra(TAG, str)
+                    .putExtra(ext_createJsonKey(AboutBean.Result::class.java), AppBusManager.toJson(updateInfo)))
+        }
+
+        fun launchWithType(context: Context, type: String = UPDATE_TYPE_PAGE) {
+            context.startActivity(Intent(context, UpdateAppActivity::class.java).putExtra(UPDATE_TYPE, type))
+        }
+
+    }
+
+    override fun getPresenter(): UpdateAppPresenter {
+        return UpdateAppPresenter()
+    }
+
+    override fun onUpdateAppSuccess() {
+    }
+
+    override fun layoutContentId(): Int {
+        if (updateType == UPDATE_TYPE_DIALOG) {
+            rootView!!.visibility = View.GONE
+        }
+        return R.layout.activity_update_app2
+    }
+
+    override fun initData() {
+        mPresenter.aboutApp(MallConst.ABOUT_APP, "3")
+    }
+
+    var updateInfo: AboutBean.Result? = null
+    var updateType = UPDATE_TYPE_PAGE
+    override fun initView() {
+        super.initView()
+        getTitleView().text = getString(R.string.update_title)
+    }
+
+    override fun initListener() {
+        updateBtn.setOnClickListener(this)
+    }
+}
+
+

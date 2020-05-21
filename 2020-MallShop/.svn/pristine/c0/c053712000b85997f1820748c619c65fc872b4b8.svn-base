@@ -1,0 +1,572 @@
+package com.epro.mall.ui.login
+
+import android.app.Activity
+import android.app.Dialog
+import android.content.Context
+import android.content.Intent
+import android.graphics.Rect
+import android.support.v4.app.Fragment
+import android.text.Editable
+import android.text.InputType
+import android.text.TextUtils
+import android.text.TextWatcher
+import android.util.TypedValue
+import android.view.Gravity
+import android.view.View
+import android.widget.*
+import cn.sharesdk.facebook.Facebook
+import cn.sharesdk.framework.Platform
+import cn.sharesdk.framework.PlatformActionListener
+import cn.sharesdk.framework.ShareSDK
+import cn.sharesdk.twitter.Twitter
+import com.epro.mall.R
+import com.epro.mall.listener.LoginSuccessEvent
+import com.epro.mall.mvp.contract.LoginContract
+import com.epro.mall.mvp.model.bean.GetVfBean
+import com.epro.mall.mvp.model.bean.LoginBean
+import com.epro.mall.mvp.model.bean.MyInfoBean
+import com.epro.mall.mvp.presenter.LoginPresenter
+import com.epro.mall.ui.activity.PhoneServiceTermsActivity
+import com.epro.mall.ui.view.BottomPopup
+import com.epro.mall.ui.view.CommonDialog
+import com.epro.mall.utils.MallConst
+import com.epro.mall.utils.MallUtils
+import com.epro.mall.utils.SoftKeyboardUtil
+import com.mike.baselib.activity.BaseTitleBarCustomActivity
+import com.mike.baselib.utils.*
+import kotlinx.android.synthetic.main.activity_login.*
+import org.greenrobot.eventbus.EventBus
+import org.jetbrains.anko.startActivity
+import com.mike.baselib.utils.toast
+import java.util.*
+
+/**
+ * 登录页面
+ */
+class LoginActivity : BaseTitleBarCustomActivity<LoginContract.View, LoginPresenter>(), LoginContract.View, View.OnClickListener {
+
+    override fun onGetVfCodeSuccess(result: GetVfBean.Result) {
+       toast(getString(R.string.code_send_success))
+    }
+
+    override fun onResume() {
+        super.onResume()
+        LogTools.debug("ccTime",System.currentTimeMillis())
+    }
+
+    companion object {
+        private const val REQUEST_CODE_REGISTER = 1
+        private const val FOR_AREA_CODE = 2
+        private const val FOR_AREA_CODE_VF = 3
+        private const val LOGIN_PHONE = "phone"
+        private const val LOGIN_EMAIL = "email"
+        private const val LOGIN_CODE  = "code"
+        private const val SP_LOGIN_TYPE_PHONE = "loginPhone"
+        private const val SP_LOGIN_TYPE_EMAIL = "loginEmail"
+        const val TAG = "Login"
+        fun launch(context: Context) {
+            launchWithStr(context, "")
+        }
+
+        fun launchWithStr(context: Context, str: String) {
+            context.startActivity(Intent(context, LoginActivity::class.java).putExtra(TAG, str))
+        }
+
+        fun launchWithForResult(activity: Activity, requestCode: Int) {
+            activity.startActivityForResult(Intent(activity, LoginActivity::class.java), requestCode)
+        }
+
+        fun launchWithForResult(fragment: Fragment, requestCode: Int) {
+            fragment.startActivityForResult(Intent(fragment.context, LoginActivity::class.java), requestCode)
+        }
+    }
+
+    override fun onClick(p0: View?) {
+        when (p0) {
+            tvRegister -> {
+                startActivity<RegisterActivity>()
+            }
+            btnPhoneLogin -> {//手机密码登录
+                val account = etPhone.text.toString().trim()
+                val password = etPhonePassword.text.toString().trim()
+                val areaCode = tvAreaCode.text.toString().trim()
+
+                if(!mPresenter.checkParams(this,account,password)){
+                    return
+                }
+               mPresenter.login(areaCode+"_"+ account, password, MallConst.LOGIN_TYPE_MP, LOGIN_PHONE)
+            }
+            btnEmailLogin -> { //邮箱密码登录
+                val account = etEmail.text.toString().trim()
+                val password = etEmailPassword.text.toString().trim()
+                if(!mPresenter.checkParams3(this,account,password)){
+                    return
+                }
+                mPresenter.login(account, password, MallConst.LOGIN_TYPE_EP, LOGIN_EMAIL)
+            }
+            tvForget -> {
+                startActivity<FindPasswordActivity>()
+            }
+            tvVfForget -> {
+                startActivity<FindPasswordActivity>()
+            }
+            tvEmailForget -> {
+                startActivity<FindPasswordActivity>()
+            }
+            btnPhoneVfLogin -> { //验证码登录
+                val account = etVfPhone.text.toString().trim()
+                val password = etVfcode.text.toString().trim()
+                val areaCode = tvVfAreaCode.text.toString().trim()
+                if(!mPresenter.checkParams2(this,account,password)){
+                    return
+                }
+                mPresenter.login(areaCode+"_" + account, password, MallConst.LOGIN_TYPE_MV, LOGIN_CODE)
+            }
+            btnGetCode -> {
+                //TODO 获取验证码
+                btnGetCode.start()
+                val account = etVfPhone.text.toString().trim()
+                val areaCode = tvVfAreaCode.text.toString().trim()
+                if(!mPresenter.checkPhone(this,account)){
+                    return
+                }
+                mPresenter.getVfCode(areaCode + "_" +account, MallConst.VF_TYPE_LOGIN, MallConst.GET_VFCODE)
+            }
+            tvSwitch -> {
+                isVfcodeLogin = true
+                vfPhoneLogin.showNext()
+            }
+            tvVfSwitch -> {
+                isVfcodeLogin = false
+                vfPhoneLogin.showNext()
+            }
+            tvAreaCode -> {
+              //  AreaSelectActivity.launchWithShopIdForResult(this, FOR_AREA_CODE)
+                showBottomPopup()
+            }
+            tvVfAreaCode -> {
+               // AreaSelectActivity.launchWithShopIdForResult(this, FOR_AREA_CODE_VF)
+                showBottomPopupCode()
+            }
+            ivFaceBook -> {
+                getMultipleStatusView().showLoading()
+                getMultipleStatusView().findViewById<ImageView>(R.id.ivLoading).ext_loadGif(R.mipmap.gif_loading)
+                thirdLogin(Facebook.NAME, false)
+            }
+            ivTwitter -> {
+                getMultipleStatusView().showLoading()
+                getMultipleStatusView().findViewById<ImageView>(R.id.ivLoading).ext_loadGif(R.mipmap.gif_loading)
+                thirdLogin(Twitter.NAME, true)
+            }
+            ivClose -> {
+                finish()
+            }
+
+            //服务条款
+            tvPhoneService ->{ PhoneServiceTermsActivity.launchWithStr(this, PhoneServiceTermsActivity.TERMS_OF_SERVICE)}
+            //隐私政策
+            tvPhonePolicy -> { PhoneServiceTermsActivity.launchWithStr(this,PhoneServiceTermsActivity.PRIVACY_POLICY)}
+        }
+    }
+
+    override fun initListener() {
+        btnPhoneLogin.setOnClickListener(this)
+        btnPhoneVfLogin.setOnClickListener(this)
+        btnEmailLogin.setOnClickListener(this)
+        tvForget.setOnClickListener(this)
+        tvVfForget.setOnClickListener(this)
+        tvEmailForget.setOnClickListener(this)
+        tvRegister.setOnClickListener(this)
+        tvSwitch.setOnClickListener(this)
+        tvVfSwitch.setOnClickListener(this)
+        tvAreaCode.setOnClickListener(this)
+        tvVfAreaCode.setOnClickListener(this)
+        ivClose.setOnClickListener(this)
+        //隐私政策服务点击
+        tvPhoneService.setOnClickListener(this)
+        tvPhonePolicy.setOnClickListener(this)
+        cbPhoneEyes.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            etPhonePassword.inputType = if (isChecked) InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            else InputType.TYPE_TEXT_VARIATION_PASSWORD or InputType.TYPE_CLASS_TEXT
+        })
+        cbEmailEyes.setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
+            etEmailPassword.inputType = if (isChecked) InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD
+            else InputType.TYPE_TEXT_VARIATION_PASSWORD or InputType.TYPE_CLASS_TEXT
+        })
+        radioGroup.check(R.id.rbPhoneLogin)
+        phoneLoginUI()
+        radioGroup.setOnCheckedChangeListener(object : RadioGroup.OnCheckedChangeListener {
+            override fun onCheckedChanged(p0: RadioGroup?, p1: Int) {
+                if (p1 == R.id.rbPhoneLogin) {
+                    phoneLoginUI()
+                } else {
+                    emailLoginUI()
+                }
+                viewFlipper.showNext()
+            }
+        })
+
+        etPhone.addTextChangedListener(textWatcher)
+        etVfPhone.addTextChangedListener(textWatcher)
+        etPhonePassword.addTextChangedListener(textWatcher)
+        etEmail.addTextChangedListener(textWatcher)
+        etEmailPassword.addTextChangedListener(textWatcher)
+        etVfcode.addTextChangedListener(textWatcher)
+        btnGetCode.setOnClickListener(this)
+        btnGetCode.setOnFinishListener {
+            if (TextUtils.isEmpty(etVfPhone.text.toString())) {
+                it.disableUI()
+            }
+        }
+
+        ivFaceBook.setOnClickListener(this)
+        ivTwitter.setOnClickListener(this)
+    }
+
+
+    private fun phoneLoginUI() {
+        rbPhoneLogin.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelSize(R.dimen.navigationTextSize).toFloat())
+        rbPhoneLogin.setTextColor(resources.getColor(R.color.mainMatchColor))
+        rbEmailLogin.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelSize(R.dimen.navigationTextSize).toFloat())
+        rbEmailLogin.setTextColor(resources.getColor(R.color.mainMatchColor_70))
+        tvSwitch.visibility = View.VISIBLE
+        tvVfSwitch.visibility = View.VISIBLE
+        setCheckedPoninter(R.drawable.shape_logintab_indicator, rbPhoneLogin)
+        setCheckedPoninter(R.drawable.shape_logintab_indicator_tran, rbEmailLogin)
+    }
+
+    private fun emailLoginUI() {
+        rbEmailLogin.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelSize(R.dimen.navigationTextSize).toFloat())
+        rbEmailLogin.setTextColor(resources.getColor(R.color.mainMatchColor))
+        rbPhoneLogin.setTextSize(TypedValue.COMPLEX_UNIT_PX, resources.getDimensionPixelSize(R.dimen.navigationTextSize).toFloat())
+        rbPhoneLogin.setTextColor(resources.getColor(R.color.mainMatchColor_70))
+        tvSwitch.visibility = View.GONE
+        tvVfSwitch.visibility = View.GONE
+        setCheckedPoninter(R.drawable.shape_logintab_indicator, rbEmailLogin)
+        setCheckedPoninter(R.drawable.shape_logintab_indicator_tran, rbPhoneLogin)
+    }
+
+    private fun setCheckedPoninter(res: Int, radioButton: RadioButton) {
+        val drawable = resources?.getDrawable(res)
+        drawable?.bounds = Rect(0, 0, drawable?.minimumWidth!!, drawable?.minimumHeight!!)
+        radioButton.setCompoundDrawables(null, null, null, drawable)
+    }
+
+    override fun getPresenter(): LoginPresenter {
+        return LoginPresenter()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == RESULT_OK) {
+            when (requestCode) {
+                REQUEST_CODE_REGISTER -> {
+
+                }
+                FOR_AREA_CODE -> {
+                    tvAreaCode.text = "+" + data?.getStringExtra("area_code")
+                }
+
+                FOR_AREA_CODE_VF -> {
+                    tvVfAreaCode.text = "+" + data?.getStringExtra("area_code")
+                }
+            }
+        }
+    }
+
+    override fun layoutContentId(): Int {
+        return R.layout.activity_login
+    }
+
+    override fun loginSuccess(result: LoginBean.Result,type: String) {
+        AppBusManager.setToken(result.token)
+        AppBusManager.setRandomKey(result.randomKey)
+        mPresenter.MyInfo(MallConst.GET_MY_INFO,type)
+    }
+
+    //基本信息获取成功
+    var realPhone :String?=null
+    override fun onMyInfoSuccess(result: MyInfoBean.Result,type: String) {
+        if (!AppBusManager.getUsername().equals(result.username)){
+            SPUtils.remove(this,"pathPhoto")
+            AppBusManager.setUsername(result.username)
+            AppBusManager.setUserPhone(result.mobile)
+            AppBusManager.setUserAvatar(result.avatar)
+        }
+        if (LOGIN_PHONE.equals(type)){
+            if (result.mobile.startsWith("+86")){
+                realPhone = result.mobile.substring(3)
+            }else if (result.mobile.startsWith("+852")){
+                realPhone = result.mobile.substring(4)
+            }
+            SPUtils.put(this, SP_LOGIN_TYPE_PHONE,realPhone!!)
+        }else if (LOGIN_EMAIL.equals(type)){
+            SPUtils.put(this, SP_LOGIN_TYPE_EMAIL,result.email)
+        }else if (LOGIN_CODE.equals(type)){
+            if (result.mobile.startsWith("+86")){
+                realPhone = result.mobile.substring(3)
+            }else if (result.mobile.startsWith("+852")){
+                realPhone = result.mobile.substring(4)
+            }
+            SPUtils.put(this, SP_LOGIN_TYPE_PHONE,realPhone!!)
+        }
+        toast(getString(R.string.login_success))
+        finish()
+        EventBus.getDefault().post(LoginSuccessEvent())
+    }
+
+    //上次登录账号记录
+    private fun accountRecords() {
+        val phone = SPUtils.get(this, SP_LOGIN_TYPE_PHONE,"") as String
+        val email = SPUtils.get(this, SP_LOGIN_TYPE_EMAIL,"") as String
+        if (!TextUtils.isEmpty(phone)&&!TextUtils.isEmpty(email)){
+            etPhone.setText(phone)
+            etVfPhone.setText(phone)
+            etEmail.setText(email)
+            btnGetCode.enableUI()
+        }else if (!TextUtils.isEmpty(email)){
+            etEmail.setText(email)
+        }else if (!TextUtils.isEmpty(phone)){
+            etPhone.setText(phone)
+            etVfPhone.setText(phone)
+            btnGetCode.enableUI()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        etPhone.removeTextChangedListener(textWatcher)
+        etVfPhone.removeTextChangedListener(textWatcher)
+        etPhonePassword.removeTextChangedListener(textWatcher)
+        etEmail.removeTextChangedListener(textWatcher)
+        etEmailPassword.removeTextChangedListener(textWatcher)
+        etVfcode.removeTextChangedListener(textWatcher)
+    }
+
+    override fun initData() {
+    }
+
+    override fun initStatusBar() {
+        StatusBarUtil.immersive(this, resources.getColor(R.color.white), 0f)
+    }
+
+    var isVfcodeLogin = false
+    override fun initView() {
+        super.initView()
+        getTitleBar().visibility = View.GONE
+        cbPhoneEyes.isChecked = false
+        btnGetCode.isEnabled = false
+        accountRecords()
+    }
+
+    val textWatcher = object : TextWatcher {
+        override fun afterTextChanged(p0: Editable?) {
+            var flag = true
+            when (radioGroup.checkedRadioButtonId) {
+                R.id.rbPhoneLogin -> {
+                    if (isVfcodeLogin) {
+                        flag = TextUtils.isEmpty(etVfPhone.text.toString())
+                        if (!flag) btnGetCode.enableUI() else btnGetCode.disableUI()
+                        flag = TextUtils.isEmpty(etVfPhone.text.toString()) || TextUtils.isEmpty(etVfcode.text.toString())
+                        btnPhoneVfLogin.isEnabled = !flag
+                        btnPhoneVfLogin.setBackgroundResource(if (!flag) R.drawable.selector_bg_btn_login else R.drawable.shape_bg_btn_login_disable)
+                    } else {
+                        flag = TextUtils.isEmpty(etPhone.text.toString()) || TextUtils.isEmpty(etPhonePassword.text.toString())
+                        btnPhoneLogin.isEnabled = !flag
+                        btnPhoneLogin.setBackgroundResource(if (!flag) R.drawable.selector_bg_btn_login else R.drawable.shape_bg_btn_login_disable)
+                    }
+                }
+                R.id.rbEmailLogin -> {
+                    flag = TextUtils.isEmpty(etEmail.text.toString()) || TextUtils.isEmpty(etEmailPassword.text.toString())
+                    btnEmailLogin.isEnabled = !flag
+                    btnEmailLogin.setBackgroundResource(if (!flag) R.drawable.selector_bg_btn_login else R.drawable.shape_bg_btn_login_disable)
+                }
+            }
+        }
+
+        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        }
+
+        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+        }
+    }
+
+    private fun thirdLogin(platformName: String, isSupportWeb: Boolean) {
+        val platform = ShareSDK.getPlatform(platformName)
+        if (platform == null) {
+            toast("Platform is null")
+            return
+        }
+        Toast.makeText(this, platformName +getString(R.string.start_login), Toast.LENGTH_SHORT).show()
+        if (!isSupportWeb) {
+            if (!platform.isClientValid) {
+                //客户端不可用
+                toast(getString(R.string.pls_download)+"$platformName")
+                return
+            }
+        }
+        if (platform.isAuthValid) {
+            platform.removeAccount(true)
+        }
+        platform.platformActionListener = object : PlatformActionListener {
+            override fun onComplete(p0: Platform?, p1: Int, p2: HashMap<String, Any>?) {
+                logTools.d("onComplete")
+                logTools.toJson(p2)
+                logTools.d(p0?.db?.token)
+                logTools.d(p0?.db?.tokenSecret)
+                logTools.d(p0?.db?.userId)
+                val token = p0?.db?.token
+                val tokenSecret = p0?.db?.tokenSecret
+                logTools.t("YB").d("onComplete: +tokenSecret"+p0?.db?.tokenSecret+" token :"+p0?.db?.token+" account: ")
+                val userId  = p0?.db?.userId
+                when (platformName) {
+                    Facebook.NAME -> {
+                        mPresenter.login(userId!!, token!!, MallConst.LOGIN_TYPE_FB, MallConst.LOGIN)
+                    }
+                    Twitter.NAME -> {
+                        mPresenter.login(tokenSecret!!, token!!, MallConst.LOGIN_TYPE_TW, MallConst.LOGIN)
+                    }
+                }
+            }
+
+            override fun onCancel(p0: Platform?, p1: Int) {
+                logTools.d("onCancel")
+                logTools.d(p0?.name)
+                toast(getString(R.string.cancellation_of_certification))
+                getMultipleStatusView().showContent()
+            }
+
+            override fun onError(p0: Platform?, p1: Int, p2: Throwable?) {
+                logTools.d("onError")
+                logTools.d(p2?.message)
+                logTools.d(p0?.name)
+                toast(getString(R.string.failed_of_certification))
+                getMultipleStatusView().showContent()
+            }
+        }
+        platform.SSOSetting(false)
+        platform.showUser(null)
+    }
+
+    override fun showError(errorMsg: String, errorCode: Int, type: String) {
+        super.showError(errorMsg, errorCode, type)
+        if(1000004 ==errorCode){
+            if (LOGIN_PHONE.equals(type)){
+                showRegisterDailog(getString(R.string.phone_not_register_1),etPhone)
+            }else if(LOGIN_EMAIL.equals(type)){
+                showRegisterDailog(getString(R.string.email_not_register_1),etEmail)
+            }else if (LOGIN_CODE.equals(type)){
+                showRegisterDailog(getString(R.string.phone_not_register_1), etVfPhone)
+            }
+        }else{
+            MallUtils.showToast(errorMsg,this)
+        }
+        AppBusManager.setToken("")
+    }
+
+    private fun showRegisterDailog(str: String ,text:EditText) {
+        CommonDialog.Builder(this)
+                .setContent(str+text.text.toString().trim()+getString(R.string.phone_not_register_2))
+                .setConfirmText(getString(R.string.phone_not_register_confirm))
+                .setOnConfirmListener(object : CommonDialog.OnConfirmListener {
+                    override fun onClick(dialog: Dialog) {
+                        dialog.dismiss()
+                        finish()
+                        startActivity<RegisterActivity>()
+                    }
+                })
+                .setOnCancelListener(object : CommonDialog.OnCancelListener {
+                    override fun onClick(dialog: Dialog) {
+                        dialog.dismiss()
+                    }
+                })
+                .create()
+                .show()
+    }
+
+
+    //区号选择
+    var flag:Boolean = false
+    private fun showBottomPopup() {
+        SoftKeyboardUtil.hideSoftKeyboard(this)
+        val pop = BottomPopup(this)
+        pop.width = DisplayManager.getScreenWidth()!!*100/100
+        pop.height = DisplayManager.getScreenHeight()!!*35/100
+        pop.popupGravity = Gravity.BOTTOM
+        val delImage = pop.contentView.findViewById<ImageView>(R.id.delImg)
+        val imgChina = pop.contentView.findViewById<ImageView>(R.id.imgChina)
+        val imgHK = pop.contentView.findViewById<ImageView>(R.id.imgHK)
+        val rlChina = pop.contentView.findViewById<RelativeLayout>(R.id.rlChina)
+        val rlHK = pop.contentView.findViewById<RelativeLayout>(R.id.rlHK)
+        if (!flag){
+            imgChina.visibility = View.VISIBLE
+            imgHK.visibility = View.GONE
+            tvAreaCode.text = "+86"
+        }else{
+            imgChina.visibility = View.GONE
+            imgHK.visibility = View.VISIBLE
+            tvAreaCode.text = "+852"
+        }
+        delImage.setOnClickListener {
+            pop.dismiss()
+        }
+        rlChina.setOnClickListener {
+            imgChina.visibility = View.VISIBLE
+            imgHK.visibility = View.GONE
+            tvAreaCode.text = "+86"
+            flag = false
+            pop.dismiss()
+        }
+        rlHK.setOnClickListener {
+            imgChina.visibility = View.GONE
+            imgHK.visibility = View.VISIBLE
+            tvAreaCode.text = "+852"
+            flag = true
+            pop.dismiss()
+        }
+        pop.showPopupWindow()
+    }
+
+    //验证码区号选择
+    var flagCode:Boolean = false
+    fun showBottomPopupCode(){
+        val pop = BottomPopup(this)
+        pop.width = DisplayManager.getScreenWidth()!!*100/100
+        pop.height = DisplayManager.getScreenHeight()!!*35/100
+        pop.popupGravity = Gravity.BOTTOM
+        val delImage = pop.contentView.findViewById<ImageView>(R.id.delImg)
+        val imgChina = pop.contentView.findViewById<ImageView>(R.id.imgChina)
+        val imgHK = pop.contentView.findViewById<ImageView>(R.id.imgHK)
+        val rlChina = pop.contentView.findViewById<RelativeLayout>(R.id.rlChina)
+        val rlHK = pop.contentView.findViewById<RelativeLayout>(R.id.rlHK)
+        if (!flagCode){
+            imgChina.visibility = View.VISIBLE
+            imgHK.visibility = View.GONE
+            tvVfAreaCode.text = "+86"
+        }else{
+            imgChina.visibility = View.GONE
+            imgHK.visibility = View.VISIBLE
+            tvVfAreaCode.text = "+852"
+        }
+        delImage.setOnClickListener {
+            pop.dismiss()
+        }
+        rlChina.setOnClickListener {
+            imgChina.visibility = View.VISIBLE
+            imgHK.visibility = View.GONE
+            tvVfAreaCode.text = "+86"
+            flagCode = false
+            pop.dismiss()
+        }
+        rlHK.setOnClickListener {
+            imgChina.visibility = View.GONE
+            imgHK.visibility = View.VISIBLE
+            tvVfAreaCode.text = "+852"
+            flagCode = true
+            pop.dismiss()
+        }
+        pop.showPopupWindow()
+    }
+
+}
+

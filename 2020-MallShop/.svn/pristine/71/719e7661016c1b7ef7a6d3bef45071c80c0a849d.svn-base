@@ -1,0 +1,117 @@
+package com.epro.mall.ui.activity;
+
+import android.app.Activity
+import android.content.Intent
+import android.view.View
+import com.epro.mall.R
+import com.epro.mall.mvp.model.bean.ScanBuyPayResult
+import com.epro.mall.utils.MallConst
+import com.mike.baselib.activity.BaseTitleBarSimpleActivity
+import com.mike.baselib.utils.*
+import kotlinx.android.synthetic.main.activity_scanbuy_pay_result.*
+
+
+class ScanBuyPayResultActivity : BaseTitleBarSimpleActivity(), View.OnClickListener {
+    override fun onClick(p0: View?) {
+        val result = AppBusManager.fromJsonWithClassKey(intent, ScanBuyPayResult::class.java)
+        when (p0) {
+            btnCheck -> {
+                val payStatus = result!!.payStatus
+                val orderSn = result!!.orderSn
+                if (payStatus == MallConst.PAY_SUCCESS) {
+                    ScanCodeOrderListDetailActivity.launchWithStr(this, orderSn!!)
+                } else {
+                    finish()
+                }
+            }
+            btnRepay -> {
+                setResult(Activity.RESULT_OK, Intent())
+                finish()
+            }
+            getRightView() -> {
+                val shopId = result!!.shopId
+                if (shopId.isEmpty()) {
+                    toast("shopId in null")
+                    return
+                }
+                ScanBarPurchaseActivity.launchWithShopId_ShopName(this, shopId, result.shopName)
+                setResult(Activity.RESULT_OK)
+                finish()
+            }
+            getLeftView() -> {
+                val payStatus = result!!.payStatus
+                if (payStatus == MallConst.PAY_SUCCESS) {
+                    setResult(Activity.RESULT_OK)
+                }
+                finish()
+            }
+        }
+    }
+
+    companion object {
+        const val TAG = "PayResult"
+        fun launchWithPayResult(activity: Activity, result: ScanBuyPayResult, requestCode: Int) {
+            activity.startActivityForResult(Intent(activity, ScanBuyPayResultActivity::class.java)
+                    .putExtra(ext_createJsonKey(ScanBuyPayResult::class.java), AppBusManager.toJson(result)), requestCode)
+        }
+    }
+
+    override fun layoutContentId(): Int {
+        return R.layout.activity_scanbuy_pay_result
+    }
+
+    override fun initData() {
+    }
+
+    override fun initView() {
+        super.initView()
+        getTitleView().text = ""
+        val result = AppBusManager.fromJsonWithClassKey(intent, ScanBuyPayResult::class.java)
+        val payStatus = result!!.payStatus
+        when (payStatus) {
+            MallConst.PAY_SUCCESS -> {
+                ivResult.setImageResource(R.mipmap.icon_successful_payment)
+                tvResult.text = getString(R.string.pay_success)
+                getTitleView().text = getString(R.string.pay_success)
+                val cartGoodsList = result!!.cartGoodsList
+                var count = 0
+                var amount = 0.toDouble()
+                for (goods in cartGoodsList!!) {
+                    amount += goods.retailPrice.toDouble() * goods.buyNum
+                    count += goods.buyNum
+                }
+                tvNum.text = getString(R.string.scan_code_shop_count_start)+" $count "+getString(R.string.piece_num)
+                tvUnit.text=AppBusManager.getAmountUnit()
+                tvAmount.text = amount.ext_formatAmount()
+                getRightView().visibility = View.VISIBLE
+                getRightView().text = getString(R.string.scan_code_purchase)
+            }
+            MallConst.PAY_FAILED -> {
+                ivResult.setImageResource(R.mipmap.pay_failed)
+                tvResult.text = getString(R.string.pay_failed)
+                getTitleView().text = getString(R.string.pay_failed)
+                llPayInfo.visibility = View.GONE
+                btnRepay.visibility = View.VISIBLE
+                btnCheck.text = getString(R.string.return_order)
+            }
+            MallConst.PAY_UNKOWN -> {
+                ivResult.setImageResource(R.mipmap.pay_failed)
+                tvResult.text = getString(R.string.pay_abnormal)
+                getTitleView().text =  getString(R.string.pay_abnormal)
+                llPayInfo.visibility = View.GONE
+                btnRepay.visibility = View.VISIBLE
+                btnCheck.text = getString(R.string.return_order)
+            }
+        }
+    }
+
+    override fun initListener() {
+        btnCheck.setOnClickListener(this)
+        btnRepay.ext_doubleClick(this)
+        getRightView().setOnClickListener(this)
+        getLeftView().setOnClickListener(this)
+    }
+
+}
+
+

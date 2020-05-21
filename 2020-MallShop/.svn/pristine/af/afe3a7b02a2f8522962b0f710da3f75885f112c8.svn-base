@@ -1,0 +1,233 @@
+package com.epro.mall.ui.activity;
+
+import android.app.Activity
+import android.content.Intent
+import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
+import android.text.TextUtils
+import android.view.View
+import com.epro.mall.R
+import com.epro.mall.mvp.contract.ScanBuyOrderInfoContract
+import com.epro.mall.mvp.model.bean.*
+import com.epro.mall.mvp.presenter.ScanBuyOrderInfoPresenter
+import com.epro.mall.ui.adapter.ScanBuyOrderInfoChildAdapter
+import com.epro.mall.ui.fragment.SelectPayModeBottomPopup
+import com.epro.mall.utils.MallBusManager
+import com.epro.mall.utils.MallConst
+import com.google.gson.reflect.TypeToken
+import com.mike.baselib.activity.BaseTitleBarCustomActivity
+import com.mike.baselib.fragment.BaseBottomPopup
+import com.mike.baselib.utils.*
+import kotlinx.android.synthetic.main.activity_scan_buy_order_info.*
+
+
+class ScanBuyOrderInfoActivity : BaseTitleBarCustomActivity<ScanBuyOrderInfoContract.View, ScanBuyOrderInfoPresenter>(), ScanBuyOrderInfoContract.View, View.OnClickListener {
+    private fun showPayPayResult(payStatus: Int) {
+        val type = object : TypeToken<ArrayList<ScanBuyCartGoods>>() {}.type
+        val cartGoodsList = AppBusManager.fromJson<ArrayList<ScanBuyCartGoods>>(intent.getStringExtra(CART_GOODS_LIST), type)
+        val shopInfo = AppBusManager.fromJsonWithClassKey(intent, ShopInfo::class.java)
+        val result = ScanBuyPayResult(payStatus, cartGoodsList!!, orderSn, shopInfo!!.shopId, shopInfo!!.shopName, shopInfo!!.shopDiscount)
+        if (payStatus == MallConst.PAY_SUCCESS) {
+            ScanBuyPayResultActivity.launchWithPayResult(this, result, FOR_SUCCESS_NEXT)
+            setResult(Activity.RESULT_OK)
+        } else {
+            ScanBuyPayResultActivity.launchWithPayResult(this, result, FOR_REPAY)
+        }
+    }
+
+    companion object {
+        const val TAG = "ScanBuyOrderInfoActivity"
+        const val CART_GOODS_LIST = "cart_goods_list"
+        const val FOR_REPAY = 11
+        const val FOR_SUCCESS_NEXT = 12
+        const val FOR_PAY_RESULT = 15
+        fun launchWithCartGoodses_ShopInfo(activity: Activity, cartGoodsList: ArrayList<ScanBuyCartGoods>, shopInfo: ShopInfo, requestCode: Int) {
+            activity.startActivityForResult(Intent(activity, ScanBuyOrderInfoActivity::class.java)
+                    .putExtra(CART_GOODS_LIST, AppBusManager.toJson(cartGoodsList))
+                    .putExtra(ext_createJsonKey(ShopInfo::class.java), AppBusManager.toJson(shopInfo)), requestCode)
+        }
+
+    }
+
+    override fun onCreateScanBuyOrderSuccess(result: CreateScanBuyOrderBean.Result) {
+        signData = result.notifyStr
+        orderSn = result.orderSn
+        PayManagerActivity.launchWithPayInfo(this, PayInfo(result.orderSn, payMode, result.notifyStr), FOR_PAY_RESULT)
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                FOR_REPAY -> {
+                    showLoading("")
+                    PayManagerActivity.launchWithPayInfo(this, PayInfo(orderSn, payMode, signData), FOR_PAY_RESULT)
+                }
+                FOR_SUCCESS_NEXT -> {
+                    finish()
+                }
+                FOR_PAY_RESULT -> {
+                    val payStatus = data!!.getIntExtra(PayManagerActivity.PAY_STATUS, MallConst.PAY_FAILED)
+                    showPayPayResult(payStatus)
+                }
+            }
+        } else {
+            getMultipleStatusView().showContent()
+        }
+    }
+
+    override fun getPresenter(): ScanBuyOrderInfoPresenter {
+        return ScanBuyOrderInfoPresenter()
+    }
+
+    override fun layoutContentId(): Int {
+        return R.layout.activity_scan_buy_order_info
+    }
+
+    override fun initData() {
+    }
+
+    var payMode = MallConst.PAY_MODE_ZFB
+    var orderSn = ""
+    var signData = ""
+    var send: CreateScanBuyOrderBean.Send? = null
+    override fun initView() {
+        super.initView()
+        getTitleView().text = getString(R.string.confirm_order)
+        var shopInfo = AppBusManager.fromJsonWithClassKey(intent, ShopInfo::class.java)
+        shopInfo?.shopDiscount = 1f
+        tvShopName.text = shopInfo!!.shopName
+        tvAddress.text = shopInfo.province + shopInfo.city + shopInfo.area + shopInfo.address
+        tvDiscount.text = getString(R.string.audience) + "${(shopInfo.shopDiscount * 10).ext_formatDiscount()}" + getString(R.string.fold)
+        if(shopInfo.shopDiscount==1f){
+            tvDiscount.visibility=View.GONE
+        }
+        val type = object : TypeToken<ArrayList<ScanBuyCartGoods>>() {}.type
+        val cartGoodsList = AppBusManager.fromJson<ArrayList<ScanBuyCartGoods>>(intent.getStringExtra(CART_GOODS_LIST), type)
+        var count = 0
+        var amount = 0.toDouble()
+        for (goods in cartGoodsList!!) {
+            amount += goods.retailPrice.toDouble() * goods.buyNum
+            count += goods.buyNum
+        }
+        tvTotalNum.text = getString(R.string.scan_code_shop_count_start) + "$count" + getString(R.string.piece_num)
+        tvOrderUnit.text = AppBusManager.getAmountUnit()
+        tvTotalAmount.text = amount.ext_formatAmount()
+        tvDiscountUnit.text = AppBusManager.getAmountUnit()
+        tvDiscountAmount.text = ((1 - shopInfo.shopDiscount.ext_formatDiscount()) * amount).ext_formatAmount()
+        tvUnit.text = AppBusManager.getAmountUnit()
+        tvRealAmount.text = (amount * shopInfo.shopDiscount.ext_formatDiscount()).ext_formatAmount()
+        tvPayMode.text = MallBusManager.getPayModeText(payMode)
+        val products = ArrayList<CreateScanBuyOrderBean.Product>()
+        for (c in cartGoodsList) {
+            val product = CreateScanBuyOrderBean.Product(c.productId, c.buyNum, c.retailPrice)
+            products.add(product)
+        }
+        val send2 = handlerActivity(cartGoodsList, shopInfo)
+        send = if (send2 != null) send2 else CreateScanBuyOrderBean.Send(shopInfo.shopId, count, amount.ext_formatAmount(), shopInfo.shopDiscount, (amount * shopInfo.shopDiscount.ext_formatDiscount()).ext_formatAmount(), payMode, products)
+        rvGoods.layoutManager = LinearLayoutManager(this)
+        rvGoods.adapter = ScanBuyOrderInfoChildAdapter(this, cartGoodsList)
+
+        calculateActivityDiscount(cartGoodsList, amount, shopInfo)
+    }
+
+
+    /**
+     * 处理有活动的情况
+     */
+    private fun handlerActivity(cartGoods: ArrayList<ScanBuyCartGoods>, shopInfo: ShopInfo): CreateScanBuyOrderBean.Send? {
+        if (!MallBusManager.isHaveActivity(cartGoods)) {
+            return null
+        }
+        val products = ArrayList<CreateScanBuyOrderBean.Product>()
+        var totalRealAmount = 0.toDouble()//总实际支付金额
+        var count = 0
+        for (goods in cartGoods) {
+            val a = MallBusManager.getProductActivity(goods)
+            if (a != null) {
+                totalRealAmount += a.discountPrice.toDouble() * goods.buyNum
+                products.add(CreateScanBuyOrderBean.Product(goods.productId, goods.buyNum, a.discountPrice))
+            } else {
+                totalRealAmount += goods.retailPrice.toDouble() * goods.buyNum
+                products.add(CreateScanBuyOrderBean.Product(goods.productId, goods.buyNum, goods.retailPrice))
+            }
+            count += goods.buyNum
+        }
+        tvRealAmount.text = (totalRealAmount * shopInfo.shopDiscount.ext_formatDiscount()).ext_formatAmount()
+        val send = CreateScanBuyOrderBean.Send(shopInfo.shopId, count, totalRealAmount.ext_formatAmount(), shopInfo.shopDiscount,
+                (totalRealAmount * shopInfo.shopDiscount.ext_formatDiscount()).ext_formatAmount(), payMode, products)
+        return send
+    }
+
+    /**
+     * 计算活动优惠
+     */
+    private fun calculateActivityDiscount(cartGoods: ArrayList<ScanBuyCartGoods>, amount: Double, shopInfo: ShopInfo) {
+        val isHaveActivity = MallBusManager.isHaveActivity(cartGoods)
+        if (!isHaveActivity) {
+            return
+        }
+        var discount = 0.toDouble() //总优惠
+        var totalRealAmount = 0.toDouble()//总实际支付金额
+        for (goods in cartGoods) {
+            val a = MallBusManager.getProductActivity(goods)
+            if (a != null) {
+                totalRealAmount += a.discountPrice.toDouble() * goods.buyNum
+            } else {
+                totalRealAmount += goods.retailPrice.toDouble() * goods.buyNum
+            }
+        }
+        discount = amount - totalRealAmount - (1 - shopInfo.shopDiscount.ext_formatDiscount()) * totalRealAmount
+        if (discount > 0.toDouble()) {
+            tvDiscountAmount.text = discount.ext_formatAmount()
+        } else {
+            tvDiscountAmount.text = 0.toDouble().ext_formatAmount()
+        }
+    }
+
+    override fun initListener() {
+        rlPayMode.setOnClickListener(this)
+        btnConfirm.ext_doubleClick(this)
+    }
+
+    private fun showSelectPayModeBottomPopup() {
+        BaseBottomPopup.Builder(SelectPayModeBottomPopup.newInstance(payMode))
+                .setOnPopupDismissListener(object : BaseBottomPopup.OnPopupDismissListener {
+                    override fun onPopupDismiss(bundle: Bundle?) {
+                        if (bundle != null) {
+                            val json = bundle.getString(ext_createJsonKey(Item::class.java))
+                            if (!TextUtils.isEmpty(json)) {
+                                val item = AppBusManager.fromJson(json, Item::class.java)
+                                tvPayMode.text = item?.content!!
+                                if (this@ScanBuyOrderInfoActivity.payMode != item.icon) {
+                                    this@ScanBuyOrderInfoActivity.payMode = item.icon
+                                    signData = ""
+                                }
+                            }
+                        }
+                    }
+                })
+                .create()
+                .show(supportFragmentManager, "pay_mode")
+    }
+
+    override fun onClick(p0: View?) {
+        when (p0) {
+            rlPayMode -> {
+                showSelectPayModeBottomPopup()
+            }
+            btnConfirm -> {  //生成订单
+                if (TextUtils.isEmpty(orderSn) || TextUtils.isEmpty(signData)) {
+                    send!!.payType = payMode
+                    mPresenter.createScanBuyOrder(send!!, MallConst.CREATE_SCANBUY_ORDER)
+                } else {
+                    showLoading("")
+                    PayManagerActivity.launchWithPayInfo(this, PayInfo(orderSn, payMode, signData), FOR_PAY_RESULT)
+                }
+            }
+        }
+    }
+}
+
+

@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            xmlns:app="http://schemas.android.com/apk/res-auto">
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintDimensionRatio="H,1:0.737"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+                <TextView
+                    android:drawablePadding="2dp"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:drawableBottom="@drawable/comp_im_shape_tag_purple_radius1"
+                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentBottom="true"
+                    android:text="注 册"
+                    android:textColor="@color/comp_im_black_2b2b2b"
+                    android:textSize="@dimen/comp_im_text_size_18"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <ImageView
+                    android:layout_marginTop="96dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </RelativeLayout>
+        </android.support.constraint.ConstraintLayout>
+
+
+        <RelativeLayout
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="60dp"
+            android:layout_marginTop="44dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:visibility="gone"
+                android:layout_centerVertical="true"
+                android:id="@+id/ivPhone"
+                android:src="@mipmap/icon_login_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:textColorHint="@color/comp_im_gray_d3d5e2"
+                android:textColor="@color/comp_im_black_2b2b2b"
+                android:hint="请输入手机号"
+                android:maxLength="20"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="15dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/ivPhone"
+                android:layout_toLeftOf="@+id/cbDelete"
+                android:textSize="@dimen/comp_im_text_size_13"
+                android:background="@null"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/etPhoneNo" />
+            <CheckBox
+                android:button="@null"
+                android:layout_centerVertical="true"
+                android:id="@+id/cbDelete"
+                android:layout_alignParentRight="true"
+                android:padding="5dp"
+                android:drawableLeft="@mipmap/icon_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="60dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/ivFront"
+                android:visibility="gone"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/icon_login_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:textColor="@color/comp_im_black_2b2b2b"
+                android:textColorHint="@color/comp_im_gray_d3d5e2"
+                android:hint="请输入姓名"
+                android:maxLength="20"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="15dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/ivFront"
+                android:layout_toLeftOf="@+id/cbBack"
+                android:textSize="@dimen/comp_im_text_size_13"
+                android:background="@null"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/etName" />
+            <CheckBox
+                android:button="@null"
+                android:layout_centerVertical="true"
+                android:id="@+id/cbBack"
+                android:layout_alignParentRight="true"
+                android:padding="5dp"
+                android:drawableLeft="@mipmap/icon_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_marginTop="5dp"
+            android:layout_marginLeft="60dp"
+            android:layout_marginRight="60dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/ivFront2"
+                android:visibility="gone"
+                android:layout_centerVertical="true"
+                android:src="@mipmap/icon_login_password"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <EditText
+                android:textColor="@color/comp_im_black_2b2b2b"
+                android:textColorHint="@color/comp_im_gray_d3d5e2"
+                android:hint="请输入单位名称"
+                android:maxLength="20"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="15dp"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/ivFront2"
+                android:layout_toLeftOf="@+id/cbBack2"
+                android:textSize="@dimen/comp_im_text_size_13"
+                android:background="@null"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/etUnit" />
+            <CheckBox
+                android:button="@null"
+                android:layout_centerVertical="true"
+                android:id="@+id/cbBack2"
+                android:layout_alignParentRight="true"
+                android:padding="5dp"
+                android:drawableLeft="@mipmap/icon_delete"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+        <Button
+            android:layout_marginLeft="48dp"
+            android:layout_marginRight="48dp"
+            style="@style/comp_im_MyButton"
+            android:id="@+id/btnRegister"
+            android:layout_marginTop="30dp"
+            android:text="注册" />
+        <LinearLayout
+            android:visibility="gone"
+            android:layout_marginRight="48dp"
+            android:layout_marginTop="7dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <View
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="5dp"/>
+            <TextView
+                android:textColor="@color/comp_im_purple_d7a6fc"
+                android:text="@string/comp_im_forget_password"
+                android:id="@+id/tvForget"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="5dp"
+                android:textSize="12sp" />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_gravity="center_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="25dp"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/comp_im_gray_f2f2f5"
+            android:textSize="@dimen/comp_im_text_size_9" />
+    </LinearLayout>
+</RelativeLayout>

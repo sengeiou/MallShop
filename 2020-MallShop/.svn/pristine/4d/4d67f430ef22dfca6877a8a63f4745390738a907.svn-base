@@ -1,0 +1,43 @@
+package com.epro.comp.im.ui.adapter
+
+
+import android.content.Context
+import android.view.View
+import com.mike.baselib.view.recyclerview.ViewHolder
+import com.mike.baselib.view.recyclerview.adapter.CommonAdapter
+import com.epro.comp.im.R
+import com.epro.comp.im.mvp.model.bean.ChatRecord
+import com.mike.baselib.utils.DateUtils
+
+/**
+ * desc: 分类的 Adapter
+ */
+
+class ChatRecordListAdapter(mContext: Context, list: ArrayList<ChatRecord>, layoutId: Int = R.layout.item_chatrecord_list) :
+        CommonAdapter<ChatRecord>(mContext, list, layoutId) {
+
+    interface OnItemClickListener {
+        fun onClick(item: ChatRecord,position: Int)
+    }
+
+    var onItemClickListener: OnItemClickListener? = null
+
+    /**
+     * 绑定数据
+     */
+    override fun bindData(holder: ViewHolder, data: ChatRecord, position: Int) {
+        holder.setText(R.id.tvName,data.recentChatMessage.csId)
+        holder.setText(R.id.tvContent,data.recentChatMessage.msgText)
+        holder.setText(R.id.tvNum,data.unReadCount.toString())
+        holder.setText(R.id.tvTime,DateUtils.formatDate(data.recentChatMessage.sentTime))
+        holder.setViewVisibility(R.id.tvNum,if(data.unReadCount==0.toLong()) View.INVISIBLE else View.VISIBLE)
+        holder.setOnItemClickListener(object : View.OnClickListener {
+            override fun onClick(view: View?) {
+                if (onItemClickListener != null) {
+                    onItemClickListener!!.onClick(data,position)
+                }
+
+            }
+        })
+    }
+}

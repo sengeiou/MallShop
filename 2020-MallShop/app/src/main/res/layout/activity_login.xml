@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/shape_bg_login">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35dp">
+
+            <ImageView
+                android:id="@+id/ivClose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:src="@mipmap/login_icon_close" />
+
+            <TextView
+                android:id="@+id/tvRegister"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:padding="10dp"
+                android:text="@string/registered"
+                android:textColor="@color/mainMatchColor"
+                android:textSize="@dimen/titleTextSize" />
+        </RelativeLayout>
+
+        <ImageView
+            android:layout_marginTop="38dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/mainMatchColor"
+            android:src="@mipmap/logo_login"/>
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="34dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:drawablePadding="6dp"
+                android:id="@+id/rbPhoneLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:button="@null"
+                android:drawableBottom="@drawable/shape_logintab_indicator"
+                android:padding="10dp"
+                android:text="@string/phone_login"
+                android:textColor="@color/mainMatchColor"
+                android:textSize="@dimen/navigationTextSize" />
+
+            <RadioButton
+                android:drawableBottom="@drawable/shape_logintab_indicator_tran"
+                android:drawablePadding="6dp"
+                android:id="@+id/rbEmailLogin"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:button="@null"
+                android:padding="10dp"
+                android:text="@string/email_login"
+                android:textColor="@color/mainMatchColor_70"
+                android:textSize="@dimen/navigationTextSize" />
+        </RadioGroup>
+
+        <ViewFlipper
+            android:layout_marginTop="20dp"
+            android:id="@+id/viewFlipper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:orientation="vertical">
+
+             <!-- 手机登录-->
+                <ViewFlipper
+                    android:id="@+id/vfPhoneLogin"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <!-- 手机密码登录-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:background="@drawable/shape_bg_tranblack20_radius6">
+
+                            <TextView
+                                android:drawablePadding="5dp"
+                                android:drawableEnd="@mipmap/login_drop_down_arrow"
+                                android:id="@+id/tvAreaCode"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:padding="10dp"
+                                android:text="+86"
+                                android:textColor="@color/mainMatchColor"
+                                android:textSize="@dimen/contentTextSize" />
+
+                            <com.epro.mall.ui.view.ClearableEditText
+
+                                android:id="@+id/etPhone"
+                                style="@style/MyEditText"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="5dp"
+                                android:layout_marginEnd="10dp"
+                                android:layout_toEndOf="@+id/tvAreaCode"
+                                android:hint="@string/pls_input_phone_num"
+                                android:maxLength="20" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/rlPasswordLogin"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:layout_marginTop="22dp"
+                            android:background="@drawable/shape_bg_tranblack20_radius6">
+
+                            <com.epro.mall.ui.view.ClearableEditText
+                                android:id="@+id/etPhonePassword"
+                                style="@style/MyPasswordEditText"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="10dp"
+                                android:layout_marginEnd="10dp"
+                                android:layout_toStartOf="@+id/cbPhoneEyes"
+                                android:hint="@string/pls_input_password" />
+
+                            <CheckBox
+                                android:id="@+id/cbPhoneEyes"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginEnd="7dp"
+                                android:button="@null"
+                                android:drawableStart="@drawable/selector_check_password"
+                                android:padding="8dp" />
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="7dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tvSwitch"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:padding="5dp"
+                                android:text="@string/change_code_login"
+                                android:textColor="@color/mainMatchColor"
+                                android:textSize="@dimen/secondaryContentTextSize" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="5dp"
+                                android:layout_weight="1" />
+
+                            <TextView
+                                android:id="@+id/tvForget"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:padding="5dp"
+                                android:text="@string/forget_password"
+                                android:textColor="@color/mainMatchColor"
+                                android:textSize="@dimen/secondaryContentTextSize" />
+                        </LinearLayout>
+
+                        <Button
+                            android:id="@+id/btnPhoneLogin"
+                            style="@style/MyButton"
+                            android:layout_marginStart="70dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginBottom="15dp"
+                            android:layout_marginEnd="70dp"
+                            android:text="@string/login" />
+
+                    </LinearLayout>
+
+                    <!-- 手机验证码登录-->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:background="@drawable/shape_bg_tranblack20_radius6">
+
+                            <TextView
+                                android:drawablePadding="5dp"
+                                android:id="@+id/tvVfAreaCode"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerVertical="true"
+                                android:drawableEnd="@mipmap/login_drop_down_arrow"
+                                android:padding="10dp"
+                                android:text="+86"
+                                android:textColor="@color/mainMatchColor"
+                                android:textSize="@dimen/contentTextSize" />
+
+                            <com.epro.mall.ui.view.ClearableEditText
+                                android:id="@+id/etVfPhone"
+                                style="@style/MyEditText"
+                                android:layout_centerVertical="true"
+                                android:layout_marginStart="5dp"
+                                android:layout_marginEnd="10dp"
+                                android:layout_toEndOf="@+id/tvVfAreaCode"
+                                android:hint="@string/please_enter_the_phone_number"
+                                android:maxLength="20" />
+                        </RelativeLayout>
+
+                        <LinearLayout
+                            android:gravity="center_vertical"
+                            android:id="@+id/llVfLogin"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:layout_marginTop="20dp"
+                            android:background="@drawable/shape_bg_tranblack20_radius6">
+                            <com.epro.mall.ui.view.ClearableEditText
+                                android:id="@+id/etVfcode"
+                                style="@style/MyEditText"
+                                android:layout_width="0dp"
+                                android:layout_weight="2"
+                                android:layout_marginStart="15dp"
+                                android:layout_marginEnd="10dp"
+                                android:hint="@string/my_info_pls_input_confirm_code"
+                                android:inputType="number"
+                                android:maxLength="6" />
+                            <View
+                                android:layout_width="0.5dp"
+                                android:layout_height="16dp"
+                                android:background="@color/mainMatchColor"
+                                />
+                            <com.epro.mall.ui.view.CountDownButton
+                                app:enableTextColor="@color/mainMatchColor"
+                                app:disableTextColor="@color/mainMatchColor_60"
+                                android:textSize="@dimen/secondaryContentTextSize"
+                                android:background="@null"
+                                android:id="@+id/btnGetCode"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_height="wrap_content"
+                                android:enabled="false"
+                                android:text="@string/my_info_pull_confirm_code" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="7dp"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/tvVfSwitch"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:padding="5dp"
+                                android:text="@string/switch_password_login"
+                                android:textColor="@color/mainMatchColor"
+                                android:textSize="@dimen/secondaryContentTextSize" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="5dp"
+                                android:layout_weight="1" />
+
+                            <TextView
+                                android:id="@+id/tvVfForget"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:padding="5dp"
+                                android:text="@string/forget_password"
+                                android:textColor="@color/mainMatchColor"
+                                android:textSize="@dimen/secondaryContentTextSize" />
+                        </LinearLayout>
+                        <Button
+                            android:id="@+id/btnPhoneVfLogin"
+                            style="@style/MyButton"
+                            android:layout_marginStart="70dp"
+                            android:layout_marginTop="20dp"
+                            android:layout_marginEnd="70dp"
+                            android:layout_marginBottom="15dp"
+                            android:text="@string/login" />
+                    </LinearLayout>
+                </ViewFlipper>
+            </LinearLayout>
+
+            <!-- 邮箱密码登录-->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="30dp"
+                android:orientation="vertical">
+                <RelativeLayout
+                    android:background="@drawable/shape_bg_tranblack20_radius6"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp">
+                    <com.epro.mall.ui.view.ClearableEditText
+                        style="@style/MyEditText"
+                        android:id="@+id/etEmail"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="10dp"
+                        android:hint="@string/pls_input_email"
+                        android:maxLength="25" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:background="@drawable/shape_bg_tranblack20_radius6"
+                    android:layout_width="match_parent"
+                    android:layout_height="44dp"
+                    android:layout_marginTop="20dp">
+
+                    <com.epro.mall.ui.view.ClearableEditText
+                        style="@style/MyPasswordEditText"
+                        android:id="@+id/etEmailPassword"
+                        android:layout_centerVertical="true"
+                        android:layout_marginStart="15dp"
+                        android:layout_marginEnd="10dp"
+                        android:layout_toStartOf="@+id/cbEmailEyes"
+                        android:hint="@string/pls_input_password" />
+                    <CheckBox
+                        android:layout_marginEnd="7dp"
+                        android:id="@+id/cbEmailEyes"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:button="@null"
+                        android:drawableStart="@drawable/selector_check_password"
+                        android:padding="8dp" />
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="7dp"
+                    android:orientation="horizontal">
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="5dp"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/tvEmailForget"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:padding="5dp"
+                        android:text="@string/forget_password"
+                        android:textColor="@color/mainMatchColor"
+                        android:textSize="@dimen/secondaryContentTextSize" />
+                </LinearLayout>
+                <Button
+                    android:layout_marginStart="70dp"
+                    android:layout_marginEnd="70dp"
+                    android:id="@+id/btnEmailLogin"
+                    style="@style/MyButton"
+                    android:layout_marginTop="20dp"
+                    android:text="@string/login" />
+            </LinearLayout>
+        </ViewFlipper>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_above="@+id/privacyPolicy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:visibility="gone"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_marginTop="8dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <View
+                android:layout_marginEnd="8dp"
+                android:background="@color/mainMatchColor_80"
+                android:layout_width="44dp"
+                android:layout_height="1dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/social_account_login"
+                android:textColor="@color/mainMatchColor"
+                android:textSize="@dimen/secondaryContentTextSize" />
+            <View
+                android:layout_marginStart="8dp"
+                android:background="@color/mainMatchColor_80"
+                android:layout_width="44dp"
+                android:layout_height="1dp"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_marginEnd="12dp"
+                android:id="@+id/ivFaceBook"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/login_icon_facebook" />
+
+            <ImageView
+                android:layout_marginStart="12dp"
+                android:id="@+id/ivTwitter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@mipmap/login_icon_twitter" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/privacyPolicy"
+        android:gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:layout_marginTop="13dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:textColor="@color/mainLoginBottom"
+            android:text="@string/click_login_agree"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="@dimen/explainContentTextSize" />
+        <TextView
+            android:textColor="@color/white"
+            android:text="@string/server_select"
+            android:id="@+id/tvPhoneService"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="5dp"
+            android:textSize="@dimen/explainContentTextSize" />
+        <TextView
+            android:textColor="@color/mainLoginBottom"
+            android:text="@string/login_and"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="@dimen/explainContentTextSize" />
+        <TextView
+            android:padding="5dp"
+            android:textColor="@color/white"
+            android:text="@string/privacy_policy_login"
+            android:id="@+id/tvPhonePolicy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="@dimen/explainContentTextSize" />
+    </LinearLayout>
+</RelativeLayout>

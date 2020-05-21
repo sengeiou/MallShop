@@ -1,0 +1,16 @@
+package com.epro.mall.mvp.model.bean
+
+
+//data class LoginBean(override val code: Int, override val message: String, override val result: String,  var realResult:Result?) : BaseBean<String> {
+data class LoginBean(override val code: Int, override val message: String, override val result:Result) : BaseBean<LoginBean.Result> {
+    data class Result(val randomKey: String, val token: String)
+
+//    | 字段     | 类型   | 必须 | 说明                                                         |
+//    | -------- | ------ | ---- | ------------------------------------------------------------ |
+//    | account  | string | Y    | 手机号码/邮箱账号                                            |
+//    | password | string | Y    | 密码/验证码/(第三方登录access_token)                         |
+//    | type     | string | Y    | EP:箱密码登录, MP:手机密码登录, MV:手机验证码登录 ，FB:facebook登录，TW:推特登录 |
+    data class Send(val account: String, val password: String,val type:String)
+
+}
+

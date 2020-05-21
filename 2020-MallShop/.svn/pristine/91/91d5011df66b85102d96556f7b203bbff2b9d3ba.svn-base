@@ -1,0 +1,41 @@
+package com.epro.comp.im.ui.adapter
+
+import android.content.Context
+import android.view.View
+import com.epro.comp.im.R
+import com.epro.comp.im.mvp.model.bean.ChatServices
+import com.mike.baselib.view.recyclerview.ViewHolder
+import com.mike.baselib.view.recyclerview.adapter.CommonAdapter
+
+class ChatServiceAdapter (mContext: Context, list: ArrayList<ChatServices>, layoutId: Int = R.layout.customer_service_item_list) :
+        CommonAdapter<ChatServices>(mContext, list, layoutId) {
+
+    constructor(context: Context):this(context,ArrayList())
+
+    init {
+        for (i in 0..5){
+            list.add(ChatServices("客服000"+i))
+        }
+    }
+
+    interface OnItemClickListener {
+        fun onClick(item: ChatServices, position: Int)
+    }
+
+    var onItemClickListener: OnItemClickListener? = null
+
+    /**
+     * 绑定数据
+     */
+    override fun bindData(holder: ViewHolder, data: ChatServices, position: Int) {
+        holder.setText(R.id.tvService,data.result)
+        holder.setOnItemClickListener(object :View.OnClickListener{
+            override fun onClick(p0: View?) {
+                if (onItemClickListener!=null){
+                    onItemClickListener!!.onClick(data,position)
+                }
+            }
+        })
+
+    }
+}

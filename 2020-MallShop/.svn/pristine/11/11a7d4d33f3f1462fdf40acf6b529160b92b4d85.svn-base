@@ -1,0 +1,19 @@
+package com.epro.mall.mvp.contract
+
+import com.epro.mall.mvp.model.bean.AboutBean
+import com.mike.baselib.base.IBaseView
+import com.mike.baselib.base.IPresenter
+
+interface HomeContract {
+
+    interface View:IBaseView{
+      fun onGetCartGoodsCountSuccess(count:Int)
+        fun onAboutSuccess(result: AboutBean.Result)
+    }
+
+
+    interface Presenter:IPresenter<View>{
+        fun getCartGoodsCount(type:String)
+        fun aboutApp(type: String,authType:String)
+    }
+}

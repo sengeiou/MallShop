@@ -1,0 +1,462 @@
+package com.mike.baselib.utils
+
+import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Rect
+import android.net.Uri
+import android.os.Build
+import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
+import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentActivity
+import android.support.v4.content.FileProvider
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.CharacterStyle
+import android.text.style.ForegroundColorSpan
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
+import com.mike.baselib.R
+import com.mike.baselib.interface_.Judgable
+import java.io.File
+import java.math.BigDecimal
+import java.util.regex.Pattern
+
+
+fun Activity.ext_takePhoto(requestCode: Int): Uri {
+    val intent = takePhoto(this)
+    startActivityForResult(intent, requestCode)
+    return intent.getParcelableExtra("imageUri")!!
+}
+
+fun Fragment.ext_takePhoto(requestCode: Int): Uri {
+    val intent = takePhoto(activity!!)
+    startActivityForResult(intent, requestCode)
+    return intent.getParcelableExtra("imageUri")!!
+}
+
+private fun takePhoto(context: Context): Intent {
+    // 跳转到系统的拍照界面
+    val intentToTakePhoto = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+    // 指定照片存储位置为sd卡本目录下
+    // 这里设置为固定名字 这样就只会只有一张temp图 如果要所有中间图片都保存可以通过时间或者加其他东西设置图片的名称
+    // File.separator为系统自带的分隔符 是一个固定的常量
+    val mTempPhotoPath = Environment.getExternalStorageDirectory().toString() + File.separator + "photo.jpeg"
+    // 获取图片所在位置的Uri路径    *****这里为什么这么做参考问题2*****
+    val imageUri: Uri
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        imageUri = FileProvider.getUriForFile(context,
+                context.applicationContext.packageName + ".fileProvider",
+                File(mTempPhotoPath))
+    } else {
+        imageUri = Uri.fromFile(File(mTempPhotoPath))
+    }
+
+    //下面这句指定调用相机拍照后的照片存储的路径
+    intentToTakePhoto.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+    intentToTakePhoto.putExtra("imageUri", imageUri)
+    return intentToTakePhoto
+}
+
+
+fun Activity.ext_choosePhoto(requestCode: Int) {
+    startActivityForResult(choosePhoto(), requestCode)
+}
+
+fun Fragment.ext_choosePhoto(requestCode: Int) {
+    startActivityForResult(choosePhoto(), requestCode)
+}
+
+fun Activity.ext_startPhotoSquareCrop(uri: Uri, requestCode: Int): Uri {
+    val intent = startPhotoSquareCrop(uri)
+    startActivityForResult(intent, requestCode)
+    return intent.getParcelableExtra("cropUri")!!
+}
+
+fun Fragment.ext_startPhotoSquareCrop(uri: Uri, requestCode: Int): Uri {
+    val intent = startPhotoSquareCrop(uri)
+    startActivityForResult(intent, requestCode)
+    return intent.getParcelableExtra("cropUri")!!
+}
+
+private fun choosePhoto(): Intent {
+    val intentToPickPic = Intent(Intent.ACTION_PICK, null)
+    // 如果限制上传到服务器的图片类型时可以直接写如："image/jpeg 、 image/png等的类型" 所有类型则写 "image/*"
+    intentToPickPic.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, "image/jpeg")
+    return intentToPickPic
+}
+
+fun Fragment.ext_startPhotoCrop(uri: Uri, width:Int,height:Int,requestCode: Int): Uri {
+    val intent = startPhotoCrop(uri,width,height)
+    startActivityForResult(intent, requestCode)
+    return intent.getParcelableExtra("cropUri")!!
+}
+
+fun Activity.ext_startPhotoCrop(uri: Uri, width:Int,height:Int,requestCode: Int): Uri {
+    val intent = startPhotoCrop(uri,width,height)
+    startActivityForResult(intent, requestCode)
+    return intent.getParcelableExtra("cropUri")!!
+}
+
+
+private fun startPhotoSquareCrop(uri: Uri): Intent {
+    return startPhotoCrop(uri,300,300)
+}
+private fun startPhotoCrop(uri: Uri,width:Int,height:Int): Intent {
+    val outputUri = Uri.fromFile(File(Environment.getExternalStorageDirectory().absolutePath + "/" + System.currentTimeMillis() + ".jpg"))
+    val intent = Intent("com.android.camera.action.CROP")
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    }
+    intent.setDataAndType(uri, "image/*")
+    //是否可裁剪
+    intent.putExtra("corp", "true")
+    intent.putExtra("scale", true)
+    //裁剪器高宽比
+    intent.putExtra("aspectY", height)
+    intent.putExtra("aspectX", width)
+    //设置裁剪框高宽
+    intent.putExtra("outputX", width)
+    intent.putExtra("outputY", height)
+    //返回数据
+    intent.putExtra("return-data", false)
+    intent.putExtra(MediaStore.EXTRA_OUTPUT, outputUri)
+    intent.putExtra("cropUri", outputUri)
+    intent.putExtra("outputFormat", Bitmap.CompressFormat.JPEG.toString())
+    return intent
+}
+
+fun FragmentActivity.ext_removeFragment(id: Int) {
+    val fragment = supportFragmentManager.findFragmentById(id)
+    if (fragment != null) {
+        supportFragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss()
+    }
+}
+
+fun ImageView.ext_loadImage(url: String?, holderRes: Int = R.mipmap.bg_empty) {
+    scaleType = ImageView.ScaleType.FIT_CENTER
+    ImageLoader.loadImage(context, url, holderRes, this)
+}
+
+fun ImageView.ext_loadCircleImage(url: String?) {
+    scaleType = ImageView.ScaleType.CENTER_CROP
+    ImageLoader.loadCircleImage(context, url, this)
+}
+
+fun ImageView.ext_loadImageWithDomain(url: String?, holderRes: Int = R.mipmap.bg_empty, domain: String = AppConfig.getBaseurl() + "/image/") {
+    ext_loadImage(domain + url, holderRes)
+}
+
+fun ImageView.ext_loadCircleImageWithDomain(url: String?, domain: String = AppConfig.getBaseurl() + "/image/") {
+    ext_loadCircleImage(domain + url)
+}
+
+/**
+ * 加载圆角图片
+ */
+fun ImageView.ext_loadConnersImageWithDomain(url: String?, radius: Float = 5F,
+                                             holderRes: Int = R.mipmap.bg_empty ,
+                                             scaleTyp: ImageView.ScaleType=ImageView.ScaleType.FIT_CENTER,
+                                             domain: String = AppConfig.getBaseurl() + "/image/") {
+    scaleType = scaleTyp
+    ImageLoader.loadRoundCornersImage(context, domain + url, DisplayManager.dip2px(radius)!!, holderRes, this)
+}
+
+fun ImageView.ext_loadGif(res: Int) {
+    ImageLoader.loadGif(context, res, R.color.transparent,this)
+}
+
+fun ImageView.ext_loadGif(url: String) {
+    ImageLoader.loadGif(context, url, this)
+}
+
+fun ImageView.ext_loadRoundCornersImage(url: String?, radius: Int) {
+    ImageLoader.loadRoundCornersImage(context, url, radius, R.mipmap.bg_empty, this)
+}
+
+fun Any.ext_isAllTrue(list: List<Judgable>): Boolean {
+    if (list.isEmpty()) {
+        return false
+    }
+    var flag = true
+    for (i in list) {
+        if (!i.judge()) {
+            flag = false
+            break
+        }
+    }
+    return flag
+}
+
+fun Any.ext_FirstFalse(list: List<Judgable>): Int {
+    if (list.isEmpty()) {
+        return -2
+    }
+    var positon = -1
+    for (i in list.indices) {
+        if (!list[i].judge()) {
+            positon = i
+            break
+        }
+    }
+    return positon
+}
+
+
+fun Any.ext_isAllFalse(list: List<Judgable>): Boolean {
+    if (list.isEmpty()) {
+        return false
+    }
+    var flag = true
+    for (i in list) {
+        if (i.judge()) {
+            flag = false
+            break
+        }
+    }
+    return flag
+}
+
+fun Any.ext_sizeOfTrue(list: List<Judgable>): Int {
+    if (list.isEmpty()) {
+        return 0
+    }
+    var count = 0
+    for (i in list) {
+        if (i.judge()) {
+            count++
+        }
+    }
+    return count
+}
+
+fun Any.ext_sizeOfFalse(list: List<Judgable>): Int {
+    if (list.isEmpty()) {
+        return 0
+    }
+    var count = 0
+    for (i in list) {
+        if (!i.judge()) {
+            count++
+        }
+    }
+    return count
+}
+
+fun Any.ext_setAllTrue(list: List<Judgable>) {
+    ext_setAllValue(list, true)
+}
+
+fun Any.ext_setAllFalse(list: List<Judgable>) {
+    ext_setAllValue(list, false)
+}
+
+fun Any.ext_setAllValue(list: List<Judgable>, value: Boolean) {
+    for (i in list) {
+        i.judgeValue = value
+    }
+}
+
+/**
+ * 防止重复点击
+ */
+fun View.ext_doubleClick(commit: () -> Unit) {
+    var lastTime = 0L
+    setOnClickListener {
+        if (System.currentTimeMillis() - lastTime < 1000) {
+            return@setOnClickListener
+        }
+        lastTime = System.currentTimeMillis()
+        commit.invoke()
+    }
+}
+
+/**
+ * 防止重复点击
+ */
+fun View.ext_doubleClick(listener: View.OnClickListener) {
+    var lastTime = 0L
+    setOnClickListener(View.OnClickListener {
+        if (System.currentTimeMillis() - lastTime < 1000) {
+            return@OnClickListener
+        }
+        lastTime = System.currentTimeMillis()
+        listener.onClick(it)
+    })
+}
+
+//【String】，判断一个字符串，是否是数字。
+fun String.ext_isPureNumber_orDecimal(): Boolean {
+    //"-[0-9]+(.[0-9]+)?|[0-9]+(.[0-9]+)?"
+    //val reg_num = "^[0-9]+(.[0-9]+)?$".toRegex()                                                //判断是否是数字。
+    val reg_num = "^[-\\+]?([0-9]+\\.?)?[0-9]+$".toRegex()                                                //判断是否是数字。
+    //TODO 完美做法。
+    val reg_science = "^((-?\\d+.?\\d*)[Ee]{1}(-?\\d+))$".toRegex()                         //判断
+
+    return this.matches(reg_num) || this.matches(reg_science)
+}
+
+//【String】处理科学计数法。（同时处理了小数点后位数的问题。）
+fun String.ext_allScientificNotation_to_formatDouble(remaining_digits: Int = 2, round_mode: Int = BigDecimal.ROUND_HALF_UP): String {
+    if (this.ext_isPureNumber_orDecimal()) {
+        //TODO 全面换用新方法。
+        return BigDecimal(this).setScale(remaining_digits, round_mode).toPlainString()              //如此，一句话就可以了？？
+    } else {
+        return this
+    }
+}
+
+//【String】科学计数法。去掉小数点后多余的零。
+fun String.ext_subZero_andDot(): String {
+    var result_str = this
+    if (result_str.indexOf(".") > 0) {
+        result_str = Pattern.compile("0+?$").matcher(result_str).replaceAll("").trim()//去掉多余的0
+        result_str = Pattern.compile("[.]$").matcher(result_str).replaceAll("").trim()//如最后一位是.则去掉
+    }
+    return result_str
+}
+
+/**
+ * 格式化金额
+ */
+fun String.ext_formatAmount(): String {
+    return ext_allScientificNotation_to_formatDouble(4).ext_allScientificNotation_to_formatDouble(2)
+}
+
+fun Double.ext_formatAmount(): String {
+    return this.toString().ext_formatAmount()
+}
+
+fun Float.ext_formatDiscount(): Double {
+    return this.toString().ext_allScientificNotation_to_formatDouble(2).toDouble()
+}
+
+fun String.ext_formatAmountWithUnit(): String {
+    return AppBusManager.getAmountUnit() + "" + ext_formatAmount()
+}
+
+fun Double.ext_formatAmountWithUnit(): String {
+    return this.toString().ext_formatAmountWithUnit()
+}
+
+
+fun <T> Any.ext_createJsonKey(clazz: Class<T>): String {
+    return clazz.simpleName + "_json"
+}
+
+fun Intent.ext_putJsonExtra(any: Any?): Intent {
+    if(any!=null){
+        this.putExtra(ext_createJsonKey(any::class.java), AppBusManager.toJson(any))
+    }
+    return this
+}
+
+fun <T> Intent.ext_getFromJsonWithClassKey(clazz: Class<T>): T? {
+    return AppBusManager.fromJsonWithClassKey(this, clazz)
+}
+fun Bundle.ext_putJsonExtra(any: Any?): Bundle {
+    if(any!=null){
+        this.putString(ext_createJsonKey(any::class.java), AppBusManager.toJson(any))
+    }
+    return this
+}
+fun <T> Bundle.ext_getFromJsonWithClassKey(clazz: Class<T>): T? {
+    return AppBusManager.fromJsonWithClassKey(this, clazz)
+}
+
+fun TextView.ext_setRightImageResource(res: Int?,padding:Int=5) {
+    val drawable = if (res == null) null else resources?.getDrawable(res)
+    drawable?.bounds = Rect(0, 0, drawable?.minimumWidth!!, drawable.minimumHeight)
+    setCompoundDrawables(null, null, drawable, null)
+    compoundDrawablePadding=DisplayManager.dip2px(padding.toFloat())!!
+}
+
+fun TextView.ext_setLeftImageResource(res: Int?,padding:Int=5) {
+    val drawable = if (res == null) null else resources?.getDrawable(res)
+    drawable?.bounds = Rect(0, 0, drawable?.minimumWidth!!, drawable.minimumHeight)
+    setCompoundDrawables(drawable, null, null, null)
+    compoundDrawablePadding=DisplayManager.dip2px(padding.toFloat())!!
+}
+
+fun TextView.ext_setTopImageResource(res: Int?,padding:Int=5) {
+    val drawable = if (res == null) null else resources?.getDrawable(res)
+    drawable?.bounds = Rect(0, 0, drawable?.minimumWidth!!, drawable.minimumHeight)
+    setCompoundDrawables(null, drawable, null, null)
+    compoundDrawablePadding=DisplayManager.dip2px(padding.toFloat())!!
+}
+
+fun TextView.ext_setTextWithHorizontalLine(text:String){
+    this.paint.flags = Paint.STRIKE_THRU_TEXT_FLAG //中划线
+    setText(text)
+}
+
+fun Activity.toast(msg: String) {
+    this.applicationContext.toast(msg)
+}
+
+fun Fragment.toast(msg: String) {
+    activity?.toast(msg)
+}
+
+fun Context.toast(msg: String) {
+    MallUtils.showToast(msg, this)
+}
+
+fun Activity.toast(msg: Int) {
+    toast(getString(msg))
+}
+
+fun Fragment.toast(msg: Int) {
+    toast(getString(msg))
+}
+
+fun Context.toast(msg: Int) {
+    toast(getString(msg))
+}
+
+fun Context.toast(message: CharSequence) {
+    toast(message.toString())
+}
+
+/**
+ * 关键字高亮显示
+ *
+ * @param target  需要高亮的关键字
+ * @param text	     需要显示的文字
+ * @return spannable 处理完后的结果，记得不要toString()，否则没有效果
+ */
+fun TextView.ext_Highlight(text: String, target: String) {
+    val spannable = SpannableStringBuilder(text)
+    var span: CharacterStyle? = null
+
+    val p = Pattern.compile(target)
+    val m = p.matcher(text)
+    while (m.find()) {
+        span = ForegroundColorSpan(Color.RED)// 需要重复！
+        spannable.setSpan(span, m.start(), m.end(),
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+    }
+    setText(spannable)
+}
+
+fun String.ext_copyToClipboard(context: Context) {
+    val cm =context.getSystemService(Context.CLIPBOARD_SERVICE) as (ClipboardManager)
+    val clipData = ClipData.newPlainText("Label", this) as ClipData
+    cm.setPrimaryClip(clipData)
+    context.toast("复制成功")
+}
+
+
+
+
+
+
+

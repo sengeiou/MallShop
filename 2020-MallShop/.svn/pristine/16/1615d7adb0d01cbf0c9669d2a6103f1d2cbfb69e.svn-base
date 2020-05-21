@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:zhy="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_marginTop="35dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:visibility="gone"
+            android:id="@+id/ivBack"
+            android:layout_marginStart="9dp"
+            android:src="@mipmap/top_icon_black_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <RelativeLayout
+            android:layout_marginStart="12dp"
+            android:background="@drawable/shape_bg_search"
+            android:layout_toEndOf="@+id/ivBack"
+            android:layout_toStartOf="@+id/tvCancel"
+            android:layout_width="match_parent"
+            android:layout_height="32dp">
+            <com.epro.mall.ui.view.ClearableEditText
+                android:layout_marginEnd="8dp"
+                app:clearIcon="@mipmap/icon_delete_black"
+                android:background="@null"
+                android:layout_toEndOf="@+id/ivSearch"
+                android:textColorHint="@color/gray_cccccc"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/contentTextSize"
+                android:layout_width="match_parent"
+                android:id="@+id/etSearch"
+                android:layout_height="32dp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:imeOptions="actionSearch"
+                android:inputType="text"
+                android:maxLines="1"
+                android:singleLine="true" />
+            <ImageView
+                android:id="@+id/ivSearch"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:src="@mipmap/icon_search"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+
+        <TextView
+            android:paddingTop="2dp"
+            android:paddingBottom="2dp"
+            android:paddingEnd="9dp"
+            android:paddingStart="9dp"
+            android:layout_centerVertical="true"
+            android:textColor="@color/thirdTextColor"
+            android:textSize="@dimen/contentTextSize"
+            android:id="@+id/tvCancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:text="@string/delete_dialog_cancel" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/rvAssociate"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+        </RelativeLayout>
+
+        <LinearLayout
+            android:background="@color/white"
+            android:orientation="vertical"
+            android:id="@+id/llRecord"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+           <RelativeLayout
+               android:visibility="gone"
+               android:id="@+id/rlRecentHeader"
+               android:layout_marginTop="25dp"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+               <TextView
+                   android:layout_centerVertical="true"
+                   android:layout_marginStart="10dp"
+                   android:textSize="@dimen/contentTextSize"
+                   android:textColor="@color/mainTextColor"
+                   android:text="@string/recently_searched"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content" />
+               <TextView
+                   android:layout_centerVertical="true"
+                   android:drawablePadding="10dp"
+                   android:drawableStart="@mipmap/search_icon_trash"
+                   android:layout_alignParentEnd="true"
+                   android:id="@+id/tvClear"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content" />
+           </RelativeLayout>
+            <com.zhy.view.flowlayout.TagFlowLayout
+                android:visibility="gone"
+                android:id="@+id/flRecent"
+                zhy:max_select="-1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"/>
+           <RelativeLayout
+               android:visibility="gone"
+               android:layout_marginTop="25dp"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+               <TextView
+                   android:layout_centerVertical="true"
+                   android:layout_marginStart="10dp"
+                   android:textSize="@dimen/contentTextSize"
+                   android:textColor="@color/mainTextColor"
+                   android:text="@string/search_suggestions"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content" />
+               <TextView
+                   android:drawableStart="@mipmap/search_icon_refresh"
+                   android:drawablePadding="10dp"
+                   android:layout_centerVertical="true"
+                   android:layout_alignParentEnd="true"
+                   android:id="@+id/tvSwitch"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content" />
+           </RelativeLayout>
+            <com.zhy.view.flowlayout.TagFlowLayout
+                android:visibility="gone"
+                android:id="@+id/flSuggest"
+                zhy:max_select="-1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"/>
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

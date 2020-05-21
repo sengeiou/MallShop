@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
+    android:layout_height="72dp"
+    android:orientation="horizontal">
+   <LinearLayout
+       android:layout_centerVertical="true"
+       android:orientation="vertical"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content">
+       <TextView
+           android:id="@+id/tvDesc"
+           android:textSize="@dimen/text_size_15"
+           android:text="@string/description"
+           android:textColor="@color/titleTextColor"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content" />
+
+       <LinearLayout
+           android:gravity="center_vertical"
+           android:layout_marginTop="4dp"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:orientation="horizontal">
+           <TextView
+               android:textStyle="bold"
+               android:id="@+id/tvUnit"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="$"
+               android:textColor="@color/mainColor"
+               android:textSize="@dimen/secondaryContentTextSize" />
+           <TextView
+               android:textStyle="bold"
+               android:maxEms="10"
+               android:maxLines="1"
+               android:ellipsize="end"
+               android:id="@+id/tvPrice"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="0.00"
+               android:textColor="@color/mainColor"
+               android:textSize="@dimen/titleTextSize" />
+           <LinearLayout
+               android:visibility="gone"
+               android:layout_marginStart="8dp"
+               android:id="@+id/llActivity"
+               android:gravity="center_vertical"
+               android:orientation="horizontal"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content">
+               <TextView
+                   android:gravity="center"
+                   android:background="@drawable/shape_tag_red_radius2"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="限时折扣"
+                   android:textColor="@color/mainMatchColor"
+                   android:textSize="8sp" />
+               <TextView
+                   android:id="@+id/tvOriginalPrice"
+                   android:layout_marginStart="5dp"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="0.00"
+                   android:textColor="@color/thirdTextColor"
+                   android:textSize="@dimen/explainContentTextSize" />
+           </LinearLayout>
+       </LinearLayout>
+   </LinearLayout>
+    <LinearLayout
+        android:id="@+id/llChangeNum"
+        android:layout_width="wrap_content"
+        android:layout_height="28dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/shape_border_gray_radius11"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+            android:scaleType="center"
+            android:src="@mipmap/icon_minus"
+            android:id="@+id/tvMinus"
+            android:layout_width="26dp"
+            android:layout_height="28dp"
+            android:textColor="@color/secondaryTextColor"
+            android:textSize="@dimen/contentTextSize" />
+
+        <TextView
+            android:id="@+id/tvNum"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/shape_border_gray"
+            android:gravity="center"
+            android:text="1"
+            android:textColor="@color/mainTextColor"
+            android:textSize="@dimen/contentTextSize" />
+
+        <ImageView
+            android:scaleType="center"
+            android:src="@mipmap/icon_plus"
+            android:id="@+id/tvPlus"
+            android:layout_width="26dp"
+            android:layout_height="28dp"
+            android:gravity="center"
+            android:textColor="@color/secondaryTextColor"
+            android:textSize="@dimen/contentTextSize" />
+    </LinearLayout>
+    <View
+        android:layout_alignParentBottom="true"
+        android:background="@color/lineColor"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"/>
+</RelativeLayout>

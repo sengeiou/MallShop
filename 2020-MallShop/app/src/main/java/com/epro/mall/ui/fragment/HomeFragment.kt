@@ -1,0 +1,277 @@
+package com.epro.mall.ui.fragment
+
+import android.app.Activity
+import android.content.Intent
+import android.location.Location
+import android.os.Bundle
+import android.text.TextUtils
+import android.view.View
+import com.amap.api.location.AMapLocation
+import com.epro.mall.R
+import com.mike.baselib.listener.LoginSuccessEvent
+import com.epro.mall.listener.RefreshHomePageFinishEvent
+import com.epro.mall.mvp.contract.HomeContract
+import com.epro.mall.mvp.model.bean.AdBanner
+import com.epro.mall.mvp.model.bean.HomeShop
+import com.epro.mall.mvp.model.bean.LocationBean
+import com.epro.mall.mvp.presenter.HomePresenter
+import com.epro.mall.ui.MainActivity
+import com.epro.mall.ui.activity.*
+import com.epro.mall.ui.activity.UpdateAppActivity.Companion.UPDATE_TYPE_DIALOG
+import com.epro.mall.ui.adapter.HomeShopListAdapter
+import com.epro.mall.utils.LocationManager
+import com.epro.mall.utils.MallConst
+import com.epro.mall.listener.CartChangeEvent
+import com.mike.baselib.fragment.BaseTitleBarListFragment
+import com.mike.baselib.net.exception.ErrorStatus
+import com.mike.baselib.utils.*
+import com.mike.baselib.view.recyclerview.MultipleType
+import kotlinx.android.synthetic.main.fragment_home.*
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
+
+/**
+ * 首页home
+ */
+
+class HomeFragment : BaseTitleBarListFragment<HomeShop, HomeContract.View, HomePresenter, HomeShopListAdapter>(), HomeContract.View, View.OnClickListener, LocationManager.LocationListener {
+    override fun getListData() {
+        if (location == null) {
+            mPresenter.getHomeShopList("", "", count == 0)
+        } else {
+            mPresenter.getHomeShopList(location!!.latitude.toString(), location!!.longitude.toString(), count == 0)
+            //mPresenter.getHomeShopList("", "", count == 0)
+        }
+    }
+
+    override fun getListAdapter(list: ArrayList<HomeShop>): HomeShopListAdapter {
+        list.add(HomeShop(ArrayList(), ArrayList(), "", 0, "", "", "", 0, "", ""))
+        return HomeShopListAdapter(activity!!, list, ArrayList(), object : MultipleType<HomeShop> {
+            override fun getLayoutId(item: HomeShop, position: Int): Int {
+                return if (position == 0) {
+                    R.layout.item_homeshoplist_header
+                } else {
+                    R.layout.item_homeshoplist2
+                }
+            }
+        })
+    }
+
+    override fun onGetBannerListSuccess(banners: ArrayList<AdBanner>) {
+        smartRefresh.finishRefresh()
+        if (banners.isNotEmpty()) {
+            logTools.toJson(banners[0])
+            listDataAdapter?.bannerList!!.clear()
+            listDataAdapter?.bannerList!!.addAll(banners)
+            listDataAdapter?.notifyItemChanged(0)
+        }
+    }
+
+    var location: Location? = null
+    override fun onLocationSuccess(location: AMapLocation) {
+        this.location = location
+        tvAddress.text = location.address
+        page = 1
+        getListData()
+    }
+
+    override fun onLocationError() {
+        tvAddress.text = getString(R.string.positioning_failure)
+        page = 1
+        getListData()
+    }
+
+    override fun onGetCartGoodsCountSuccess(count: Int) {
+        val ac = activity as MainActivity
+        ac.showMsgCount(2, count)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onCartChangeEvent(event: CartChangeEvent) {
+        if (AppBusManager.isLogin()) {
+            mPresenter.getCartGoodsCount(MallConst.GET_CARTGOODS_COUNT)
+        }
+    }
+
+
+    override fun onClick(p0: View?) {
+        when (p0) {
+//            ivRight -> {
+//                //showHomePop()
+//                startActivity(Intent(activity!!, FindShopActivity::class.java).putExtra("LatLng", LatLng(location?.latitude!!,location?.longitude!!)))
+//            }
+            ivSearch -> {
+                if (location == null) {
+                    toast("请重新定位")
+                    return
+                }
+                SearchActivity.launchWithShopId_Keyword_Location(activity!!, null, null
+                        , com.epro.mall.mvp.model.bean.Location("", location!!.latitude.toString(), location!!.longitude.toString()))
+                //toast("功能开发中,敬请期待")
+                //startActivity<TestActivity>()
+            }
+
+            tvAddress -> {
+                //  LocationSelectActivity.launchWithShopIdForResult(this, FOR_LOCATION)
+                // toast("功能开发中,敬请期待")
+
+                // AreaSelectActivity.launchWithShopIdForResult(activity!!,0)
+                // AreaSelectActivity.launchWithShopIdForResult(activity!!,0)
+                //EventBus.getDefault().post(BigEvent())
+            }
+            //扫码购
+            ivScanCode -> {
+                ScanBarPurchaseActivity.launch(activity!!)
+            }
+        }
+    }
+
+    companion object {
+        const val TAG = "HomeFragment"
+        const val FOR_LOCATION = 1
+
+        fun newInstance(str: String): HomeFragment {
+            val args = Bundle()
+            args.putString(TAG, str)
+            val fragment = HomeFragment()
+            fragment.setArguments(args)
+            return fragment
+        }
+
+        fun newInstance(): HomeFragment {
+            return newInstance("")
+        }
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                FOR_LOCATION -> {
+                    val location = AppBusManager.fromJson(data?.getStringExtra(ext_createJsonKey(LocationBean::class.java)), LocationBean::class.java)
+                    tvAddress.text = location?.location
+                    page = 1
+                    getListData()
+                }
+            }
+        }
+    }
+
+    var count = 0
+    var locationManager:LocationManager= LocationManager.getInstance()
+    override fun lazyLoad() {
+//        if (AppBusManager.isLogin()) {
+//            mPresenter.getCartGoodsCount(MallConst.GET_CARTGOODS_COUNT)
+//        }
+        LogTools.debug("do here1")
+        locationManager.requestLocation()
+        LogTools.debug("do here2")
+        mPresenter.getBannerList(0, count==0)
+        count++
+    }
+
+    override fun layoutCustomContentId(): Int {
+        return R.layout.fragment_home
+    }
+
+    override fun getPresenter(): HomePresenter {
+        return HomePresenter()
+    }
+
+    override fun initData() {
+
+    }
+
+    override fun initListener() {
+        ivSearch.setOnClickListener(this)
+        tvAddress.setOnClickListener(this)
+        ivScanCode.ext_doubleClick(this)
+        locationManager.locationListener = this
+        smartRefresh.setOnRefreshListener { refreshlayout ->
+            lazyLoad()
+        }
+    }
+
+    override fun getListDataSuccess(list: List<HomeShop>, type: String) {
+        super.getListDataSuccess(list, type)
+        smartRefresh.finishRefresh()
+
+        logTools.d("shop list success")
+    }
+
+    override fun showError(errorMsg: String, errorCode: Int, type: String) {
+        super.showError(errorMsg, errorCode, type)
+        smartRefresh.finishRefresh()
+        if (errorCode == ErrorStatus.NETWORK_ERROR) {
+           getMultipleStatusView().showContent()
+        }
+
+        logTools.d(type+errorCode)
+
+    }
+
+
+
+    override fun initView() {
+        super.initView()
+        AppBusManager.initRefreshUI(smartRefresh)
+        getRefreshView().setEnableRefresh(false)
+        getRvListView().setBackgroundResource(R.color.transparent)
+        if ("".equals(SPUtils.get(activity!!, "ResetTime", ""))) {
+            saveTime()
+        }
+        UpdateAppActivity.launchWithType(activity!!, UPDATE_TYPE_DIALOG)
+        getTitleBar().visibility = View.GONE
+        locationManager.initLocation(activity!!)
+        // childFragmentManager.beginTransaction().replace(R.id.fragmentContent, HomeShopListFragment.newInstance(), "homeShopList").commitAllowingStateLoss()
+        listDataAdapter?.onItemClickListener = object : HomeShopListAdapter.OnItemClickListener {
+            override fun onClick(item: HomeShop) {
+                if(!TextUtils.isEmpty(item.shopId)){
+                    ShopDetailActivity.launchWithShopId(activity!!, item.shopId)
+                }
+            }
+        }
+    }
+
+
+    private fun saveTime() {
+        val dateSame = Date()
+        val formatSame = "yyyy-MM-dd"
+        var dateSameTime = SimpleDateFormat(formatSame)
+        var sameTime = dateSameTime.format(dateSame)
+        SPUtils.put(activity!!, "ResetTime", sameTime)
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onRefreshHomePageFinishEvent(event: RefreshHomePageFinishEvent) {
+        // finishRefresh()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onLoginSuccessEvent(event: LoginSuccessEvent) {
+        mPresenter.getCartGoodsCount(MallConst.GET_CARTGOODS_COUNT)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        locationManager.destroyLocation()
+    }
+
+    override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
+        super.onPermissionsDenied(requestCode, perms)
+        activity?.finish()
+    }
+
+    override fun showLoading(type: String) {
+        if(count==0){
+            super.showLoading(type)
+        }
+    }
+
+}

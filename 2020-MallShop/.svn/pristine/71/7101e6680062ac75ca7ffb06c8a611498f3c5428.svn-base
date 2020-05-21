@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bottomColor"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:layout_marginTop="12dp"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="vertical">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="103dp"
+                android:paddingVertical="18dp"
+                >
+
+                <com.epro.mall.ui.view.CircleImageView
+                    android:id="@+id/ivAvatar"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:paddingTop="13dp"
+                    android:src="@mipmap/default_image"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    tools:layout_editor_absoluteY="6dp"
+                    tools:ignore="MissingConstraints" />
+
+                <ImageView
+                    android:id="@+id/imgCamera"
+                    android:layout_width="15dp"
+                    android:layout_height="15dp"
+                    android:layout_alignRight="@+id/ivAvatar"
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginBottom="5dp"
+                    android:src="@mipmap/my_camera"
+                    app:layout_constraintBottom_toBottomOf="@+id/ivAvatar"
+                    app:layout_constraintHorizontal_bias="0.57"
+                    tools:layout_editor_absoluteY="6dp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintLeft_toRightOf="@+id/ivAvatar"
+                    app:layout_constraintRight_toRightOf="parent" />
+
+            </android.support.constraint.ConstraintLayout>
+        </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="12dp"
+            android:background="@color/bottomColor" />
+        <RelativeLayout
+            android:gravity="center_vertical"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+            <TextView
+                android:text="@string/my_info_account"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/contentTextSize"
+                android:paddingStart="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/tvAccount"
+                android:layout_alignParentEnd="true"
+                android:textColor="@color/thirdTextColor"
+                android:text=""
+                android:textSize="@dimen/contentTextSize"
+                android:paddingEnd="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </RelativeLayout>
+        <View
+            style="@style/View_line"
+            android:layout_alignParentBottom="true"
+            />
+        <RelativeLayout
+            android:id="@+id/rlPhone"
+            android:gravity="center_vertical"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+            <TextView
+                android:text="@string/bind_phone_num"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/contentTextSize"
+                android:paddingStart="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:drawableEnd="@mipmap/arrow_right"
+                android:drawablePadding="13dp"
+                android:id="@+id/tvPhone"
+                android:layout_alignParentEnd="true"
+                android:text=""
+                android:textColor="@color/secondaryTextColor"
+                android:textSize="@dimen/contentTextSize"
+                android:paddingEnd="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+        <View
+            style="@style/View_line"
+            android:layout_alignParentBottom="true"
+            />
+        <RelativeLayout
+            android:id="@+id/rlEmail"
+            android:gravity="center_vertical"
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="48dp">
+            <TextView
+                android:text="@string/bind_email_num"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/contentTextSize"
+                android:paddingStart="12dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:drawableEnd="@mipmap/arrow_right"
+                android:drawablePadding="13dp"
+                android:id="@+id/tvEmail"
+                android:layout_alignParentEnd="true"
+                android:text=""
+                android:paddingEnd="12dp"
+                android:textColor="@color/secondaryTextColor"
+                android:textSize="@dimen/contentTextSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+    </LinearLayout>
+</LinearLayout>

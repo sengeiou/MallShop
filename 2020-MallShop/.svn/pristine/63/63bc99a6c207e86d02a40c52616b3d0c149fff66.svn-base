@@ -1,0 +1,347 @@
+package com.epro.mall.ui.fragment
+
+import android.app.Dialog
+import android.content.Intent
+import android.os.Build
+import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.view.Gravity
+import android.view.View
+import android.view.WindowManager
+import android.widget.TextView
+import com.epro.mall.R
+import com.epro.mall.listener.LoginSuccessEvent
+import com.epro.mall.listener.LogoutSuccessEvent
+import com.epro.mall.listener.MyInfoChangeEvent
+import com.epro.mall.mvp.contract.MineContract
+import com.epro.mall.mvp.model.bean.ItemMine
+import com.epro.mall.mvp.model.bean.MyInfoBean
+import com.epro.mall.mvp.presenter.MinePresenter
+import com.epro.mall.ui.AppConfigActivity
+import com.epro.mall.ui.activity.*
+import com.epro.mall.ui.adapter.MineAdapter
+import com.epro.mall.ui.login.LoginActivity
+import com.epro.mall.ui.login.ModifyPasswordActivity
+import com.epro.mall.ui.view.CommonDialog
+import com.epro.mall.ui.view.LogoutBottomPopup
+import com.epro.mall.utils.ActivityUtil
+import com.epro.mall.utils.MallBusManager
+import com.epro.mall.utils.MallConst
+import com.epro.mall.utils.MallUtils
+import com.mike.baselib.fragment.BaseTitleBarCustomFragment
+import com.mike.baselib.listener.CancelInstallEvent
+import com.mike.baselib.net.exception.ErrorStatus
+import com.mike.baselib.service.DownloadIntentService
+import com.mike.baselib.utils.*
+import kotlinx.android.synthetic.main.fragment_mine.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import org.jetbrains.anko.support.v4.startActivity
+
+
+/**
+ * 我的页面
+ */
+class MineFragment : BaseTitleBarCustomFragment<MineContract.View, MinePresenter>(), MineContract.View, View.OnClickListener {
+
+    override fun loginOutSuccess() {
+        EventBus.getDefault().post(LogoutSuccessEvent())
+        toast(getString(R.string.login_out_success))
+    }
+
+    private fun clearDataLoginOut() {
+        logTools.t("YB").d("clearDataLoginOut")
+        AppBusManager.setPassword("")
+        AppBusManager.setToken("")
+        setRefreshEnable(false)
+        tvTelephone.visibility = View.GONE
+        tvName.setText(R.string.pls_login)
+        ivAvatar.setImageResource(R.mipmap.default_image)
+        btnLogout.text = getString(R.string.pls_login_system)
+    }
+
+    override fun onMyInfoSuccess(result: MyInfoBean.Result) {
+        tvName.text = result.username
+        tvTelephone.visibility = View.VISIBLE
+        if (!"".equals(result.mobile)) {
+            tvTelephone.text = MallUtils.getStringAccount(result.mobile, "phone")
+        } else {
+            tvTelephone.text = MallUtils.getStringAccount(result.email, "email")
+        }
+        btnLogout.text = getString(R.string.logout)
+        AppBusManager.setUsername(result.username)
+        AppBusManager.setUserPhone(result.mobile)
+        AppBusManager.setUserAvatar(result.avatar)
+        if (!"".equals(result.avatar)) {
+            ivAvatar.ext_loadImageWithDomain(result.avatar)
+        } else {
+            ivAvatar.setImageResource(R.mipmap.default_image)
+        }
+    }
+
+    override fun onClick(p0: View?) {
+        when (p0) {
+            ivAvatar -> {
+                if (MallBusManager.checkNotLogin(activity!!)) {
+                    return
+                }
+                startActivity<MyInfoActivity>()
+            }
+            rlHeader -> {
+                if (MallBusManager.checkNotLogin(activity!!)) {
+                    return
+                }
+                startActivity<MyInfoActivity>()
+            }
+            btnLogout -> {
+                var btnString = btnLogout.text.toString().trim()
+                if (getString(R.string.logout).equals(btnString)) {
+                    showLogoutDialog()
+                } else {
+                    LoginActivity.launch(activity!!)
+                }
+            }
+        }
+    }
+
+    companion object {
+        const val TAG = "MineFragment"
+        const val COUNT = 1
+        const val REQUEST_CODE_FOR_LOGIN_RESULT = 4
+        fun newInstance(str: String): MineFragment {
+            val args = Bundle()
+            args.putString(TAG, str)
+            val fragment = MineFragment()
+            fragment.setArguments(args)
+            return fragment
+        }
+
+        fun newInstance(): MineFragment {
+            return newInstance("")
+        }
+    }
+
+    override fun getPresenter(): MinePresenter {
+        return MinePresenter()
+    }
+
+//    private val mTexts = arrayOf(R.string.account_relative, R.string.modify_password, R.string.language_change, R.string.receive_address, R.string.about_us, R.string.set_dv)
+//    private val mIcons = arrayOf(R.mipmap.my_icon1, R.mipmap.my_icon2, R.mipmap.icon_language, R.mipmap.my_icon3, R.mipmap.my_icon4, R.mipmap.my_icon4)
+//    private val mBackgrounds = arrayOf(R.drawable.shape_bg_white_half_radius17_top, R.color.white, R.drawable.shape_bg_white_half_radius5,
+//            R.drawable.shape_bg_white_half_radius6_top, R.drawable.shape_bg_white_half_radius5, R.color.white)
+
+
+    override fun layoutContentId(): Int {
+        return R.layout.fragment_mine
+    }
+
+    override fun lazyLoad() {
+        logTools.d(this::class.java.simpleName + "lazy do")
+        if (AppBusManager.isLogin()) {
+            mPresenter.MyInfo(MallConst.GET_MY_INFO)
+        }
+    }
+
+    override fun initData() {
+    }
+
+    override fun initListener() {
+        ivAvatar.setOnClickListener(this)
+        rlHeader.setOnClickListener(this)
+        btnLogout.setOnClickListener(this)
+    }
+
+    val mTexts = arrayOf(R.string.modify_password, R.string.receive_address,R.string.about_us)
+    val mIcons = arrayOf(R.mipmap.my_icon2,R.mipmap.my_icon3, R.mipmap.my_icon4)
+    val mBackgrounds = arrayOf(R.drawable.shape_bg_white_half_radius17_top, R.drawable.shape_bg_white_half_radius6_top, R.drawable.shape_bg_white_half_radius5)
+    override fun initView() {
+        super.initView()
+        getTitleBar().visibility = View.GONE
+        setRefreshEnable(true)
+        if (AppBusManager.isLogin()) {
+            tvName.setText(AppBusManager.getUsername())
+            btnLogout.text = getString(R.string.logout)
+            mPresenter.MyInfo(MallConst.GET_MY_INFO)
+        } else {
+            tvName.setText(R.string.pls_login)
+            btnLogout.text = getString(R.string.pls_login_system)
+            setRefreshEnable(false)
+        }
+        val list = ArrayList<ItemMine>()
+        for (index in mTexts.indices) {
+            list.add(ItemMine(mIcons[index], AppContext.getInstance().getString(mTexts[index]), mBackgrounds[index]))
+        }
+        val linearLayoutManager = LinearLayoutManager(activity!!)
+        rvMineItems.layoutManager = linearLayoutManager as RecyclerView.LayoutManager?
+        val adapter = MineAdapter(activity!!,list)
+        rvMineItems.adapter = adapter
+        adapter.onItemClickListener = object : MineAdapter.OnItemClickListener {
+            override fun onClick(item: ItemMine) {
+                when (item.content) {
+                    //增加全局上下文修复语言切换后无法点击问题
+                    AppContext.getInstance().getString(R.string.account_relative) -> {
+                        if (AppBusManager.isLogin()) {
+                            startActivity<AccountAssociationActivity>()
+                            // toast("功能开发中,敬请期待")
+                        } else {
+                            startActivityForResult(Intent(activity!!, LoginActivity::class.java), REQUEST_CODE_FOR_LOGIN_RESULT)
+                        }
+                    }
+                    AppContext.getInstance().getString(R.string.modify_password) -> {
+                        if (AppBusManager.isLogin()) {
+                            ModifyPasswordActivity.launch(activity!!)
+                        } else {
+                            startActivityForResult(Intent(activity!!, LoginActivity::class.java), REQUEST_CODE_FOR_LOGIN_RESULT)
+                        }
+                    }
+                    AppContext.getInstance().getString(R.string.receive_address) -> {
+                        if (AppBusManager.isLogin()) {
+                            AddressListActivity.launchWithAddress(activity!!,null,0)
+                            //toast("功能开发中,敬请期待")
+                        } else {
+                            startActivityForResult(Intent(activity!!, LoginActivity::class.java), REQUEST_CODE_FOR_LOGIN_RESULT)
+                        }
+                    }
+                    AppContext.getInstance().getString(R.string.about_us) -> {
+                        startActivity<AboutActivity>()
+                    }
+                    AppContext.getInstance().getString(R.string.language_change) -> {
+                        startActivity<LanguageChangeActivity>()
+                    }
+                    AppContext.getInstance().getString(R.string.my_message)->{
+                        if(MallBusManager.checkNotLogin(activity!!)){
+                            return
+                        }
+                        ActivityUtil.launch2CompIMChatRecordList(activity!!)
+                    }
+
+                    AppContext.getInstance().getString(R.string.set_dv) + "(" + AppBusManager.getDevName() + ")" -> {
+                       startActivity<AppConfigActivity>()
+                   }
+                }
+            }
+        }
+    }
+
+    private fun showLogoutDialog() {
+        val pop = LogoutBottomPopup(activity!!)
+        pop.width = DisplayManager.getScreenWidth()!! * 100 / 100
+        pop.height = DisplayManager.getScreenHeight()!! * 15 / 100
+        pop.popupGravity = Gravity.BOTTOM
+        pop.showPopupWindow()
+        val logoutBottom = pop.contentView.findViewById<TextView>(R.id.logoutBottom)
+        val cancelBottom = pop.contentView.findViewById<TextView>(R.id.cancelBottom)
+        cancelBottom.setOnClickListener {
+            pop.dismiss()
+        }
+        logoutBottom.setOnClickListener {
+            pop.dismiss()
+            mPresenter.loginOut(MallConst.LOGOUT)
+        }
+    }
+
+    fun showUpdateDialog(remarks: String) {
+        CommonDialog.Builder(activity!!)
+                .setTitle(getString(R.string.update_dialog))
+                .setContent(remarks)
+                .setOnConfirmListener(object : CommonDialog.OnConfirmListener {
+                    override fun onClick(dialog: Dialog) {
+                        dialog.dismiss()
+                        if (!getString(R.string.alreay_newest_version).equals(remarks)) {
+                        }
+                    }
+                })
+                .setOnCancelListener(object : CommonDialog.OnCancelListener {
+                    override fun onClick(dialog: Dialog) {
+                        dialog.dismiss()
+                    }
+                })
+                .create()
+                .show()
+    }
+
+
+    fun showClearCacheDialog() {
+        CommonDialog.Builder(activity!!)
+                .setTitle(getString(R.string.prompt_title))
+                .setContent(getString(R.string.clean_cache_pls))
+                .setOnConfirmListener(object : CommonDialog.OnConfirmListener {
+                    override fun onClick(dialog: Dialog) {
+                        dialog.dismiss()
+                        CleanMessageUtil.clearAllCache(activity)
+                        toast(getString(R.string.clean_cache_success))
+                    }
+                })
+                .setOnCancelListener(object : CommonDialog.OnCancelListener {
+                    override fun onClick(dialog: Dialog) {
+                        dialog.dismiss()
+                    }
+                })
+                .create()
+                .show()
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onCancelInstallEvent(event: CancelInstallEvent) {
+        activity?.stopService(Intent(activity, DownloadIntentService::class.java))
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onLoginSuccessEvent(event: LoginSuccessEvent) {
+        initLoginUI()
+    }
+
+    private fun initLoginUI() {
+        logTools.t("YB").d(" MineFragment onLoginSuccess : ")
+        mPresenter.MyInfo(MallConst.GET_MY_INFO)
+    }
+
+    override fun onDestroy() {
+        activity?.stopService(Intent(activity, DownloadIntentService::class.java))
+        super.onDestroy()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    fun onLogoutSuccess(event: LogoutSuccessEvent) {
+        logTools.t("YB").d("onLogoutSuccess")
+        clearDataLoginOut()
+    }
+
+    override fun showError(errorMsg: String, errorCode: Int, type: String) {
+        super.showError(errorMsg, errorCode, type)
+        if (errorCode == ErrorStatus.MULTI_DEVICE_ERROR || errorCode == ErrorStatus.TOKEN_EXPIERD) {
+            clearDataLoginOut()
+        }
+        if (type.equals(MallConst.LOGOUT)) {
+            if (errorCode == ErrorStatus.UNKNOWN_ERROR) {
+                clearDataLoginOut()
+            }
+        }
+    }
+
+    var imagePath: String? = null
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onMyInfoChangeEvent(event: MyInfoChangeEvent) {
+        imagePath = event.image
+        if (event.image != null) {
+            ivAvatar.ext_loadImageWithDomain(event.image)
+        }
+    }
+
+    protected fun hideBottomUIMenu() {
+        //隐藏虚拟按键，并且全屏
+        if (Build.VERSION.SDK_INT > 11 && Build.VERSION.SDK_INT < 19) { // lower api
+            val v = activity!!.getWindow().getDecorView()
+            v.setSystemUiVisibility(View.GONE)
+        } else if (Build.VERSION.SDK_INT >= 19) {
+            var window = activity!!.window
+            var params = window.getAttributes()
+            params.systemUiVisibility = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;View.SYSTEM_UI_FLAG_IMMERSIVE
+            window.setAttributes(params)
+        }
+    }
+
+}

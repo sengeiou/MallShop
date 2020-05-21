@@ -1,0 +1,101 @@
+package com.epro.mall.ui.activity
+
+import android.content.Context
+import android.content.Intent
+import android.view.View
+import com.epro.mall.R
+import com.epro.mall.mvp.contract.AboutContract
+import com.epro.mall.mvp.model.bean.AboutBean
+import com.epro.mall.mvp.presenter.AboutPresenter
+import com.epro.mall.ui.view.CustomProgressDialog
+import com.mike.baselib.activity.BaseTitleBarCustomActivity
+import com.mike.baselib.utils.AppUtils
+import kotlinx.android.synthetic.main.activity_about.*
+import org.jetbrains.anko.startActivity
+
+class AboutActivity :BaseTitleBarCustomActivity<AboutContract.View,AboutPresenter>(),AboutContract.View, View.OnClickListener {
+
+    override fun onClick(p0: View?) {
+      when(p0){
+          tv_product->{
+              startActivity<ProductDescription>()
+          }
+          tv_Update->{
+            // mPresenter.aboutApp(MallConst.ABOUT_APP,"3")
+              UpdateAppActivity.launchWithType(this)
+          }
+          tv_servicePhone->{
+              AppUtils.callPhone(this, phoneNum.text.toString())
+          }
+      }
+    }
+
+    companion object{
+        const val TAG = "About"
+        fun launch(context: Context) {
+            launchWithStr(context, "")
+        }
+
+        fun launchWithStr(context: Context, str: String) {
+            context.startActivity(Intent(context, AboutActivity::class.java).putExtra(TAG, str))
+        }
+    }
+
+    override fun onAboutSuccess(data:AboutBean.Result) {
+       /* if (TextUtils.isEmpty(data.version)){
+            UpdateAppActivity.launchWithStr(this,NOT_TO_UPDATE,data)
+            return
+        }
+        var versionNewArray = data.version.split(".")
+        var currentVersion = AppUtils.getVerName(this).split(".")
+        var doUpdate = getCompared(currentVersion,versionNewArray)
+        if (doUpdate){
+            UpdateAppActivity.launchWithStr(this,NEED_TO_UPDATE,data)
+        }else{
+            UpdateAppActivity.launchWithStr(this,NOT_TO_UPDATE,data)
+        }*/
+    }
+
+    private fun getCompared(currentVersion: List<String>, versionNewArray: List<String>): Boolean {
+        logTools.t("YB").d("getCompared currentVersion:"+currentVersion+ " versionNewArray :"+versionNewArray)
+        if (versionNewArray[0].toInt()>currentVersion[0].toInt()){
+            return true
+        }else if (versionNewArray[0].toInt()==currentVersion[0].toInt()&&versionNewArray[1].toInt()>currentVersion[1].toInt()){
+            return true
+        }else if (versionNewArray[0].toInt()==currentVersion[0].toInt()&&versionNewArray[1].toInt()==currentVersion[1].toInt()&&versionNewArray[2].toInt()>currentVersion[2].toInt()){
+            return true
+        }
+        return false
+    }
+
+
+    override fun layoutContentId(): Int {
+        return  R.layout.activity_about
+    }
+
+    override fun initView() {
+        super.initView()
+        tv_version.text = "Version "+AppUtils.getVerName(this)
+    }
+
+    override fun initData() {
+        getTitleView().text =getString(R.string.about_app)
+    }
+
+    override fun initListener() {
+        tv_product.setOnClickListener(this)
+        tv_Update.setOnClickListener(this)
+        tv_servicePhone.setOnClickListener(this)
+    }
+
+    override fun getPresenter(): AboutPresenter {
+        return AboutPresenter()
+    }
+
+    //    进度条
+    private fun showLoginProgress() {
+        var progressDialog = CustomProgressDialog(this,R.style.progressDialog)
+        progressDialog.setCanceledOnTouchOutside(true)
+        progressDialog.show()
+    }
+}

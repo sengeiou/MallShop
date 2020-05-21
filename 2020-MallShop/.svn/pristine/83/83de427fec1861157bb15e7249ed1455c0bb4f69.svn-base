@@ -1,0 +1,104 @@
+package com.epro.mall.utils
+
+import android.content.Context
+import android.text.TextUtils
+import android.view.Gravity
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import android.widget.TextView
+import android.widget.Toast
+import com.epro.mall.R
+import com.mike.baselib.utils.DisplayManager
+
+
+class MallUtils {
+
+    companion object {
+
+        fun showToast(msg: String, mContext: Context) {
+            if (TextUtils.isEmpty(msg)) {
+                return
+            }
+            var toast = Toast(mContext.applicationContext)
+            var inflate = mContext.applicationContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            var view = inflate.inflate(R.layout.toast_info, null)
+            var tvContent = view.findViewById<TextView>(R.id.tvContent)
+            var p = tvContent.layoutParams as ViewGroup.MarginLayoutParams
+            p.bottomMargin = DisplayManager.dip2px(3.toFloat())!!
+            p.topMargin = DisplayManager.dip2px(3.toFloat())!!
+            p.leftMargin = DisplayManager.dip2px(19.toFloat())!!
+            p.rightMargin = DisplayManager.dip2px(19.toFloat())!!
+            tvContent.layoutParams = p
+            toast.view = view
+            toast.duration = Toast.LENGTH_SHORT
+            toast.setGravity(Gravity.CENTER, 0, 0)
+            var text = view.findViewById<TextView>(R.id.tvContent)
+            text.text = msg
+            toast.show()
+        }
+
+        fun showProgressToast(msg: String, mContext: Context) {
+            var toast = Toast(mContext.applicationContext)
+            var inflate = mContext.applicationContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            var view = inflate.inflate(R.layout.toast_progress_info, null)
+            toast.view = view
+            toast.duration = Toast.LENGTH_SHORT
+            toast.setGravity(Gravity.CENTER, 0, 0)
+            var text = view.findViewById<TextView>(R.id.tvContent)
+            text.text = msg
+            toast.show()
+        }
+
+        //购物成功
+        fun showShopToast(mContext: Context) {
+            var toast = Toast(mContext.applicationContext)
+            var inflate = mContext.applicationContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+            var view = inflate.inflate(R.layout.shop_toast, null)
+            toast.view = view
+            toast.duration = Toast.LENGTH_SHORT
+            toast.setGravity(Gravity.CENTER, 0, 0)
+            toast.show()
+        }
+
+        fun getStringAccount(mAccount: String?, mType: String): String? {
+            var account: String? = null
+            if (!TextUtils.isEmpty(mAccount)) {
+                if ("email".equals(mType)) {
+                    val indexOf = mAccount!!.indexOf("@")
+                    if (indexOf >= 5) {
+                        account = mAccount!!.substring(0, 5) + "****" + mAccount!!.substring(indexOf)
+                    } else if (indexOf >= 4) {
+                        account = mAccount!!.substring(0, 4) + "****" + mAccount!!.substring(indexOf)
+                    } else if (indexOf >= 3) {
+                        account = mAccount!!.substring(0, 3) + "****" + mAccount!!.substring(indexOf)
+                    } else if (indexOf >= 2) {
+                        account = mAccount!!.substring(0, 2) + "****" + mAccount!!.substring(indexOf)
+                    }
+                    return account
+                } else {
+                    if (mAccount!!.startsWith("+86", false)) {
+                        account = "+86 " + mAccount!!.substring(3, 6) + "****" + mAccount!!.substring(mAccount!!.length - 4, mAccount!!.length)
+                    } else {
+                        account = "+852 " + mAccount!!.substring(4, 6) + "****" + mAccount!!.substring(mAccount!!.length - 2, mAccount!!.length)
+                    }
+                    return account
+                }
+            } else {
+                return ""
+            }
+            return account
+        }
+
+        fun getCompared(currentVersion: List<String>, versionNewArray: List<String>): Boolean {
+            if (versionNewArray[0].toInt() > currentVersion[0].toInt()) {
+                return true
+            } else if (versionNewArray[0].toInt() == currentVersion[0].toInt() && versionNewArray[1].toInt() > currentVersion[1].toInt()) {
+                return true
+            } else if (versionNewArray[0].toInt() == currentVersion[0].toInt() && versionNewArray[1].toInt() == currentVersion[1].toInt() && versionNewArray[2].toInt() > currentVersion[2].toInt()) {
+                return true
+            }
+            return false
+        }
+
+    }
+}

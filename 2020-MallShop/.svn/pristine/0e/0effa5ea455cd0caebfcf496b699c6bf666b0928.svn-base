@@ -1,0 +1,36 @@
+package com.epro.mall.mvp.model
+
+import com.mike.baselib.net.exception.ApiException
+import com.mike.baselib.net.exception.ErrorStatus
+import com.mike.baselib.rx.scheduler.SchedulerUtils
+import com.epro.mall.listener.RetryWithDelay
+import com.epro.mall.mvp.model.bean.*
+import io.reactivex.Observable
+
+class HomeShopListModel : BaseModel() {
+    fun getHomeShopList(latitude: String, longitude: String): Observable<GetResultListBean<HomeShop>> {
+        return getApiSevice().getHomeShopList(latitude, longitude)
+                .flatMap {
+                    if (it.code == ErrorStatus.SUCCESS) {
+                        return@flatMap Observable.just(it)
+                    } else {
+                        return@flatMap Observable.error<GetResultListBean<HomeShop>>(ApiException(it.message, it.code))
+                    }
+                }
+                .retryWhen(RetryWithDelay())
+                .compose(SchedulerUtils.ioToMain())
+    }
+
+    fun getHomeBannerList(type: Int): Observable<GetResultListBean<AdBanner>> {
+        return getApiSevice().getHomeBannerList()
+                .flatMap {
+                    if (it.code == ErrorStatus.SUCCESS) {
+                        return@flatMap Observable.just(it)
+                    } else {
+                        return@flatMap Observable.error<GetResultListBean<AdBanner>>(ApiException(it.message, it.code))
+                    }
+                }
+                .retryWhen(RetryWithDelay())
+                .compose(SchedulerUtils.ioToMain())
+    }
+}

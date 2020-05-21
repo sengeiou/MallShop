@@ -1,0 +1,275 @@
+package com.epro.comp.im.service
+
+import android.app.Activity
+import android.app.Service
+import android.content.Intent
+import android.os.IBinder
+import android.text.TextUtils
+import com.epro.comp.im.listener.ChatMessageChangeEvent
+import com.epro.comp.im.listener.ConnectSuccessEvent
+import com.epro.comp.im.mvp.model.bean.MsgBody
+import com.epro.comp.im.mvp.model.bean.User
+import com.epro.comp.im.smack.SmackManager
+import com.epro.comp.im.utils.IMBusManager
+import com.mike.baselib.net.exception.ApiException
+import com.mike.baselib.net.exception.ErrorStatus
+import com.mike.baselib.net.exception.ExceptionHandle
+import com.mike.baselib.rx.scheduler.SchedulerUtils
+import com.mike.baselib.utils.AppBusManager
+import com.mike.baselib.utils.LogTools
+import com.mike.baselib.utils.RxTimer
+import com.mike.baselib.utils.toast
+import io.reactivex.Observable
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.disposables.Disposable
+import org.greenrobot.eventbus.EventBus
+import org.jivesoftware.smack.ConnectionListener
+import org.jivesoftware.smack.XMPPConnection
+import org.jivesoftware.smack.chat2.Chat
+import org.jivesoftware.smack.chat2.IncomingChatMessageListener
+import org.jivesoftware.smack.chat2.OutgoingChatMessageListener
+import org.jivesoftware.smack.packet.Message
+import org.jivesoftware.smack.packet.Presence
+import org.jivesoftware.smackx.filetransfer.FileTransferListener
+import org.jxmpp.jid.EntityBareJid
+
+
+/**
+ * 即时通讯服务,长连接
+ */
+class IMService : Service() {
+    companion object {
+        fun startIMService(activity: Activity, csId: String) {
+            activity.startService(Intent(activity, IMService::class.java).putExtra("csId", csId))
+        }
+
+        fun stopIMService(activity: Activity) {
+            activity.stopService(Intent(activity, IMService::class.java))
+        }
+    }
+
+    private var compositeDisposable = CompositeDisposable()
+
+    fun addSubscription(disposable: Disposable) {
+        compositeDisposable.add(disposable)
+    }
+
+    fun clearSubscription() {
+        if (!compositeDisposable.isDisposed) {
+            compositeDisposable.clear()
+        }
+    }
+
+    override fun onBind(p0: Intent?): IBinder? {
+        return null
+    }
+
+    /**
+     * 聊天接收监听
+     */
+
+    internal var incomingChatMessageListener: IncomingChatMessageListener = object : IncomingChatMessageListener {
+        override fun newIncomingMessage(from: EntityBareJid?, message: Message?, chat: Chat?) {
+
+            if (chat != null) {
+                if (message != null && !TextUtils.isEmpty(message.body)) {
+                    LogTools.debug("IMService",message.toString())
+                    val disposable = Observable.just(true).flatMap {
+                        val msg = IMBusManager.saveRecvTextMsgToLocal<MsgBody>(message)
+                        IMBusManager.updateRecord(msg!!)
+                        return@flatMap Observable.just(msg)
+                    }.compose(SchedulerUtils.ioToMain()).subscribe({ bean ->
+                        val event = ChatMessageChangeEvent<MsgBody>()
+                        event.message = bean
+                        EventBus.getDefault().post(event)
+                    }, { throwable ->
+                        //处理异常
+                        ExceptionHandle.handleException(throwable)
+                    })
+                    addSubscription(disposable)
+                }
+            }
+        }
+    }
+
+    internal var outgoingChatMessageListener: OutgoingChatMessageListener = object : OutgoingChatMessageListener {
+        override fun newOutgoingMessage(to: EntityBareJid?, message: Message?, chat: Chat?) {
+
+        }
+    }
+    internal var fileTransferListener: FileTransferListener = FileTransferListener { request ->
+
+    }
+    /**
+     * 连接监听
+     */
+    internal var connectListener = object : ConnectionListener {
+        override fun connected(connection: XMPPConnection?) {
+
+        }
+
+        override fun connectionClosed() {
+
+        }
+
+        override fun connectionClosedOnError(e: Exception?) {
+
+        }
+
+        override fun authenticated(connection: XMPPConnection?, resumed: Boolean) {
+
+        }
+
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        if(AppBusManager.isLogin()){
+            SmackManager.getInstance().connectionInstance.addConnectionListener(connectListener)
+        }
+    }
+
+    private fun login(csId: String?) {
+        if(!AppBusManager.isLogin()){
+            stopSelf()
+            return
+        }
+        var tag = 0
+        LogTools.debug("IMService", "onStartCommand")
+        val disposable = Observable.just(true).flatMap {
+            if (SmackManager.getInstance().isAuthenticated) {
+                val presence = Presence(Presence.Type.available)
+                presence.mode = Presence.Mode.available
+                SmackManager.getInstance().connection.sendStanza(presence)
+
+                val friends = SmackManager.getInstance().allFriends
+                for (f in friends) {
+                    LogTools.debug(f.name)
+                }
+                return@flatMap Observable.just(true)
+            }
+            SmackManager.getInstance().login(AppBusManager.getUsername(), AppBusManager.getUsername())
+            val result = SmackManager.getInstance().isAuthenticated
+            if (result) {
+                tag = 2
+                IMBusManager.setUser(User(AppBusManager.getUsername(), AppBusManager.getUsername(), AppBusManager.getUsername()))
+                LogTools.debug("IMService", "loginSuccess")
+                if (!isAdded) {
+                    SmackManager.getInstance().addFileTransferListener(fileTransferListener)
+                    isAdded = true
+                }
+                SmackManager.getInstance().chatManager.addIncomingListener(incomingChatMessageListener)
+
+                val presence = Presence(Presence.Type.available)
+                presence.mode = Presence.Mode.available
+                SmackManager.getInstance().connection.sendStanza(presence)
+
+                if (TextUtils.isEmpty(csId)) {
+                    return@flatMap Observable.just(true)
+                } else {
+//                val chat = SmackManager.getInstance().createChat(SmackManager.getInstance().getChatJid(csId))
+//                chat.send("我上线了")
+                    // return@flatMap Observable.just(true)
+                }
+               //登录成功加好友
+                val friends = SmackManager.getInstance().allFriends
+                var flag = false
+                for (f in friends) {
+                    if (f.name != null && f.name.contains(csId!!)) {
+                        flag = true
+                        break
+                    }
+                }
+                for (f in friends) {
+                    LogTools.debug(f.name)
+                }
+                if (flag) {
+                    return@flatMap Observable.just(true)
+                } else {
+                    flag = SmackManager.getInstance().addFriend(csId, csId, null)
+                    if (flag) {
+                        val entry = SmackManager.getInstance().getFriend(csId)
+                        return@flatMap Observable.just(true)
+                    } else {
+                        return@flatMap Observable.error<Boolean>(ApiException("加好友失败", ErrorStatus.API_ERROR))
+                    }
+                }
+            } else {
+                return@flatMap Observable.error<Boolean>(ApiException("登录失败", ErrorStatus.API_ERROR))
+            }
+        }.flatMap {
+            if (it) { //登录成功
+                //接收离线消息
+//                val offlineManager = OfflineMessageManager(SmackManager.getInstance().connection)
+//                val messages = offlineManager.messages
+//                for (m in messages) {
+//                    if (!TextUtils.isEmpty(m.body)) {
+//                        val msg = IMBusManager.saveRecvTextMsgToLocal<MsgBody>(m, true)
+//                        IMBusManager.updateRecord(msg!!)
+//                    }
+//                }
+//                //删除离线消息
+//                offlineManager.deleteMessages()
+                //将状态设置成在线
+//                val presence = Presence(Presence.Type.available)
+//                presence.mode = Presence.Mode.available
+//                SmackManager.getInstance().connection.sendStanza(presence)
+
+            } else {
+                return@flatMap Observable.error<Boolean>(ApiException("登录失败", ErrorStatus.API_ERROR))
+            }
+            return@flatMap Observable.just(true)
+        }.compose(SchedulerUtils.ioToMain()).subscribe({ bean ->
+            //toast("即时通讯登录成功"+tag)
+            val event = ConnectSuccessEvent()
+            event.user = User(AppBusManager.getUsername(), AppBusManager.getUsername(), AppBusManager.getUsername())
+            event.tag = tag
+            EventBus.getDefault().post(event)
+
+        }, { throwable ->
+            //处理异常
+            stopSelf()
+            ExceptionHandle.handleException(throwable)
+            toast(ExceptionHandle.errorMsg)
+        })
+        addSubscription(disposable)
+
+    }
+
+    var rxTimer: RxTimer = RxTimer()
+    var isAdded = false
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        login(intent?.getStringExtra("csId"))
+        if (rxTimer.isDisposed) {
+            rxTimer.interval(10 * 1000, RxTimer.IRxNext {
+                login(intent?.getStringExtra("csId"))
+            })
+        }
+        return super.onStartCommand(intent, flags, startId)
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        LogTools.debug("IMService", "onDestroy")
+        isAdded = false
+        rxTimer.cancel()
+        val disposable = Observable.just(true).flatMap {
+            SmackManager.getInstance().fileTransferManager.removeFileTransferListener(fileTransferListener)
+            SmackManager.getInstance().chatManager.removeIncomingListener(incomingChatMessageListener)
+            //SmackManager.getInstance().logout()
+            SmackManager.getInstance().disconnect()
+            SmackManager.getInstance().connectionInstance.removeConnectionListener(connectListener)
+            LogTools.debug("IMService", "disconnect")
+            return@flatMap Observable.just(true)
+        }.compose(SchedulerUtils.ioToMain()).subscribe({ bean ->
+
+        }, { throwable ->
+            //处理异常
+            ExceptionHandle.handleException(throwable)
+            toast(ExceptionHandle.errorMsg)
+        })
+        // addSubscription(disposable)
+        clearSubscription()
+    }
+}

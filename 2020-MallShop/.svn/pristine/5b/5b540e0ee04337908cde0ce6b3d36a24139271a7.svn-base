@@ -1,0 +1,221 @@
+package com.epro.mall.ui.fragment
+
+import android.Manifest
+import android.app.Activity
+import android.content.Intent
+import android.location.Location
+import android.os.Bundle
+import android.text.TextUtils
+import android.view.View
+import com.amap.api.location.AMapLocation
+import com.amap.api.maps.model.LatLng
+import com.epro.mall.R
+import com.epro.mall.listener.LoginSuccessEvent
+import com.epro.mall.listener.RefreshHomePageFinishEvent
+import com.epro.mall.mvp.contract.HomeContract
+import com.epro.mall.mvp.model.bean.AboutBean
+import com.epro.mall.mvp.model.bean.LocationBean
+import com.epro.mall.mvp.presenter.HomePresenter
+import com.epro.mall.ui.MainActivity
+import com.epro.mall.ui.activity.NearlyShopListActivity
+import com.epro.mall.ui.activity.ScanBarPurchaseActivity
+import com.epro.mall.ui.activity.SearchActivity
+import com.epro.mall.ui.activity.UpdateAppActivity
+import com.epro.mall.ui.activity.UpdateAppActivity.Companion.UPDATE_TYPE_DIALOG
+import com.epro.mall.utils.ActivityUtil
+import com.epro.mall.utils.LocationManager
+import com.epro.mall.utils.MallBusManager
+import com.epro.mall.utils.MallConst
+import com.epro.pos.listener.CartChangeEvent
+import com.mike.baselib.fragment.BaseTitleBarCustomFragment
+import com.mike.baselib.utils.*
+import com.mike.baselib.utils.AppBusManager
+import com.mike.baselib.utils.ext_createJsonKey
+import com.mike.baselib.utils.ext_doubleClick
+import kotlinx.android.synthetic.main.fragment_home.*
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import java.text.SimpleDateFormat
+import java.util.*
+
+import pub.devrel.easypermissions.AfterPermissionGranted
+import pub.devrel.easypermissions.EasyPermissions
+
+/**
+ * 首页home
+ */
+
+class HomeFragment : BaseTitleBarCustomFragment<HomeContract.View, HomePresenter>(), HomeContract.View, View.OnClickListener, LocationManager.LocationListener {
+    var location: Location? = null
+    override fun onLocationSuccess(location: AMapLocation) {
+        this.location = location
+        tvAddress.text = location.address
+        refreshShopList(LatLng(location.latitude, location.longitude))
+    }
+
+    override fun onLocationError() {
+        tvAddress.text = getString(R.string.positioning_failure)
+        refreshShopList(LatLng(0.toDouble(), 0.toDouble()))
+    }
+
+    override fun onGetCartGoodsCountSuccess(count: Int) {
+        val ac = activity as MainActivity
+        ac.showMsgCount(2, count)
+    }
+
+    override fun onAboutSuccess(result: AboutBean.Result) {
+     /*   var versionNewArray = result.version.split(".")
+        var currentVersion = AppUtils.getVerName(activity!!).split(".")
+        var doUpdate = MallUtils.getCompared(currentVersion,versionNewArray) //版本号是否有更新
+        if (doUpdate){
+            UpdateAppActivity2.launchWithType(activity!!,UPDATE_TYPE_DIALOG)
+        }*/
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onCartChangeEvent(event: CartChangeEvent) {
+        if (AppBusManager.isLogin()) {
+            mPresenter.getCartGoodsCount(MallConst.GET_CARTGOODS_COUNT)
+        }
+    }
+
+
+    override fun onClick(p0: View?) {
+        when (p0) {
+//            ivRight -> {
+//                //showHomePop()
+//                startActivity(Intent(activity!!, FindShopActivity::class.java).putExtra("LatLng", LatLng(location?.latitude!!,location?.longitude!!)))
+//            }
+            ivSearch -> {
+                if(location==null){
+                    toast("请重新定位")
+                    return
+                }
+                SearchActivity.launchWithShopId_Keyword_Location(activity!!,null,null
+                        ,com.epro.mall.mvp.model.bean.Location("",location!!.latitude.toString(),location!!.longitude.toString()))
+                //toast("功能开发中,敬请期待")
+            }
+
+            tvAddress -> {
+                //  LocationSelectActivity.launchWithShopIdForResult(this, FOR_LOCATION)
+                // toast("功能开发中,敬请期待")
+
+                // AreaSelectActivity.launchWithShopIdForResult(activity!!,0)
+                // AreaSelectActivity.launchWithShopIdForResult(activity!!,0)
+            }
+            //扫码购
+            ivScanCode -> {
+                ScanBarPurchaseActivity.launch(activity!!)
+            }
+        }
+    }
+
+    companion object {
+        const val TAG = "HomeFragment"
+        const val FOR_LOCATION = 1
+
+        fun newInstance(str: String): HomeFragment {
+            val args = Bundle()
+            args.putString(TAG, str)
+            val fragment = HomeFragment()
+            fragment.setArguments(args)
+            return fragment
+        }
+
+        fun newInstance(): HomeFragment {
+            return newInstance("")
+        }
+    }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                FOR_LOCATION -> {
+                    val location = AppBusManager.fromJson(data?.getStringExtra(ext_createJsonKey(LocationBean::class.java)), LocationBean::class.java)
+                    tvAddress.text = location?.location
+                    refreshShopList(LatLng(0.toDouble(), 0.toDouble()))
+                }
+            }
+        }
+    }
+
+    override fun lazyLoad() {
+//        if (AppBusManager.isLogin()) {
+//            mPresenter.getCartGoodsCount(MallConst.GET_CARTGOODS_COUNT)
+//        }
+        LocationManager.getInstance().initLocation(activity!!)
+        LocationManager.getInstance().requestLocation()
+    }
+
+    override fun layoutContentId(): Int {
+        return R.layout.fragment_home
+    }
+
+    override fun getPresenter(): HomePresenter {
+        return HomePresenter()
+    }
+
+    override fun initData() {
+
+    }
+
+    override fun initListener() {
+        ivSearch.setOnClickListener(this)
+        tvAddress.setOnClickListener(this)
+        ivScanCode.ext_doubleClick(this)
+        LocationManager.getInstance().locationListener = this
+    }
+
+    override fun initView() {
+        super.initView()
+        setRefreshEnable(true)
+        if("".equals(SPUtils.get(activity!!,"ResetTime",""))){
+            saveTime()
+        }
+        UpdateAppActivity.launchWithType(activity!!,UPDATE_TYPE_DIALOG)
+        getTitleBar().visibility = View.GONE
+        childFragmentManager.beginTransaction().add(R.id.fragmentContent, HomeShopListFragment.newInstance(), "homeShopList").commitAllowingStateLoss()
+    }
+
+
+    private fun saveTime() {
+        val dateSame = Date()
+        val formatSame = "yyyy-MM-dd"
+        var dateSameTime = SimpleDateFormat(formatSame)
+        var sameTime = dateSameTime.format(dateSame)
+        SPUtils.put(activity!!,"ResetTime",sameTime)
+    }
+
+
+    private fun refreshShopList(latLng: LatLng) {
+        val fragment = childFragmentManager.findFragmentByTag("homeShopList")
+        fragment?.arguments!!.putParcelable("LatLng", latLng)
+        if (fragment is HomeShopListFragment) {
+            fragment.refresh()
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onRefreshHomePageFinishEvent(event: RefreshHomePageFinishEvent) {
+        finishRefresh()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onLoginSuccessEvent(event: LoginSuccessEvent) {
+        mPresenter.getCartGoodsCount(MallConst.GET_CARTGOODS_COUNT)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        LocationManager.getInstance().destroyLocation()
+    }
+
+    override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
+        super.onPermissionsDenied(requestCode, perms)
+        activity?.finish()
+    }
+
+}

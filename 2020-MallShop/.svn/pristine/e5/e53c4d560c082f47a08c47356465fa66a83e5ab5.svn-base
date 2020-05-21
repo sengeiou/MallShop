@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@drawable/shape_bg_login"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_marginTop="35dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <ImageView
+            android:id="@+id/ivClose"
+            android:padding="10dp"
+            android:src="@mipmap/login_icon_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="eproshop"
+            android:textColor="@color/mainMatchColor"
+            android:textSize="53sp" />
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_marginTop="50dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <RadioButton
+                android:drawableBottom="@drawable/shape_logintab_indicator"
+                android:drawablePadding="6dp"
+                android:textColor="@color/mainMatchColor"
+                android:textSize="@dimen/navigationTextSize"
+                android:padding="10dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:layout_marginRight="10dp"
+                android:button="@null"
+                android:text="@string/bind_account_phone"
+                android:id="@+id/rbPhoneBind"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <RadioButton
+                android:drawableBottom="@drawable/shape_logintab_indicator_tran"
+                android:drawablePadding="6dp"
+                android:textColor="@color/mainMatchColor"
+                android:textSize="@dimen/navigationTextSize"
+                android:padding="10dp"
+                android:background="?android:attr/selectableItemBackground"
+                android:layout_marginLeft="10dp"
+                android:button="@null"
+                android:text="@string/bind_account_email"
+                android:id="@+id/rbEmailBind"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RadioGroup>
+        <ViewFlipper
+            android:id="@+id/viewFlipper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <include layout="@layout/layout_bind_phone"/>
+            <include layout="@layout/layout_bind_email"/>
+        </ViewFlipper>
+    </LinearLayout>
+</RelativeLayout>
+

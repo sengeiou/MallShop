@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!--<RelativeLayout-->
+        <!--android:id="@+id/rlHeader"-->
+        <!--android:background="@drawable/shape_bg_login"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="73dp">-->
+        <!--<ImageView-->
+            <!--android:layout_marginBottom="8dp"-->
+            <!--android:id="@+id/ivBack"-->
+            <!--android:src="@mipmap/icon_back_white"-->
+            <!--android:layout_alignParentLeft="true"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:layout_width="32dp"-->
+            <!--android:layout_height="32dp" />-->
+        <!--<TextView-->
+            <!--android:layout_marginTop="13dp"-->
+            <!--android:padding="12dp"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:text="@string/cart"-->
+            <!--android:textStyle="bold"-->
+            <!--android:textColor="@color/mainMatchColor"-->
+            <!--android:textSize="@dimen/navigationTextSize"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content" />-->
+    <!--</RelativeLayout>-->
+
+    <android.support.v7.widget.RecyclerView
+        android:background="@color/bottomColor"
+        android:layout_above="@+id/rlBottom1"
+        android:id="@+id/rvCart"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+    <RelativeLayout
+        android:background="@color/white"
+        android:id="@+id/rlBottom1"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_alignParentBottom="true">
+
+        <LinearLayout
+            android:id="@+id/llStart"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:button="@drawable/selector_checkbox"
+                android:id="@+id/cbAllSelect"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginStart="10dp" />
+
+            <TextView
+                android:id="@+id/tvSelectNum1"
+                android:textSize="@dimen/middleContentTextSize"
+                android:textColor="@color/thirdTextColor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:text="@string/select_0" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginEnd="5dp"
+            android:layout_toStartOf="@+id/llBottom"
+            android:layout_toEndOf="@+id/llStart"
+            android:layout_centerVertical="true"
+            android:id="@+id/llDiscount"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=" 已优惠"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/middleContentTextSize" />
+            <TextView
+                android:id="@+id/tvDiscount"
+                android:textStyle="bold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.00"
+                android:textColor="@color/mainColor"
+                android:textSize="@dimen/middleContentTextSize" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llBottom"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/middleContentTextSize"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/total" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:textStyle="bold"
+                    android:id="@+id/tvUnit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$"
+                    android:textColor="@color/mainColor"
+                    android:textSize="@dimen/secondaryContentTextSize" />
+                <TextView
+                    android:textStyle="bold"
+                    android:maxEms="10"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:id="@+id/tvTotal1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0.00"
+                    android:textColor="@color/mainColor"
+                    android:textSize="@dimen/titleTextSize" />
+            </LinearLayout>
+            <Button
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                style="@style/MainRedButton"
+                android:id="@+id/btnCheckout"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_width="wrap_content"
+                android:text="@string/settlement" />
+        </LinearLayout>
+        <View
+            android:background="@color/lineColor2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+    </RelativeLayout>
+</RelativeLayout>

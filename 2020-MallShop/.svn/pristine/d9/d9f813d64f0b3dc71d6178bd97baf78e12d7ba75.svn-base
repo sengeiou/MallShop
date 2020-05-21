@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="12dp"
+        android:background="@color/bottomColor" />
+
+    <ImageView
+        android:id="@+id/ivResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:src="@mipmap/icon_successful_payment" />
+
+    <TextView
+        android:id="@+id/tvResult"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/pay_success"
+        android:textColor="@color/mainTextColor"
+        android:textSize="@dimen/navigationTextSize"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:gravity="center_vertical"
+        android:id="@+id/llPayInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvNum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:text="@string/total_0"
+            android:textColor="@color/secondaryTextColor"
+            android:textSize="@dimen/secondaryContentTextSize" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:id="@+id/tvUnit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/secondaryContentTextSize" />
+            <TextView
+                android:maxEms="10"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:id="@+id/tvAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.00"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/titleTextSize" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnRepay"
+            style="@style/MainRedButton"
+            android:layout_height="32dp"
+            android:layout_marginEnd="18dp"
+            android:layout_marginBottom="15dp"
+            android:text="@string/pay_again"
+            android:textSize="@dimen/contentTextSize"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/btnCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:layout_marginBottom="15dp"
+            android:background="@drawable/shape_border_yellow_radius12"
+            android:text="@string/check_order"
+            android:textColor="@color/secondaryColor"
+            android:textSize="@dimen/contentTextSize" />
+    </LinearLayout>
+</LinearLayout>

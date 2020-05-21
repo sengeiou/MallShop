@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="8dp"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
+    android:background="@color/white"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp">
+        <TextView
+            style="@style/MyTextView"
+            android:textSize="@dimen/text_size_16"
+            android:drawableStart="@mipmap/store_shop"
+            android:drawableEnd="@mipmap/arrow_right"
+            android:drawablePadding="9dp"
+            android:id="@+id/tvShopName"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="" />
+        <TextView
+            style="@style/MyTextView"
+            android:textSize="@dimen/secondaryContentTextSize"
+            android:text=""
+            android:textColor="@color/mainColor"
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true" />
+    </RelativeLayout>
+    <android.support.v7.widget.RecyclerView
+        android:nestedScrollingEnabled="false"
+        android:id="@+id/rvOrderGoods"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="end|center_vertical"
+        android:layout_marginTop="12dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/tvPickupWay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="14dp"
+            android:background="@drawable/shape_pickup_bg"
+            android:gravity="center"
+            android:text="@string/pickup"
+            android:textColor="@color/secondaryTextColor"
+            android:textSize="@dimen/secondaryContentTextSize" />
+
+        <TextView
+            android:layout_marginEnd="5dp"
+            android:textSize="@dimen/secondaryContentTextSize"
+            android:id="@+id/tvGoodsNum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/scan_code_shop_count_end"
+            android:textColor="@color/mainTextColor" />
+
+        <LinearLayout
+            android:id="@+id/oderDiscount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_marginLeft="6dp"
+            android:layout_marginRight="6dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="@string/discount_price"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/secondaryContentTextSize" />
+            <TextView
+                android:id="@+id/orderPrice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/secondaryContentTextSize"
+                android:textColor="@color/mainColor"
+                android:text=""/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/secondaryContentTextSize"
+                android:text="@string/rmb"/>
+        </LinearLayout>
+
+
+        <TextView
+            android:textSize="@dimen/secondaryContentTextSize"
+            android:id="@+id/tvPayText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/total"
+            android:textColor="@color/mainTextColor" />
+        <TextView
+            android:id="@+id/tvSymbol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textStyle="bold"
+            android:textSize="@dimen/secondaryContentTextSize"
+            android:textColor="@color/symbol_title"/>
+        <TextView
+            android:id="@+id/tvAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:text="HK 29"
+            android:textColor="@color/mainTextColor"
+            android:textSize="@dimen/titleTextSize" />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/llBottom"
+        android:gravity="end|center_vertical"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="12dp"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btnLeft"
+            android:layout_width="86dp"
+            android:layout_height="32dp"
+            android:background="@drawable/shape_border_gray_radius12"
+            android:text="@string/delete_dialog_cancel"
+            android:textColor="@color/thirdTextColor"
+            android:textSize="@dimen/contentTextSize" />
+        <Button
+            android:textColor="@color/secondaryColor"
+            android:background="@drawable/shape_border_yellow_radius12"
+            android:layout_marginStart="12dp"
+            android:layout_marginEnd="5dp"
+            android:id="@+id/btnRight"
+            android:layout_width="86dp"
+            android:layout_height="32dp"
+            android:text="@string/pay"
+            android:textSize="@dimen/contentTextSize" />
+    </LinearLayout>
+</LinearLayout>

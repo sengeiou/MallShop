@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@color/bottomColor"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_marginTop="12dp"
+            android:background="@color/white"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/ivResult"
+                android:layout_marginTop="30dp"
+                android:src="@mipmap/icon_successful_payment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/tvResult"
+                android:textSize="@dimen/navigationTextSize"
+                android:textColor="@color/mainTextColor"
+                android:textStyle="bold"
+                android:layout_marginTop="24dp"
+                android:text="@string/pay_success"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/llPayInfo"
+                android:layout_marginTop="6dp"
+                android:orientation="horizontal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_marginEnd="8dp"
+                    android:id="@+id/tvNum"
+                    android:textSize="@dimen/contentTextSize"
+                    android:textColor="@color/secondaryTextColor"
+                    android:text="@string/total_0"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+                <TextView
+                    android:id="@+id/tvAmount"
+                    android:textSize="@dimen/contentTextSize"
+                    android:textColor="@color/mainTextColor"
+                    android:text="0.00"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+            <Button
+                android:layout_marginTop="10dp"
+                android:layout_marginBottom="33dp"
+                android:textColor="@color/secondaryColor"
+                android:background="@drawable/shape_border_yellow_radius12"
+                android:id="@+id/btnCheck"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:text="@string/check_order"
+                android:textSize="@dimen/contentTextSize" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_marginTop="20dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <View
+                android:layout_marginEnd="16dp"
+                android:background="@color/gray_999999"
+                android:layout_width="98dp"
+                android:layout_height="0.5dp"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="@string/related_suggestion"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/contentTextSize" />
+            <View
+                android:layout_marginStart="16dp"
+                android:background="@color/gray_999999"
+                android:layout_width="98dp"
+                android:layout_height="0.5dp"/>
+        </LinearLayout>
+        <android.support.v7.widget.RecyclerView
+            android:nestedScrollingEnabled="false"
+            android:background="@color/bottomColor"
+            android:paddingStart="6dp"
+            android:paddingEnd="6dp"
+            android:layout_marginTop="22dp"
+            android:id="@+id/rvGoods"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+</android.support.v4.widget.NestedScrollView>

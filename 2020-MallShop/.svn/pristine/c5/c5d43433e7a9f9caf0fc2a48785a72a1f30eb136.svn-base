@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="text_size_10">10sp</dimen>
+    <dimen name="text_size_11">11sp</dimen>
+    <dimen name="text_size_12">12sp</dimen>
+    <dimen name="text_size_13">13sp</dimen>
+    <dimen name="text_size_14">14sp</dimen>
+    <dimen name="text_size_15">15sp</dimen>
+    <dimen name="text_size_16">16sp</dimen>
+    <dimen name="text_size_18">18sp</dimen>
+
+    <!-- 一级导航标题文本大小 -->
+    <dimen name="navigationTextSize">18sp</dimen>
+
+    <!-- 二级导航标题文本大小 -->
+    <dimen name="secondNavigationTextSize">17sp</dimen>
+
+    <!-- 标题文本大小 -->
+    <dimen name="titleTextSize">16sp</dimen>
+
+    <!-- 内容文字大小 -->
+    <dimen name="contentTextSize">14sp</dimen>
+
+    <!-- 中等内容文字大小 -->
+    <dimen name="middleContentTextSize">13sp</dimen>
+
+    <!-- 辅助文本文字大小 -->
+    <dimen name="secondaryContentTextSize">12sp</dimen>
+
+    <!-- 说明文本大小 -->
+    <dimen name="explainContentTextSize">11sp</dimen>
+
+    <dimen name="titlePhoneSize">20sp</dimen>
+
+    <dimen name="smallContentTextSize">8sp</dimen>
+
+    <dimen name="sidebar_default_side_text_size">14sp</dimen>
+    <dimen name="sidebar_default_dialog_text_size">20sp</dimen>
+    <dimen name="sidebar_default_dialog_text_bg_radius">4dp</dimen>
+    <dimen name="sidebar_default_dialog_text_background_width">100dp</dimen>
+    <dimen name="sidebar_default_dialog_text_background_height">100dp</dimen>
+    <dimen name="text_size_24">24sp</dimen>
+</resources>

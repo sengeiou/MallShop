@@ -1,0 +1,37 @@
+package com.epro.comp.im.ui.adapter
+
+import android.content.Context
+import android.view.View
+import android.widget.ImageView
+import com.epro.comp.im.R
+import com.epro.comp.im.mvp.model.bean.CustomerService
+import com.epro.comp.im.utils.IMBusManager
+import com.mike.baselib.utils.ImageLoader
+import com.mike.baselib.view.recyclerview.ViewHolder
+import com.mike.baselib.view.recyclerview.adapter.CommonAdapter
+
+class ChatServiceAdapter (mContext: Context, list: ArrayList<CustomerService>, layoutId: Int = R.layout.customer_service_item_list) :
+        CommonAdapter<CustomerService>(mContext, list, layoutId) {
+
+    constructor(context: Context):this(context,ArrayList())
+    interface OnItemClickListener {
+        fun onClick(item: CustomerService, position: Int)
+    }
+
+    var onItemClickListener: OnItemClickListener? = null
+
+    /**
+     * 绑定数据
+     */
+    override fun bindData(holder: ViewHolder, data: CustomerService, position: Int) {
+        holder.setText(R.id.tvService,data.name)
+        holder.setOnItemClickListener(object :View.OnClickListener{
+            override fun onClick(p0: View?) {
+                if (onItemClickListener!=null){
+                    onItemClickListener!!.onClick(data,position)
+                }
+            }
+        })
+
+    }
+}

@@ -1,0 +1,197 @@
+package com.epro.comp.im.mvp.model
+
+import android.text.TextUtils
+import com.epro.comp.im.listener.ChatMessageChangeEvent
+import com.epro.comp.im.mvp.model.bean.*
+import com.epro.comp.im.smack.SmackManager
+import com.epro.comp.im.utils.IMBusManager
+import com.epro.comp.im.utils.IMConst
+import com.mike.baselib.net.exception.ApiException
+import com.mike.baselib.net.exception.ErrorStatus
+import com.mike.baselib.rx.scheduler.SchedulerUtils
+import com.mike.baselib.utils.AppContext
+import io.reactivex.Observable
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import org.greenrobot.eventbus.EventBus
+import org.jivesoftware.smack.chat.ChatManagerListener
+import org.jivesoftware.smack.packet.Presence
+import org.jivesoftware.smackx.filetransfer.FileTransfer
+import org.jivesoftware.smackx.filetransfer.FileTransferListener
+import org.jivesoftware.smackx.filetransfer.FileTransferRequest
+import org.jivesoftware.smackx.offline.OfflineMessageManager
+import java.io.File
+import java.io.FileInputStream
+
+
+class ChatModel : BaseModel() {
+
+    fun sendTextMsg(text: String, csId: String): Observable<SendMessageBean<TextMsgBody>> {
+        return Observable.just(true).flatMap {
+            val chat = SmackManager.getInstance().createChat(SmackManager.getInstance().getChatJid(csId))
+            chat.send(text)
+            val message = IMBusManager.getBaseSendMessage<TextMsgBody>(MsgType.TEXT)
+            val textMsgBody = TextMsgBody()
+            textMsgBody.message = text
+            message.body = textMsgBody
+            message.sentStatus = MsgSendStatus.SENT
+            message.csId = csId
+            message.customerId = IMBusManager.getUser()!!.userId
+            message.isRead=true
+            IMBusManager.saveMessage(message)
+            IMBusManager.updateRecord(message)
+            return@flatMap Observable.just(SendMessageBean<TextMsgBody>(ErrorStatus.SUCCESS, ErrorStatus.SUCCESS_MSG, message))
+        }.compose(SchedulerUtils.ioToMain())
+    }
+
+
+    fun <T : MsgBody> sendBase64MsgFile(file: File, msgType: MsgType, csId: String): Observable<SendMessageBean<T>> {
+        return Observable.just(true).flatMap {
+            logTools.d(file.exists())
+
+            val chat = SmackManager.getInstance().createChat(SmackManager.getInstance().getChatJid(csId))
+
+            //文件转base64字符串
+            val inputFile = FileInputStream(file)
+            val buffer = ByteArray(file.length().toInt())
+            inputFile.read(buffer)
+            inputFile.close()
+            val base64 = android.util.Base64.encodeToString(buffer, android.util.Base64.NO_WRAP)
+            val message = IMBusManager.getBaseSendMessage<T>(MsgType.IMAGE)
+            when (msgType) {
+                MsgType.IMAGE -> {
+                    val imageMsgBody = ImageMsgBody()
+                    imageMsgBody.originalPath = file.absolutePath
+                    message.body = imageMsgBody as T
+                    chat.send(IMConst.IMAGE_TYPE + base64)
+                }
+                else -> {
+                }
+            }
+            message.csId = csId
+            message.customerId = IMBusManager.getUser()!!.userId
+            message.sentStatus = MsgSendStatus.SENT
+            message.isRead=true
+            IMBusManager.saveMessage(message)
+            IMBusManager.updateRecord(message)
+            return@flatMap Observable.just(SendMessageBean(ErrorStatus.SUCCESS, ErrorStatus.SUCCESS_MSG, message))
+        }.compose(SchedulerUtils.ioToMain())
+    }
+
+    fun <T : MsgBody> sendMsgFile(file: File, msgType: MsgType, csId: String): Observable<SendMessageBean<T>> {
+        return Observable.just(true).flatMap {
+            logTools.d(file.exists())
+            val transfer = SmackManager.getInstance().getSendFileTransfer(SmackManager.getInstance().getFileTransferJid(csId))
+            transfer.sendFile(file, msgType.name)
+
+            logTools.d(transfer.isDone)
+            logTools.d(transfer.status.toString())
+            val message = IMBusManager.getBaseSendMessage<T>(MsgType.IMAGE)
+            when (msgType) {
+                MsgType.IMAGE -> {
+                    val imageMsgBody = ImageMsgBody()
+                    imageMsgBody.originalPath = file.absolutePath
+                    message.body = imageMsgBody as T
+                }
+                else -> {
+                }
+            }
+            message.csId = csId
+            message.customerId = IMBusManager.getUser()!!.userId
+            IMBusManager.saveMessage(message)
+            val event = ChatMessageChangeEvent<T>()
+            event.message = message
+            EventBus.getDefault().post(event)
+
+            while (!transfer.isDone) {
+                Thread.sleep(200)
+            }
+
+            if (transfer.status == FileTransfer.Status.complete) {
+                message.sentStatus = MsgSendStatus.SENT
+            } else {
+                message.sentStatus = MsgSendStatus.FAILED
+            }
+            return@flatMap Observable.just(SendMessageBean(ErrorStatus.SUCCESS, ErrorStatus.SUCCESS_MSG, message))
+        }.compose(SchedulerUtils.ioToMain())
+    }
+
+    fun <T : MsgBody> recvMsgFile(request: FileTransferRequest): Observable<RecvMessageBean<T>> {
+        return Observable.just(true).flatMap {
+            // Accept it
+            logTools.d(request.description)
+            logTools.d(request.fileName)
+            logTools.d(request.requestor)
+            val transfer = request.accept()
+            val dir = File(AppContext.getInstance().context.externalCacheDir!!.absolutePath, "chat")
+            if (!dir.exists()) {
+                dir.mkdir()
+            }
+            val file = File(dir, request.fileName)
+            transfer.receiveFile(file)
+
+            var msgType = MsgType.IMAGE
+            val message = IMBusManager.getBaseSendMessage<T>(msgType)
+            when (msgType) {
+                MsgType.IMAGE -> {
+                    val imageMsgBody = ImageMsgBody()
+                    imageMsgBody.originalPath = file.absolutePath
+                    message.body = imageMsgBody as T
+                }
+                else -> {
+                }
+            }
+
+            message.csId = request.requestor.split("@")[0]
+            message.customerId = IMBusManager.getUser()!!.userId
+            message.isSend = false
+            logTools.d(transfer.isDone)
+            logTools.d(transfer.status.toString())
+            while (!transfer.isDone) {
+                Thread.sleep(200)
+            }
+            if (transfer.status == FileTransfer.Status.complete) {
+                message.sentStatus = MsgSendStatus.SENT
+                IMBusManager.saveMessage(message)
+            } else {
+                message.sentStatus = MsgSendStatus.FAILED
+                return@flatMap Observable.error<RecvMessageBean<T>>(ApiException(transfer.exception.message.toString(), ErrorStatus.API_ERROR))
+            }
+            logTools.d(transfer.isDone)
+            logTools.d(transfer.status.toString())
+            return@flatMap Observable.just(RecvMessageBean(ErrorStatus.SUCCESS, ErrorStatus.SUCCESS_MSG, message))
+        }.compose(SchedulerUtils.ioToMain())
+    }
+
+    fun <T : MsgBody> getMessageList(csId: String): Observable<GetMessageListBean<T>> {
+        return Observable.just(true).flatMap {
+            logTools.d("do here1")
+            IMBusManager.updateMessageRead(csId) //全部设为已读
+            logTools.d("do here2")
+            val messageList = IMBusManager.getMessageList<T>(csId)
+            logTools.d("do here3")
+            return@flatMap Observable.just(GetMessageListBean(ErrorStatus.SUCCESS, ErrorStatus.SUCCESS_MSG, messageList as ArrayList<ChatMessage<T>>))
+        }.compose(SchedulerUtils.ioToMain())
+    }
+
+
+    fun updateImage(image: File, isCreateThumb: Int): Observable<UploadImageBean> {
+        val bodyMap = HashMap<String, RequestBody>()
+        bodyMap!!.put("isCreateThumb", RequestBody.create(MediaType.parse("text/plain"), isCreateThumb.toString()))
+        val requestBody = RequestBody.create(MediaType.parse("image/png"), image)
+        val body = MultipartBody.Part.createFormData("image", image.name, requestBody)
+        return getApiSevice().uploadImage(bodyMap, body)
+                .flatMap {
+                    if (it.code == ErrorStatus.SUCCESS) {
+                        return@flatMap Observable.just(it)
+                    } else {
+                        return@flatMap Observable.error<UploadImageBean>(ApiException(it.message, it.code))
+                    }
+                }
+                // .retryWhen(RetryWithDelay())
+                .compose(SchedulerUtils.ioToMain())
+    }
+
+
+}

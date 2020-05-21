@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <android.support.constraint.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <com.youth.banner.Banner
+            android:id="@+id/banner"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:banner_default_image="@mipmap/bg_empty"
+            app:layout_constraintDimensionRatio="H,1:1"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </android.support.constraint.ConstraintLayout>
+    <RelativeLayout
+        android:padding="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <TextView
+                    android:textStyle="bold"
+                    android:id="@+id/tvUnit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="$"
+                    android:textColor="@color/mainColor"
+                    android:textSize="@dimen/text_size_18" />
+                <TextView
+                    android:textStyle="bold"
+                    android:maxEms="10"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    android:id="@+id/tvPrice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0.00"
+                    android:textColor="@color/mainColor"
+                    android:textSize="@dimen/text_size_24" />
+            </LinearLayout>
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/llActivity"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:gravity="center"
+                    android:background="@drawable/shape_tag_red_radius2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="限时折扣"
+                    android:textColor="@color/mainMatchColor"
+                    android:textSize="8sp" />
+                <TextView
+                    android:id="@+id/tvOriginalPrice"
+                    android:layout_marginStart="5dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0.00"
+                    android:textColor="@color/thirdTextColor"
+                    android:textSize="@dimen/explainContentTextSize" />
+            </LinearLayout>
+            <TextView
+                android:textStyle="bold"
+                android:layout_marginTop="5dp"
+                android:textColor="@color/titleTextColor"
+                android:textSize="@dimen/titleTextSize"
+                android:text="@string/product_description"
+                android:id="@+id/tvDesc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+        <TextView
+            android:layout_marginTop="5dp"
+            android:textSize="@dimen/explainContentTextSize"
+            android:textColor="@color/thirdTextColor"
+            android:layout_alignParentEnd="true"
+            android:text="@string/inventory_0"
+            android:id="@+id/tvStock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+    <View
+        android:background="@color/bottomColor"
+        android:layout_width="match_parent"
+        android:layout_height="12dp"/>
+    <RelativeLayout
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+        <TextView
+            android:layout_centerVertical="true"
+            android:text="@string/delivery_area"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_centerVertical="true"
+            android:textColor="@color/mainTextColor"
+            android:textSize="@dimen/contentTextSize"
+            android:id="@+id/tvSendRange"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_alignParentBottom="true"
+            android:background="@color/bottomColor"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"/>
+    </RelativeLayout>
+    <android.support.v7.widget.RecyclerView
+        android:nestedScrollingEnabled="false"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:id="@+id/rvSpecs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <RelativeLayout
+        android:layout_marginTop="12dp"
+        android:padding="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:textColor="@color/mainTextColor"
+            android:textSize="@dimen/contentTextSize"
+            android:layout_centerVertical="true"
+            android:text="@string/quantity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <LinearLayout
+            android:id="@+id/llChangeNum"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/shape_border_gray_radius11"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:scaleType="center"
+                android:src="@mipmap/icon_minus"
+                android:id="@+id/tvMinus"
+                android:layout_width="26dp"
+                android:layout_height="28dp"
+                android:textColor="@color/secondaryTextColor"
+                android:textSize="@dimen/contentTextSize" />
+
+            <TextView
+                android:id="@+id/tvNum"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/shape_border_gray"
+                android:gravity="center"
+                android:text="1"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/contentTextSize" />
+
+            <ImageView
+                android:scaleType="center"
+                android:src="@mipmap/icon_plus"
+                android:id="@+id/tvPlus"
+                android:layout_width="26dp"
+                android:layout_height="28dp"
+                android:gravity="center"
+                android:textColor="@color/secondaryTextColor"
+                android:textSize="@dimen/contentTextSize" />
+        </LinearLayout>
+    </RelativeLayout>
+    <View
+        android:background="@color/bottomColor"
+        android:layout_width="match_parent"
+        android:layout_height="12dp"/>
+    <LinearLayout
+        android:padding="12dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:text="@string/graphic_details"
+            android:textColor="@color/mainTextColor"
+            android:textSize="@dimen/contentTextSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvEmpty"
+            android:visibility="gone"
+            android:layout_marginTop="5dp"
+            android:text="@string/no_details"
+            android:textColor="@color/secondaryTextColor"
+            android:textSize="@dimen/middleContentTextSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+</LinearLayout>

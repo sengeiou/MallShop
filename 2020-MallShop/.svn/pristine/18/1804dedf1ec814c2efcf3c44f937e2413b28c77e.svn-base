@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/bottomColor"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <LinearLayout
+        android:id="@+id/llContent"
+        android:layout_width="match_parent"
+        android:background="@drawable/shape_bg_white_radius14"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="6dp"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        android:layout_marginBottom="6dp"
+        android:padding="12dp"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <com.mike.baselib.view.CircleImageView
+                android:layout_centerVertical="true"
+                android:id="@+id/ivShopLogo"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginEnd="5dp"
+                android:src="@mipmap/bg_empty" />
+            <TextView
+                android:layout_toEndOf="@+id/ivShopLogo"
+                android:maxLines="1"
+                android:ellipsize="end"
+                android:maxEms="12"
+                android:textStyle="bold"
+                android:id="@+id/tvShopName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@color/titleTextColor"
+                android:textSize="@dimen/titleTextSize" />
+            <TextView
+                android:layout_toEndOf="@+id/tvShopName"
+                android:layout_centerVertical="true"
+                android:id="@+id/tvTag"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/shape_bg_tag_yellow"
+                android:gravity="center"
+                android:text="@string/newest"
+                android:textColor="@color/mainMatchColor"
+                android:textSize="@dimen/smallContentTextSize" />
+            <TextView
+                android:id="@+id/tvDistance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:drawableStart="@mipmap/icon_location_arrow"
+                android:drawablePadding="3dp"
+                android:padding="5dp"
+                android:text="0m"
+                android:textColor="@color/thirdTextColor"
+                android:textSize="@dimen/explainContentTextSize" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <com.zhy.view.flowlayout.TagFlowLayout
+                android:layout_toStartOf="@+id/tvSale"
+                android:id="@+id/flTags"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true" />
+
+            <TextView
+                android:id="@+id/tvSale"
+                android:layout_marginStart="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:text="@string/sales_per_month"
+                android:textColor="@color/thirdTextColor"
+                android:textSize="@dimen/explainContentTextSize" />
+
+        </RelativeLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:nestedScrollingEnabled="false"
+            android:id="@+id/rvImages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:visibility="gone" />
+    </LinearLayout>
+</LinearLayout>
+
+
+
+

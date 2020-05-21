@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="comp_im_white">#ffffff</color>
+    <color name="comp_im_purple_ffdaa7ff">#ffdaa7ff</color>
+    <color name="comp_im_purple_ffd7a6fc">#ffd7a6fc</color>
+    <color name="comp_im_purple_d7a6fc">#D7A6FC</color>
+    <color name="comp_im_black_2b2b2b">#2B2B2B</color>
+    <color name="comp_im_gray_d3d5e2">#d3d5e2</color>
+    <color name="comp_im_gray_f2f2f5">#f2f2f5</color>
+
+    <color name="colorPrimary">#008577</color>
+    <color name="colorPrimaryDark">#00574B</color>
+    <color name="colorAccent">#D81B60</color>
+</resources>

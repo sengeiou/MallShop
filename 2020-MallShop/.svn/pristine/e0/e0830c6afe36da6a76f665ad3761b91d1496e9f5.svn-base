@@ -1,0 +1,94 @@
+package com.epro.comp.im.mvp.model.bean;
+
+
+import org.litepal.annotation.Column;
+import org.litepal.crud.LitePalSupport;
+
+import java.util.UUID;
+
+
+public class CustomerService extends LitePalSupport implements java.io.Serializable {
+    //  @PrimaryKey
+    @Column(unique = true, defaultValue = "unknown")
+    private String uuid = UUID.randomUUID().toString() + "";
+    @Column(unique = true, defaultValue = "unknown")
+    private String account;
+    private String shopId;
+    private String avatar;
+    private String shopName;
+    private String name;
+    private String shopLogo;
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public long getObjectId() {
+        return getBaseObjId();
+    }
+
+    public String getShopName() {
+        return shopName;
+    }
+
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
+    }
+
+
+    public void setShopId(String shopId) {
+        this.shopId = shopId;
+    }
+
+    public String getShopId() {
+        return shopId;
+    }
+
+    public void setAccount(String account) {
+        this.account = account;
+    }
+
+    public String getAccount() {
+        return account;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setShopLogo(String shopLogo) {
+        this.shopLogo = shopLogo;
+    }
+
+    public String getShopLogo() {
+        return shopLogo;
+    }
+    //    @Override
+//    public int hashCode() {
+//        return Integer.valueOf(account.);
+//    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof CustomerService) {
+            return this.account.equals(((CustomerService) obj).account);
+        }
+        return false;
+    }
+}

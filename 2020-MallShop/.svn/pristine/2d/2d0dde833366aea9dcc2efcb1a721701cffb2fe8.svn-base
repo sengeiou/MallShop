@@ -1,0 +1,477 @@
+package com.epro.mall.ui.activity
+
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.graphics.Rect
+import android.os.Bundle
+import android.support.v4.widget.NestedScrollView
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
+import android.text.TextUtils
+import android.util.TypedValue
+import android.view.View
+import android.widget.ImageView
+import android.widget.TextView
+import com.billy.cc.core.component.CC
+import com.epro.mall.R
+import com.epro.mall.mvp.contract.GoodsDetailContract
+import com.epro.mall.mvp.model.bean.*
+import com.epro.mall.mvp.presenter.GoodsDetailPresenter
+import com.epro.mall.ui.adapter.SpecAdapter
+import com.epro.mall.ui.fragment.GoodsWebDetailFragment
+import com.epro.mall.ui.fragment.SelectSpecBottomPopup
+import com.epro.mall.utils.ActivityUtil
+import com.epro.mall.utils.MallBusManager
+import com.epro.mall.utils.MallConst
+import com.epro.mall.utils.MallUtils
+import com.epro.pos.listener.CartChangeEvent
+import com.mike.baselib.activity.BaseTitleBarCustomActivity
+import com.mike.baselib.fragment.BaseBottomPopup
+import com.mike.baselib.utils.*
+import com.youth.banner.Banner
+import com.youth.banner.BannerConfig
+import com.youth.banner.loader.ImageLoader
+import kotlinx.android.synthetic.main.activity_goods_detail.*
+import kotlinx.android.synthetic.main.item_goodsdetail_top.*
+import org.greenrobot.eventbus.EventBus
+
+/**
+ * 商品详情页面
+ */
+class GoodsDetailActivity : BaseTitleBarCustomActivity<GoodsDetailContract.View, GoodsDetailPresenter>(), GoodsDetailContract.View, View.OnClickListener {
+    override fun onAddToCartSuccess() {
+        MallUtils.showShopToast(this)
+        EventBus.getDefault().post(CartChangeEvent())
+    }
+
+    //店铺信息
+    override fun onGetShopInfoSuccess(shopInfo: ShopInfo) {
+        if (TextUtils.isEmpty(shopInfo.distance)){
+            tvSendRange.text = "0 km"
+        }else{
+            tvSendRange.text = shopInfo.distance+" km"
+        }
+    }
+
+    override fun onClick(p0: View?) {
+        when (p0) {
+            btnAddCart -> { //TODO 加入购物车
+                if (MallBusManager.checkNotLogin(this)) {
+                    return
+                }
+                if (!isSpecViewAllVisiable()) {
+                    showSelectSpecBottomPopup(SelectSpecBottomPopup.ADD_TO_CART)
+                    return
+                }
+                if (!checkSpecAllSelected()) {
+                    return
+                }
+                if (product == null) {
+                    toast("product is null")
+                    return
+                }
+                if (tvNum.text.toString().toInt() > product!!.productNumber) {
+                    toast(getString(R.string.out_of_stock))
+                    return
+                }
+                mPresenter.addToCart(product!!.productId, tvNum.text.toString().toInt(), MallConst.ADD_CARTGOODS)
+            }
+
+            btnRightNow -> {  //TODO 立即购买
+                if (MallBusManager.checkNotLogin(this)) {
+                    return
+                }
+                if (!isSpecViewAllVisiable()) {
+                    showSelectSpecBottomPopup(SelectSpecBottomPopup.BUY_RIGHT_NOW)
+                    return
+                }
+                if (!checkSpecAllSelected()) {
+                    return
+                }
+                if (product == null) {
+                    toast("product is null")
+                    return
+                }
+                if (tvNum.text.toString().toInt() > product!!.productNumber) {
+                    toast(getString(R.string.out_of_stock))
+                    return
+                }
+                goToConfirmOrder(tvNum.text.toString().toInt(),product!!)
+            }
+            ivBack -> {
+                finish()
+            }
+
+            tvPlus -> {
+                var num = tvNum.text.toString().toInt()
+                num++
+                if (product != null) {
+                    if (num > product!!.productNumber) {
+                        toast(getString(R.string.out_of_stock))
+                        tvNum.text = "" + (num - 1)
+                        return
+                    }
+                }
+                tvNum.text = "" + num
+            }
+
+            tvMinus -> {
+                var num = tvNum.text.toString().toInt()
+                if (num == 1) {
+                    toast(getString(R.string.not_be_less_anymore))
+                    return
+                }
+                num--
+                tvNum.text = "" + num
+            }
+            tvShop -> {
+                if (goods == null) {
+                    toast(getString(R.string.product_is_not_loaded))
+                    return
+                }
+                ShopDetailActivity.launchWithShopId(this, goods!!.shopId)
+            }
+
+            tvCart -> {
+                if (MallBusManager.checkNotLogin(this)) {
+                    return
+                }
+                CartActivity.launch(this)
+            }
+            ivBack2 -> {
+                finish()
+            }
+            ivBackToTop -> {
+                scrollView.smoothScrollTo(0, 0)
+            }
+
+            tvService -> {
+                //goService()
+                if (MallBusManager.checkNotLogin(this)) {
+                    return
+                }
+                if (goods == null) {
+                    toast(getString(R.string.product_is_not_loaded))
+                    return
+                }
+                ActivityUtil.launch2CompIMChat(this, goods!!.shopId, "zhonghua")
+                //ActivityUtil.launch2CompIMChat(this,goods!!.shopId,"227")
+            }
+        }
+    }
+
+//    fun goService() {
+//        LogTools.debug("ccTime", System.currentTimeMillis())
+//        val cc = CC.obtainBuilder("CompIM")
+//                .setActionName("showActivityChat")
+//                .build()
+//        CCUtil.navigateTo(cc, Class.forName("com.epro.comp.im.ui.activity.ChatActivity") as Class<out Activity>?)
+//    }
+
+    fun goService1() {
+        LogTools.debug("ccThread", Thread.currentThread().name)
+        LogTools.debug("ccThread", Thread.currentThread().name)
+
+        val cc = CC.obtainBuilder("CompIM")
+                .setActionName("showActivityChat")
+                .build()
+        cc.call()
+        LogTools.debug("ccThread", cc.getContext())
+        //LogTools.debug("ccThread", getProcessName(cc.getContext()))
+        LogTools.debug("ccThread", cc.context.classLoader)
+        LogTools.debug("ccThread", this::class.java.classLoader)
+    }
+
+
+    private fun checkSpecAllSelected(): Boolean {
+        val firstFalse = ext_FirstFalse(adapter?.mData!!)
+        if (firstFalse == -2) {
+            toast("Spec data is null")
+            return false
+        }
+        if (firstFalse >= 0) {
+            toast(adapter?.mData!![firstFalse].name + getString(R.string.not_selected))
+            return false
+        }
+        return true
+    }
+
+    companion object {
+        const val TAG = "getGoodsDetail"
+        const val GOODS_ID = "goodsId"
+        const val FOR_CHECKOUT_RESULT = 10
+        fun launch(context: Context) {
+            launchWithGoodsId(context, "")
+        }
+
+        fun launchWithGoodsId(context: Context, goodsId: String) {
+            context.startActivity(Intent(context, GoodsDetailActivity::class.java).putExtra(GOODS_ID, goodsId))
+        }
+
+    }
+
+    override fun getPresenter(): GoodsDetailPresenter {
+        return GoodsDetailPresenter()
+    }
+
+    private fun initSpecUI(goods: Goods) {
+        logTools.d(AppBusManager.toJson(goods.productList))
+        rvSpecs.layoutManager = LinearLayoutManager(this) as RecyclerView.LayoutManager?
+        adapter = SpecAdapter(this, goods)
+        rvSpecs.adapter = adapter
+        adapter?.onChildItemSelectListener = object : SpecAdapter.OnChildItemSelectListener {
+            override fun onChildItemSelect(spec: Spec, specValue: SpecValue) {
+            }
+        }
+        adapter?.onProductSelectListener = object : SpecAdapter.OnProductSelectListener {
+            override fun onProductSelect(product: Product?) {
+                this@GoodsDetailActivity.product = product
+                if (product != null) {
+                    tvPrice.text = product.onlineSalesPrice.ext_formatAmount()
+                    tvStock.visibility = View.VISIBLE
+                    tvStock.text = getString(R.string.inventory) + " " + product.productNumber.toString()
+
+                    //如果商品有活动
+                    val activiy = MallBusManager.getProductActivity(product)
+                    if (activiy == null) {
+                        llActivity.visibility = View.GONE
+                    } else {
+                        tvPrice.text = activiy.discountPrice.ext_formatAmount()
+                        llActivity.visibility = View.VISIBLE
+                        tvOriginalPrice.ext_setTextWithHorizontalLine(AppBusManager.getAmountUnit() + " " + product.onlineSalesPrice.ext_formatAmount())
+                    }
+                } else {
+                    handlerGoodsActivity(goods)
+                    tvStock.visibility = View.VISIBLE
+                    tvStock.text = getString(R.string.inventory) + " " + MallBusManager.getTotalStock(goods!!)
+                }
+            }
+        }
+        adapter!!.findProduct()
+    }
+
+    var goods: Goods? = null
+    var product: Product? = null
+    override fun onGetGoodsDetailSuccess(goods: Goods) {
+        getTitleBar().visibility = View.GONE
+        this.goods = goods
+        initSpecUI(goods)
+        handlerGoodsActivity(goods)
+        handlerDeliveryDistance(goods)
+        tvDesc.text = goods.shoppingMallName
+        imageList.clear()
+        val pics = arrayListOf(goods.goodsPicUrl, goods.goodsPicUrl1, goods.goodsPicUrl2, goods.goodsPicUrl3, goods.goodsPicUrl4)
+        for (p in pics) {
+            if (p.isNotEmpty()) {
+                imageList.add(p)
+            }
+        }
+        banner.setImages(imageList).setImageLoader(GlideImageLoader()).start()
+        banner.stopAutoPlay()
+        if (TextUtils.isEmpty(goods.goodsDesc)) {
+            tvEmpty.visibility = View.VISIBLE
+        }
+        val webFragment = supportFragmentManager.findFragmentById(R.id.fragmentGoodsWebDetail) as GoodsWebDetailFragment
+        webFragment.loadData(goods.goodsDesc)
+    }
+
+    private fun handlerDeliveryDistance(goods: Goods) {
+        if (goods.deliveryMode == MallConst.DELIVERY_MODE_SHOPDEFAULT){ //1：店铺默认配送距离
+             mPresenter.getShopInfo(goods.shopId,MallConst.GET_SHOP_INFO)
+        }else if (goods.deliveryMode == MallConst.DELIVERY_MODE_CUSTOM){  // 2：自定义
+            tvSendRange.text = goods.deliveryDistance+" km"
+        }else{      //  3：不支持配送
+            tvSendRange.text = getString(R.string.no_distance)
+        }
+    }
+
+    /**
+     * 处理有带活动的商品
+     */
+    private fun handlerGoodsActivity(goods: Goods) {
+        val isHaveActivity = MallBusManager.isHaveActivity(goods)
+        if (isHaveActivity) {
+            tvOriginalPrice.ext_setTextWithHorizontalLine(AppBusManager.getAmountUnit() + " " + MallBusManager.getGoodsMinMaxPrice(goods)?.ext_formatAmount())
+            llActivity.visibility = View.VISIBLE
+            tvPrice.text = MallBusManager.getGoodsWithActivityMinMaxPrice(goods)?.ext_formatAmount()
+        } else {
+            llActivity.visibility = View.GONE
+            tvPrice.text = MallBusManager.getGoodsMinMaxPrice(goods)?.ext_formatAmount()
+        }
+    }
+
+
+    override fun layoutContentId(): Int {
+        return R.layout.activity_goods_detail
+    }
+
+    override fun initData() {
+        val goodsId = intent.getStringExtra(GOODS_ID)
+        mPresenter.getGoodsDetail(goodsId!!, MallConst.GET_GOODS_DETAIL)
+    }
+
+    override fun initStatusBar() {
+        StatusBarUtil.immersive(this, resources.getColor(R.color.white), 0f)
+    }
+
+    //var adapter: GoodsDetailAdapter? = null
+    var adapter: SpecAdapter? = null
+    val imageList = ArrayList<String>()
+    @SuppressLint("SetJavaScriptEnabled")
+    override fun initView() {
+        super.initView()
+        getTitleBar().visibility = View.GONE
+        getTitleView().text = getString(R.string.goods_detail)
+        setRefreshEnable(true)
+        banner.setBannerStyle(BannerConfig.NUM_INDICATOR)
+        banner.setIndicatorGravity(BannerConfig.RIGHT)
+        setBannerIndicatorBackground()
+//        imageList.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1565342060345&di=308ee31fce991ab33cd8e3d16d9a4355&imgtype=0&src=http%3A%2F%2Fhbimg.b0.upaiyun.com%2Fb1cce6f996734bdbb9b3fb9ef7705deabc980e35493b-ysf8BZ_fw658")
+//        imageList.add("https://ss3.baidu.com/-fo3dSag_xI4khGko9WTAnF6hhy/image/h%3D300/sign=b5e4c905865494ee982209191df4e0e1/c2cec3fdfc03924590b2a9b58d94a4c27d1e2500.jpg")
+//        banner.setImages(imageList).setImageLoader(GlideImageLoader()).start()
+        tvUnit.text = AppBusManager.getAmountUnit()
+//        rvDetail.layoutManager=LinearLayoutManager(this)
+//        rvDetail.adapter=GoodsDetailAdapter(this, ArrayList(),object :MultipleType<String>{
+//            override fun getLayoutId(item: String, position: Int): Int {
+//                if(position==1){
+//                    return R.layout.item_goodsdetail_bottom
+//                }
+//               return R.layout.item_goodsdetail_top
+//            }
+//
+//        })
+    }
+
+    private fun setBannerIndicatorBackground() {
+        val clazz = Banner::class.java
+        // 获得指定类的属性
+        try {
+            val field = clazz.getDeclaredField("numIndicator")
+            field.isAccessible = true
+            val numIndicator = field.get(banner) as TextView
+            numIndicator.setBackgroundResource(R.drawable.shape_bg_banner_indicator)
+            numIndicator.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 11.toFloat())
+            val params = numIndicator.layoutParams
+            params.width = DisplayManager.dip2px(38.toFloat())!!
+            params.height = DisplayManager.dip2px(16.toFloat())!!
+            numIndicator.layoutParams = params
+        } catch (e: NoSuchFieldException) {
+            e.printStackTrace()
+        } catch (e: IllegalAccessException) {
+            e.printStackTrace()
+        }
+    }
+
+    inner class GlideImageLoader : ImageLoader() {
+        override fun displayImage(context: Context?, path: Any?, imageView: ImageView?) {
+            imageView?.scaleType = ImageView.ScaleType.FIT_CENTER
+            imageView?.ext_loadImageWithDomain(path as String?)
+        }
+    }
+
+    override fun initListener() {
+        btnAddCart.ext_doubleClick(this)
+        btnRightNow.ext_doubleClick(this)
+        ivBack.setOnClickListener(this)
+        ivBack2.setOnClickListener(this)
+        tvPlus.setOnClickListener(this)
+        tvMinus.setOnClickListener(this)
+        tvShop.setOnClickListener(this)
+        tvCart.setOnClickListener(this)
+        tvService.setOnClickListener(this)
+        ivBackToTop.setOnClickListener(this)
+        scrollView.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { p0, p1, p2, p3, p4 ->
+            // alpha = 滑出去的高度/(screenheight/3);
+            val heightPixels = resources.displayMetrics.heightPixels
+            val alpha = scrollView.scrollY.toFloat() / (heightPixels / 3)// 0~1 透明度是1~0
+            //这里选择的screenheight的1/3 是alpha改变的速率 （根据你的需要你可以自己定义）
+            rlHeader.alpha = alpha
+            StatusBarUtil.darkMode(this, alpha > 0.5)
+            ivBackToTop.visibility = if (scrollView.scrollY.toFloat() > DisplayManager.getScreenHeight()!!) View.VISIBLE else View.GONE
+        })
+    }
+
+    private fun isSpecViewAllVisiable(): Boolean {
+        val rect = Rect()
+        rvSpecs.getLocalVisibleRect(rect)
+        return rect.top == 0
+    }
+
+    override fun showError(errorMsg: String, errorCode: Int, type: String) {
+        super.showError(errorMsg, errorCode, type)
+        if (type == MallConst.GET_GOODS_DETAIL) {
+            getMultipleStatusView().showError()
+            getMultipleStatusView().findViewById<TextView>(R.id.tvError).text = errorMsg
+            getTitleBar().visibility = View.VISIBLE
+            StatusBarUtil.darkMode(this)
+        }
+    }
+
+    private fun showSelectSpecBottomPopup(buyType: String) {
+        val popup = BaseBottomPopup.Builder(SelectSpecBottomPopup())
+                .putString(ext_createJsonKey(Goods::class.java), AppBusManager.toJson(goods))
+                .putString(SelectSpecBottomPopup.BUY_TYPE, buyType)
+                .setOnPopupDismissListener(object : BaseBottomPopup.OnPopupDismissListener {
+                    override fun onPopupDismiss(bundle: Bundle?) {
+                        if (bundle != null) {
+                            val goods = AppBusManager.fromJson(bundle.getString(ext_createJsonKey(Goods::class.java))!!, Goods::class.java)
+                            this@GoodsDetailActivity.goods = goods
+                            initSpecUI(goods!!)
+                        }
+                    }
+                })
+                .create()
+
+        (popup as SelectSpecBottomPopup).onSureClickListner = object : SelectSpecBottomPopup.OnSureClickListner {
+            override fun onSureClick(buyTpe: String, product: Product, buyNum: Int) {
+                when (buyType) {
+                    SelectSpecBottomPopup.ADD_TO_CART -> {
+                        mPresenter.addToCart(product.productId, buyNum, MallConst.ADD_CARTGOODS)
+                        popup.dismiss()
+                    }
+                    SelectSpecBottomPopup.BUY_RIGHT_NOW -> {
+                        goToConfirmOrder(buyNum, product)
+                    }
+                }
+            }
+        }
+        popup.show(supportFragmentManager, "select_spec")
+    }
+
+    private fun goToConfirmOrder(buyNum: Int, product: Product) {
+        val cartGoodsList = ArrayList<CartGoods>()
+        val cartGoods = CartGoods(goods!!.goodsID, goods!!.goodsName, product.productId,
+                product.onlineSalesPrice, buyNum, product.productPicUrl, product.specificationsValueNames, goods!!.shoppingMallName)
+        cartGoods.judgeValue = true
+        cartGoods.onlineActivityInfo = product.onlineActivityInfo
+        cartGoodsList.add(cartGoods)
+        val shopCart = ShopCart(goods!!.shopId, cartGoodsList, "")
+        OrderInfoActivity.launchWithShopCart(this@GoodsDetailActivity, shopCart, FOR_CHECKOUT_RESULT)
+    }
+
+    override fun onDestroy() {
+        ext_removeFragment(R.id.fragmentGoodsWebDetail)
+        super.onDestroy()
+    }
+
+    override fun reload() {
+        val goodsId = intent.getStringExtra(GOODS_ID)
+        mPresenter.getGoodsDetail(goodsId!!, MallConst.GET_GOODS_DETAIL)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (Activity.RESULT_OK == resultCode) {
+            when (requestCode) {
+                FOR_CHECKOUT_RESULT -> {
+                    finish()
+                }
+            }
+        }
+    }
+
+}
+
+

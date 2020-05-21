@@ -1,0 +1,288 @@
+package com.epro.comp.im.ui.fragment
+
+import android.app.Activity
+import android.app.Dialog
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import com.epro.comp.im.R
+import com.epro.comp.im.listener.ChatCloseEvent
+import com.epro.comp.im.listener.ChatMessageChangeEvent
+import com.epro.comp.im.listener.ConnectSuccessEvent
+import com.epro.comp.im.listener.IMServiceCloseEvent
+import com.epro.comp.im.mvp.contract.ChatRecordListContract
+import com.epro.comp.im.mvp.model.bean.ChatRecord
+import com.epro.comp.im.mvp.model.bean.IMShop
+import com.epro.comp.im.mvp.model.bean.MsgBody
+import com.epro.comp.im.mvp.model.bean.User
+import com.epro.comp.im.mvp.presenter.ChatRecordListPresenter
+import com.epro.comp.im.service.IMService
+import com.epro.comp.im.ui.activity.ChatActivity
+import com.epro.comp.im.ui.adapter.ChatRecordListAdapter
+import com.epro.comp.im.utils.ActivityUtil
+import com.epro.comp.im.utils.IMBusManager
+import com.mike.baselib.fragment.BaseTitleBarListFragment
+import com.mike.baselib.listener.LoginSuccessEvent
+import com.mike.baselib.listener.LogoutSuccessEvent
+import com.mike.baselib.net.exception.ErrorStatus
+import com.mike.baselib.utils.AppBusManager
+import com.mike.baselib.utils.NetworkUtil
+import com.mike.baselib.view.CommonDialog
+import com.mike.baselib.view.EmptyView
+import com.mike.baselib.view.recyclerview.adapter.OnItemLongClickListener
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+
+class ChatRecordListFragment : BaseTitleBarListFragment<ChatRecord, ChatRecordListContract.View
+        , ChatRecordListPresenter, ChatRecordListAdapter>(), ChatRecordListContract.View, View.OnClickListener {
+    override fun onClick(p0: View?) {
+        when (p0) {
+            getRightView() -> {
+                showClearAllMessage()
+            }
+        }
+    }
+
+    private fun showClearAllMessage() {
+        CommonDialog.Builder(activity!!)
+                .setContent("确定清空所有消息?")
+                .setOnConfirmListener(object : CommonDialog.OnConfirmListener {
+                    override fun onClick(dialog: Dialog) {
+                        dialog.dismiss()
+                        IMBusManager.clearAllRecord()
+                        listDataAdapter?.setData(ArrayList())
+                        showEmptyView()
+                    }
+                })
+                .create()
+                .show()
+    }
+
+    private fun showDeleteMessage(chatRecord: ChatRecord, position: Int) {
+        CommonDialog.Builder(activity!!)
+                .setContent("确定删除该消息记录?")
+                .setOnConfirmListener(object : CommonDialog.OnConfirmListener {
+                    override fun onClick(dialog: Dialog) {
+                        dialog.dismiss()
+                        listDataAdapter!!.mData.removeAt(position)
+                        IMBusManager.deleteRecord(chatRecord.shopId)
+                        listDataAdapter?.notifyDataSetChanged()
+                        if (listDataAdapter!!.mData.isEmpty()) {
+                            showEmptyView()
+                        }
+                    }
+                })
+                .create()
+                .show()
+    }
+
+    companion object {
+        const val TAG = "getChatRecordList"
+        const val FOR_CHAT_RESULT = 11
+        fun launch(context: Context) {
+            launchWithStr(context, "")
+        }
+
+        fun launchWithStr(context: Context, str: String) {
+            context.startActivity(Intent(context, ChatRecordListFragment::class.java).putExtra(TAG, str))
+        }
+    }
+
+
+    override fun getListAdapter(list: ArrayList<ChatRecord>): ChatRecordListAdapter {
+        return ChatRecordListAdapter(activity!!, list)
+    }
+
+    override fun getListData() {
+        if (AppBusManager.isLogin()) {
+            mPresenter.getChatRecordList(shopId)
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setForceLoad(true)
+        super.onCreate(savedInstanceState)
+    }
+
+    override fun initData() {
+
+    }
+
+    override fun getPresenter(): ChatRecordListPresenter {
+        return ChatRecordListPresenter()
+    }
+
+    var isClickToChat = false
+    override fun initView() {
+        if (AppBusManager.isLogin()) {
+            IMBusManager.setUser(User(AppBusManager.getUsername(),
+                    AppBusManager.getUsername(), AppBusManager.getUsername(),AppBusManager.getUserAvatar()))
+        }
+        super.initView()
+        getTitleView().text = "消息列表"
+        getLeftView().visibility = View.GONE
+        getRightView().text = "清空"
+        getRightView().visibility = View.VISIBLE
+        listDataAdapter?.onItemClickListener = object : ChatRecordListAdapter.OnItemClickListener {
+            override fun onClick(item: ChatRecord, position: Int) {
+                isClickToChat = true
+                item.unReadCount = 0
+                listDataAdapter?.notifyItemChanged(position)
+                ChatActivity.launchWithShop_CsId(this@ChatRecordListFragment, IMBusManager.getIMShop(item.shopId),item.recentChatMessage.csId, FOR_CHAT_RESULT)
+            }
+        }
+        listDataAdapter?.setOnItemLongClickListener(object : OnItemLongClickListener<ChatRecord> {
+            override fun onItemLongClick(m: ChatRecord, position: Int): Boolean {
+                showDeleteMessage(m, position)
+                return true
+            }
+        })
+
+        if (!AppBusManager.isLogin()) {
+            showEmptyView()
+        }
+    }
+
+    var shopId = ""
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            FOR_CHAT_RESULT -> {
+                if (Activity.RESULT_OK == resultCode) {
+//                    shopId = data!!.getStringExtra("shopId")
+//                    getListData()
+                }
+                isClickToChat = false
+            }
+        }
+    }
+
+    private fun showEmptyView() {
+        logTools.d(" showEmptyView : ")
+        getRefreshView().setEnableRefresh(AppBusManager.isLogin())
+        // getRefreshView().setEnableLoadMore(AppBusManager.isLogin())
+        val view = EmptyView.Builder(activity!!)
+                .setShowText1("暂无消息")
+                .setShowText2("登录查看消息")
+                .setClickLisener(object : View.OnClickListener {
+                    override fun onClick(p0: View?) {
+                        ActivityUtil.launch2AppLogin(activity!!)
+                    }
+                })
+                .create()
+        getMultipleStatusView().showEmpty(view, ViewGroup.LayoutParams(-1, -1))
+        val tvButton = getMultipleStatusView().findViewById<TextView>(R.id.tvBottom)
+        tvButton.visibility = if (!AppBusManager.isLogin()) View.VISIBLE else View.GONE
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onChatMessageChangeEvent(event: ChatMessageChangeEvent<MsgBody>) {
+//        val message = event.message!!
+        if (!isClickToChat) {
+            shopId = ""
+            getListData()
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onChatCloseEvent(event: ChatCloseEvent) {
+        shopId = event.shopId
+        getListData()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onConnectSuccessEvent(event: ConnectSuccessEvent) {
+        logTools.d("onConnectSuccessEvent")
+        getListData()
+    }
+
+    var lazyLoad=false
+    override fun lazyLoad() {
+        logTools.d("lazyLoad do here")
+        lazyLoad=true
+        connectCustomerService()
+    }
+
+    override fun initListener() {
+        getRightView().setOnClickListener(this)
+    }
+
+    override fun getLayoutId(): Int {
+        return R.layout.activity_base_red_titlebar
+    }
+
+    override fun dismissLoading(errorMsg: String, errorCode: Int, type: String) {
+        if (errorCode == ErrorStatus.SUCCESS) {
+            if (listDataAdapter!!.mData.isEmpty()) {
+                showEmptyView()
+            } else {
+                getMultipleStatusView().showContent()
+            }
+        }
+    }
+
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    fun onLogoutSuccess(event: LogoutSuccessEvent) {
+        logTools.d("do here logout")
+        logTools.d(AppBusManager.isLogin())
+        listDataAdapter!!.setData(ArrayList())
+        showEmptyView()
+        val tvButton = getMultipleStatusView().findViewById<TextView>(R.id.tvBottom)
+        logTools.d(tvButton)
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    fun onIMServiceCloseEvent(event: IMServiceCloseEvent) {
+        connectCustomerService()
+    }
+
+    override fun showError(errorMsg: String, errorCode: Int, type: String) {
+        super.showError(errorMsg, errorCode, type)
+        if (errorCode == ErrorStatus.MULTI_DEVICE_ERROR || errorCode == ErrorStatus.TOKEN_EXPIERD) {
+            listDataAdapter!!.setData(ArrayList())
+            showEmptyView()
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onLoginSuccess(event: LoginSuccessEvent) {
+        logTools.d("do here login")
+        IMBusManager.setUser(User(AppBusManager.getUsername(),
+                AppBusManager.getUsername(), AppBusManager.getUsername(),AppBusManager.getUserAvatar()))
+        page = 1
+        getListData()
+        getRefreshView().setEnableRefresh(true)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if(lazyLoad){
+            lazyLoad=false
+        }else{
+            logTools.d("do here onResume")
+            connectCustomerService()
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+    }
+
+
+    fun connectCustomerService() {
+        if (AppBusManager.isLogin()) {
+            showLoading("")
+            if (NetworkUtil.isNetworkAvailable(activity!!)) {
+                IMService.startIMService(activity!!,"","")
+            } else {
+                getListData()
+            }
+        }
+    }
+}
+
+

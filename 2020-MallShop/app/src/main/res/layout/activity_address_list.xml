@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/bottomColor"
+    android:layout_height="match_parent">
+   <LinearLayout
+       android:layout_above="@+id/btnAdd"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
+       <include layout="@layout/activity_base_titlebar_list"/>
+   </LinearLayout>
+
+    <Button
+        android:id="@+id/btnAdd"
+        android:layout_alignParentBottom="true"
+        android:layout_centerInParent="true"
+        style="@style/Confirm_Button"
+        android:text="@string/add_address" />
+</RelativeLayout>

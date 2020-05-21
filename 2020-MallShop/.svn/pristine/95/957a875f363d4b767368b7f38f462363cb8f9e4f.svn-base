@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="12dp"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:padding="12dp">
+
+    <TextView
+        android:id="@+id/tvShopName"
+        style="@style/MyTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:drawableStart="@mipmap/icon_shop"
+        android:text="@string/shop_name_title" />
+
+    <include layout="@layout/layout_line" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/receipt_method"
+            android:textColor="@color/thirdTextColor"
+            android:textSize="@dimen/contentTextSize" />
+
+        <RadioGroup
+            android:id="@+id/rgTakeMode"
+            android:layout_width="wrap_content"
+            android:layout_height="34dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="@drawable/shape_border_gray_radius17"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/rbSelfTake"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:background="@drawable/selector_bg_radiobutton"
+                android:button="@null"
+                android:checked="true"
+                android:gravity="center"
+                android:text="@string/order_self_pickup"
+                android:textColor="@color/radiobutton_color"
+                android:textSize="@dimen/secondaryContentTextSize" />
+
+            <RadioButton
+                android:id="@+id/rbDelivery"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                android:background="@drawable/selector_bg_radiobutton"
+                android:button="@null"
+                android:checked="false"
+                android:gravity="center"
+                android:text="@string/order_delivery"
+                android:textColor="@color/radiobutton_color"
+                android:textSize="@dimen/secondaryContentTextSize" />
+        </RadioGroup>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/lineColor" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:id="@+id/tvTakeTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/order_send_address_1"
+            android:textColor="@color/thirdTextColor"
+            android:textSize="@dimen/contentTextSize" />
+
+        <LinearLayout
+            android:layout_marginEnd="5dp"
+            android:layout_toStartOf="@+id/tvAddressArrow"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:layout_toEndOf="@+id/tvTakeTitle"
+            android:id="@+id/llAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:textColorHint="@color/thirdTextColor"
+                android:id="@+id/tvName"
+                style="@style/MyTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxEms="15"
+                android:maxLines="1"
+                android:hint="联系信息"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_marginTop="3dp"
+                android:textSize="@dimen/secondaryContentTextSize"
+                android:textColorHint="@color/thirdTextColor"
+                android:id="@+id/tvAddress"
+                style="@style/MyTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxEms="20"
+                android:maxLines="2"
+                android:hint="自提地址" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:id="@+id/tvAddressArrow"
+            android:drawableEnd="@mipmap/arrow_right"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="@color/lineColor" />
+    <RelativeLayout
+        android:id="@+id/llTime"
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+
+        <TextView
+            android:id="@+id/tvTimeTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:text="@string/pickup_time"
+            android:textColor="@color/thirdTextColor"
+            android:textSize="@dimen/contentTextSize" />
+
+        <TextView
+            android:id="@+id/tvTime"
+            style="@style/MyTextView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="15dp"
+            android:layout_toEndOf="@+id/tvTimeTitle"
+            android:drawableEnd="@mipmap/arrow_right"
+            android:hint="请选择自提时间" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/lineColor" />
+    </RelativeLayout>
+    <android.support.v7.widget.RecyclerView
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:nestedScrollingEnabled="false"
+        android:id="@+id/rvOrderGoods"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/freight"
+            android:textColor="@color/thirdTextColor"
+            android:textSize="@dimen/contentTextSize" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="60dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvTakeMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/order_goto_delivery"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/contentTextSize" />
+
+            <TextView
+                android:id="@+id/tvFreight"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:text="0.00"
+                android:textColor="@color/mainColor"
+                android:textSize="@dimen/contentTextSize" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp">
+
+
+
+        <LinearLayout
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/llAmount"
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/tvTotalNum"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="共计0件"
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/secondaryContentTextSize" />
+           <LinearLayout
+               android:visibility="gone"
+               android:id="@+id/llDiscount"
+               android:orientation="horizontal"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content">
+               <TextView
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text=" 已优惠"
+                   android:textColor="@color/mainTextColor"
+                   android:textSize="@dimen/secondaryContentTextSize" />
+               <TextView
+                   android:id="@+id/tvDiscount"
+                   android:textStyle="bold"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:text="0.00"
+                   android:textColor="@color/mainColor"
+                   android:textSize="@dimen/secondaryContentTextSize" />
+           </LinearLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=",小计: "
+                android:textColor="@color/mainTextColor"
+                android:textSize="@dimen/secondaryContentTextSize" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llAmount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvUnit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$"
+                android:textColor="@color/mainColor"
+                android:textSize="@dimen/secondaryContentTextSize"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvTotalAmount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxEms="10"
+                android:maxLines="1"
+                android:text="0.00"
+                android:textColor="@color/mainColor"
+                android:textSize="@dimen/titleTextSize"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

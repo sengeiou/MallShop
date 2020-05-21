@@ -1,0 +1,356 @@
+package com.epro.mall.ui.fragment
+
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.app.Dialog
+import android.content.Context
+import android.content.Intent
+import android.os.Bundle
+import android.text.TextUtils
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import com.epro.mall.R
+import com.epro.mall.listener.LoginSuccessEvent
+import com.epro.mall.listener.LogoutSuccessEvent
+import com.epro.mall.listener.OrderDeleteEvent
+import com.epro.mall.mvp.contract.OrderListContract
+import com.epro.mall.mvp.model.bean.Order
+import com.epro.mall.mvp.model.bean.OrderListBean
+import com.epro.mall.mvp.model.bean.PayInfo
+import com.epro.mall.mvp.presenter.OrderListPresenter
+import com.epro.mall.ui.activity.CartActivity
+import com.epro.mall.ui.activity.PayManagerActivity
+import com.epro.mall.ui.adapter.OrderListAdapter
+import com.epro.mall.ui.login.LoginActivity
+import com.epro.mall.ui.view.CommonDialog
+import com.epro.mall.ui.view.EmptyView
+import com.epro.mall.ui.view.PickupCodeDialog
+import com.epro.mall.utils.MallConst
+import com.epro.mall.utils.MallUtils
+import com.epro.pos.listener.CartChangeEvent
+import com.epro.pos.listener.OrderPayEvent
+import com.mike.baselib.fragment.BaseTitleBarListFragment
+import com.mike.baselib.net.exception.ErrorStatus
+import com.mike.baselib.utils.AppBusManager
+import com.mike.baselib.utils.LogTools
+import com.mike.baselib.utils.toast
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+
+/**
+ * 订单列表
+ */
+class OrderListFragment : BaseTitleBarListFragment<Order, OrderListContract.View
+        , OrderListPresenter, OrderListAdapter>(), OrderListContract.View {
+    override fun onOrderAgainSuccess(productIds: ArrayList<String>) {
+        EventBus.getDefault().post(CartChangeEvent())
+        CartActivity.launchWithProductIds(this@OrderListFragment, productIds, ORDER_TO_AGAIN_SUCESS)
+    }
+
+    companion object {
+        const val TAG = "OrderList"
+        const val ORDER_TO_PAY_SUCESS = 2
+        const val ORDER_TO_AGAIN_SUCESS = 3
+        const val ORDER_TO_LOGIN = 4
+        private val log = LogTools("BaseLazyLoadFragment__" + this::class.java.simpleName)
+        fun newInstance(str: String): OrderListFragment {
+            val args = Bundle()
+            args.putString(TAG, str)
+            val fragment = OrderListFragment()
+            fragment.arguments = args
+            return fragment
+        }
+
+        fun newInstance(): OrderListFragment {
+            return newInstance("")
+        }
+    }
+
+    override fun getListAdapter(list: ArrayList<Order>): OrderListAdapter {
+        return OrderListAdapter(activity!!, list)
+    }
+
+    override fun getListData() {
+        if (arguments != null && AppBusManager.isLogin()) {
+            if (arguments?.getString(TAG) != null) {
+                logTools.t("YB").d("OrderListFragment getListData ："+arguments?.getString(TAG)!!)
+                var titleString = arguments?.getString(TAG)!!
+                if(AppBusManager.isLogin()){
+                    getRefreshView().setEnableRefresh(true)
+                    getRefreshView().setEnableLoadMore(true)
+                    mPresenter.getOrderList(MallConst.GET_ORDER_LIST, titleString, page)
+                }
+            }
+        }
+    }
+
+    override fun initData() {
+    }
+
+    override fun getPresenter(): OrderListPresenter {
+        return OrderListPresenter()
+    }
+
+
+    override fun initView() {
+        super.initView()
+        getTitleBar().visibility = View.GONE
+        logTools.t("YB").d("initView : " + listDataAdapter!!.mData + " isLogin: " + AppBusManager.isLogin())
+        if (!AppBusManager.isLogin()) {
+            showNotLoginView()
+            return
+        }
+        adapterClickListener()
+        //listDataAdapter!!.setData(dataList)
+    }
+
+    var orderItem:Order?=null
+    private fun adapterClickListener() {
+        listDataAdapter?.onItemClickListener = object : OrderListAdapter.OnItemClickListener {
+            override fun onClick(item: Order, int: Int) {
+                orderItem = item
+                // 0 左边，1 右边
+                if (0 == int) {
+                    if (1 == item.orderStatus.toInt()) {                  // 待支付  取消订单
+                        showTobePaidDailog(item.orderSn, getString(R.string.user_cancel_order))  //2 用户主动取消订单
+                    } else if (6 == item.orderStatus.toInt()) {         //已完成  删除订单
+                        showDeleteOrder(item.orderSn)
+                    } else if (2 == item.orderStatus.toInt() || 7 == item.orderStatus.toInt()) {    //已经取消  删除订单
+                        showDeleteOrder(item.orderSn)
+                    }
+                } else if (1 == int) {
+                    if (1 == item.orderStatus.toInt()) {                 // 待支付  去支付
+                        //PayManagerActivity.launchWithPayInfo(this@OrderListFragment, PayInfo(item!!.orderSn, item.payType, ""), ORDER_TO_PAY_SUCESS)
+                        activity?.supportFragmentManager!!.beginTransaction().replace(R.id.fragmentPay,
+                                PayManagerFragment.newInstance( PayInfo(item!!.orderSn, item.payType, ""))).commitAllowingStateLoss()
+                    } else if (3 == item.orderStatus.toInt() || 4 == item.orderStatus.toInt() || 5 == item.orderStatus.toInt()) {   // 待收货  查看提货码
+                        showPickupCodeDailog(item.deliveryCode)
+                    } else if (6 == item.orderStatus.toInt()) {       //已完成  再来一单
+                        mPresenter.orderAgain(item!!.orderSn, MallConst.ORDER_AGAIN)
+                    } else if (2 == item.orderStatus.toInt() || 7 == item.orderStatus.toInt()) {    //取消  重新购买
+                        mPresenter.orderAgain(item!!.orderSn, MallConst.ORDER_AGAIN)
+                    }
+                }
+            }
+        }
+    }
+
+
+    private fun showNotLoginView(visiable: Boolean = true) {
+        logTools.t("YB").d(" showNotLoginView : ")
+        getRefreshView().setEnableRefresh(false)
+        getRefreshView().setEnableLoadMore(false)
+        val view = EmptyView.Builder(activity!!)
+                .setShowText1(getString(R.string.order_empty_title))
+                .setShowText2(getString(R.string.login_check_order))
+                .setClickLisener(object : View.OnClickListener {
+                    override fun onClick(p0: View?) {
+                        LoginActivity.launchWithForResult(this@OrderListFragment, ORDER_TO_LOGIN)
+                    }
+                })
+                .create()
+        getMultipleStatusView().showEmpty(view, ViewGroup.LayoutParams(-1, -1))
+        val tvButton = getMultipleStatusView().findViewById<TextView>(R.id.tvBottom)
+        tvButton.visibility = if (visiable) View.VISIBLE else View.GONE
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            ORDER_TO_PAY_SUCESS -> {
+                if (Activity.RESULT_OK == resultCode) {
+                    val payStatus = data!!.getIntExtra(PayManagerActivity.PAY_STATUS, MallConst.PAY_FAILED)
+                    showPayPayResult(payStatus)
+                }
+            }
+
+            ORDER_TO_AGAIN_SUCESS -> {
+                if (Activity.RESULT_OK == resultCode) {
+                    toast("ok")
+                }
+                if (Activity.RESULT_CANCELED == resultCode) {
+
+                }
+            }
+        }
+    }
+
+
+    private fun showPayPayResult(payStatus: Int) {
+        if (payStatus == MallConst.PAY_SUCCESS) {
+            toast(getString(R.string.pay_success))
+        } else {
+            toast(getString(R.string.pay_failed))
+        }
+    }
+
+    //提货码弹框
+    private fun showPickupCodeDailog(deliveryCode: String) {
+        if (deliveryCode.length == 4) {
+            PickupCodeDialog.Builder(activity!!).setContent(deliveryCode).create().show()
+        } else {
+            MallUtils.showToast(getString(R.string.no_commit_code), activity!!)
+        }
+    }
+
+    //删除订单弹框
+    private fun showDeleteOrder(orderSn: String) {
+        CommonDialog.Builder(activity!!)
+                .setContent(getString(R.string.order_del_dialog))
+                .setOnConfirmListener(object : CommonDialog.OnConfirmListener {
+                    override fun onClick(dialog: Dialog) {
+                        dialog.dismiss()
+                        mPresenter.deleteOrder(MallConst.DELETE_ORDER, orderSn)
+                    }
+                })
+                .setOnCancelListener(object : CommonDialog.OnCancelListener {
+                    override fun onClick(dialog: Dialog) {
+                        dialog.dismiss()
+                    }
+                })
+                .create()
+                .show()
+    }
+
+    //待支付弹框 取消订单
+    private fun showTobePaidDailog(orderSn: String, reason: String) {
+        CommonDialog.Builder(activity!!)
+                .setContent(getString(R.string.order_cancel_dialog))
+                .setOnConfirmListener(object : CommonDialog.OnConfirmListener {
+                    override fun onClick(dialog: Dialog) {
+                        dialog.dismiss()
+                        mPresenter.cancelOrder(MallConst.CANCEL_ORDER, orderSn, reason)
+                    }
+                })
+                .create()
+                .show()
+    }
+
+    override fun initListener() {
+    }
+
+    //懒加载，下一个view先oncreate,
+    override fun lazyLoad() {
+        super.lazyLoad()
+        log.d("lazyLoad() : " + arguments?.get(TAG) + "  page: " + page)
+    }
+
+    //viewpage预加载
+    override fun setUserVisibleHint(isVisibleToUser: Boolean) {
+        super.setUserVisibleHint(isVisibleToUser)
+        log.d("setUserVisibleHint : " + arguments?.get(TAG) + "  page: " + page)
+    }
+
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        log.d("onCreateView() : " + arguments?.get(TAG) + "  page: " + page)
+        return super.onCreateView(inflater, container, savedInstanceState)
+    }
+
+    override fun onDestroyView() {
+        log.d("onDestroyView() : " + arguments?.get(TAG) + "  page: " + page)
+        super.onDestroyView()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        log.d("onDestroy() : " + arguments?.get(TAG) + "  page: " + page)
+    }
+
+    @SuppressLint("MissingSuperCall")
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        log.d("onCreate() : " + isFirstLoad() + arguments?.get(TAG) + "  page: " + page)
+    }
+
+    @SuppressLint("MissingSuperCall")
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+        log.d("onAttach() : " + arguments?.get(TAG) + "  page: " + page)
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        log.d("onDetach() : " + arguments?.get(TAG) + "  page: " + page)
+    }
+
+    //订单列表获取成功
+    override fun onOrderListSuccess(result: OrderListBean.Result) {
+
+    }
+
+    override fun dismissLoading(errorMsg: String, errorCode: Int, type: String) {
+        if (errorCode == ErrorStatus.SUCCESS) {
+            if (listDataAdapter!!.mData.isEmpty()) {
+                showNotLoginView(false)
+            } else {
+                getMultipleStatusView().showContent()
+            }
+        }
+        //super.dismissLoading(errorMsg, errorCode, type)
+    }
+
+    //取消订单
+    override fun cancelOrderSuccess(result: String) {  //刷全部 刷新待支付 和 取消
+        var msg = OrderDeleteEvent()
+        msg.type = "1"
+        EventBus.getDefault().postSticky(msg)
+        toast(getString(R.string.cancel_success))
+    }
+
+    //删除订单
+    override fun deleteOrderSuccess(result: String) { //刷全部 本页面
+        var msg = OrderDeleteEvent()
+        msg.type = "0"
+        EventBus.getDefault().postSticky(msg)
+        toast(getString(R.string.delete_success))
+    }
+
+
+    //支付结果
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onOrderPayEvent(event: OrderPayEvent) {
+       // val status = arguments?.getString(TAG)!!
+        if(orderItem!=null&& orderItem!!.orderStatus.toInt()==1){
+            val payStatus = event.payStatus
+            showPayPayResult(payStatus)
+            orderItem = null
+        }
+        page=1
+        getListData()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    fun onOrderDeleteEvent(event: OrderDeleteEvent) {
+        page=1
+        getListData()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun onLoginSuccess(event: LoginSuccessEvent) {
+        page=1
+        getListData()
+        getRefreshView().setEnableRefresh(true)
+        getRefreshView().setEnableLoadMore(true)
+        adapterClickListener()
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN, sticky = true)
+    fun onLogoutSuccess(event: LogoutSuccessEvent) {
+        logTools.d("do here logout")
+        listDataAdapter!!.setData(ArrayList())
+        showNotLoginView()
+    }
+
+    override fun showError(errorMsg: String, errorCode: Int, type: String) {
+        super.showError(errorMsg, errorCode, type)
+        if(errorCode==ErrorStatus.MULTI_DEVICE_ERROR||errorCode==ErrorStatus.TOKEN_EXPIERD){
+            listDataAdapter!!.setData(ArrayList())
+            showNotLoginView()
+        }
+    }
+}
+
+

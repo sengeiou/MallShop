@@ -1,0 +1,27 @@
+package com.epro.comp.im.smack.xmppdebug;
+
+import com.mike.baselib.utils.LogTools;
+
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.StanzaListener;
+import org.jivesoftware.smack.packet.Stanza;
+
+/**
+ * Created by WangQX on 2018/4/16.
+ * Description:此类用于打印xmpp协议收发包信息
+ */
+
+public class XmppLoggingPacketListener implements StanzaListener {
+    private final String prefix;
+
+    public XmppLoggingPacketListener(String prefix) {
+        this.prefix = Validate.notNull(prefix);
+    }
+
+    @Override
+    public void processStanza(Stanza packet) {
+        if (XmppDebugger.printInterpreted.get()) {
+            LogTools.debug(XmppDebugger.LOGGER_NAME, prefix + " " + packet.getClass().getName() + " " + packet.toString());
+        }
+    }
+}
